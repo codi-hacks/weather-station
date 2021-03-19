@@ -1,7 +1,7 @@
 This is a monorepo with all the instructions and software to build and program your own solar-powered wi-fi weather station(s).
 
 - [Overview](#overview)
-- [Building the weather stations](hardware-files/README.md))
+- [Building the weather stations](hardware-files/README.md)
 - [Arduino sketch README](sketch/README.md)
 - [API server README](server/README.md)
 - [Web app README](web-app/README.md)
@@ -14,12 +14,19 @@ The weather stations send measurements to the API server to collect, which in tu
 
 <!-- (Flowchart generated using [gojs](https://gojs.net/latest/samples/flowchart.html). Load `diagram.json` onto their site to generate a new svg.) -->
 
+Folder structure:
+
+- **[hardware-files/](hardware-files/)** - All the files needed to print and build the weather station hardware
+- **[sketch/](sketch/)** - Embedded software that runs on the weather stations
+- **[server/](server/)** - API server
+- **[web-app/](web-app/)** - Website/mobile app
+
 **Milestones:**
 
 - [x] Week 1
-  - [ ] Project introduction
-  - [ ] Explanation of architecture
-  - [ ] Nodejs review
+  - [x] Project introduction
+  - [x] Explanation of architecture
+  - [x] Nodejs review
 - [ ] Week 2
   - [ ] API introduction
 - [ ] Hardware and Arduino introduction
