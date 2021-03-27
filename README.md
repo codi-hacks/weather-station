@@ -14,7 +14,7 @@ The weather stations send measurements to the API server to collect, which in tu
 
 <!-- (Flowchart generated using [gojs](https://gojs.net/latest/samples/flowchart.html). Load `diagram.json` onto their site to generate a new svg.) -->
 
-Folder structure:
+**Folder structure:**
 
 - **[hardware-files/](hardware-files/)** - All the files needed to print and build the weather station hardware
 - **[sketch/](sketch/)** - Embedded software that runs on the weather stations
@@ -27,9 +27,14 @@ Folder structure:
   - [x] Project introduction
   - [x] Explanation of architecture
   - [x] Nodejs review
-- [ ] Week 2
-  - [ ] API introduction
-- [ ] Hardware and Arduino introduction
+- [x] Week 2
+  - [x] API introduction
+  - [x] fetching data in the web app
+- [ ] Week 3
+  - [ ] Discussing Rust
+  - [ ] Database introduction
+- [ ] Week 4
+  - [ ] Hardware and Arduino introduction
 - [ ] Web app workshop
 - [ ] API server workshop
 - [ ] Arduino workshop
