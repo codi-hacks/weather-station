@@ -1,5 +1,5 @@
 <template>
-    <VueApexCharts width="500" type="bar" :options="chartOptions" :series="series"/>
+  <VueApexCharts width="500" type="bar" :options="chartOptions" :series="series"/>
 </template>
 
 <script>
