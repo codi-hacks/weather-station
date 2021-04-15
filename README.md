@@ -33,14 +33,17 @@ The weather stations send measurements to the API server to collect, which in tu
 - [x] Week 3
   - [x] Discussing Rust
   - [x] Database introduction
-- [ ] Week 4
-  - [ ] Hardware and Arduino introduction
-  - [ ] Try out the sketches:
-    - [ ] [Sketch 1: Hello World](https://gist.github.com/jaythomas/69a7bacf49e3f26ae8311a25ec416702)
+- [x] Week 4, ESP8266 Workshop (part 1)
+  - [x] Hardware and Arduino introduction
+  - [ x Try out the sketches:
+    - [x] [Sketch 1: Hello World](https://gist.github.com/jaythomas/69a7bacf49e3f26ae8311a25ec416702)
+- [ ] Week 5, ESP8266 Workshop (part 2)
     - [ ] [Sketch 2: LED Blink](https://gist.github.com/jaythomas/5bc647d795368d76fbcd233d69ee4246)
     - [ ] [Sketch 3: LED Swell](https://gist.github.com/jaythomas/56faf188e171e11e31d73bcf0457b042)
     - [ ] [Sketch 4: RGB LED](https://gist.github.com/jaythomas/2163c926c71bd153f35c89ae6f34b350)
     - [ ] [Sketch 5: RGB Swell](https://gist.github.com/jaythomas/4e1c2e71ac708f6263b3ec3324602426)
+    - [ ] [Sketch 6: Wifi](https://gist.github.com/jaythomas/c6a8850c13ec2fddc878c8dadebfae91)
+    - [ ] [Sketch 7: FINAL BOSS](https://gist.github.com/jaythomas/0f9becea61da928d38879eb3563897fa)
 - [ ] Web app workshop
 - [ ] API server workshop
 - [ ] Arduino workshop
