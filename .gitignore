@@ -1,1 +1,3 @@
+# Logs, cache, and temp files
 *.log
+.DS_Store

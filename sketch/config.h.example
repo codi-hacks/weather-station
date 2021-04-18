@@ -1,0 +1,18 @@
+// WiFi settings/credentials
+char hostname[] = "WeatherStation"; // Name for identifying this device on the network
+char ssid[] = "XXXX"; // WiFi SSID
+char pass[] = "XXXX"; // WiFi password (set to "" for open networks)
+
+// Server API
+const char* server = "192.168.1.118";
+const uint16_t port = 3381;
+// Set a unique id and key for identifying this station on the
+// server. This information should be provided by the api server.
+const char* station_id = "xxxx";
+const char* api_key = "xxxx";
+
+// Length of time to sleep between reports (in ms)
+// More frequent reporting will lead to more power consumption
+const long measurement_interval = 300000;
+// Whether or not to output information to serial
+bool debug_mode = 0;

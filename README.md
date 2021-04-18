@@ -23,30 +23,35 @@ The weather stations send measurements to the API server to collect, which in tu
 
 **Milestones:**
 
-- [x] Week 1
+- **Week 1**
   - [x] Project introduction
   - [x] Explanation of architecture
   - [x] Nodejs review
-- [x] Week 2
+- **Week 2**
   - [x] API introduction
   - [x] fetching data in the web app
-- [x] Week 3
+- **Week 3**
   - [x] Discussing Rust
   - [x] Database introduction
-- [x] Week 4, ESP8266 Workshop (part 1)
-  - [x] Hardware and Arduino introduction
-  - [ x Try out the sketches:
+  - Web app workshop (part 1)
+    - [x] Set up node.js
+- **Week 4**
+  - ESP8266 Workshop (part 1)
+    - [x] Hardware and Arduino introduction
     - [x] [Sketch 1: Hello World](https://gist.github.com/jaythomas/69a7bacf49e3f26ae8311a25ec416702)
-- [ ] Week 5, ESP8266 Workshop (part 2)
-    - [ ] [Sketch 2: LED Blink](https://gist.github.com/jaythomas/5bc647d795368d76fbcd233d69ee4246)
-    - [ ] [Sketch 3: LED Swell](https://gist.github.com/jaythomas/56faf188e171e11e31d73bcf0457b042)
-    - [ ] [Sketch 4: RGB LED](https://gist.github.com/jaythomas/2163c926c71bd153f35c89ae6f34b350)
-    - [ ] [Sketch 5: RGB Swell](https://gist.github.com/jaythomas/4e1c2e71ac708f6263b3ec3324602426)
-    - [ ] [Sketch 6: Wifi](https://gist.github.com/jaythomas/c6a8850c13ec2fddc878c8dadebfae91)
-    - [ ] [Sketch 7: FINAL BOSS](https://gist.github.com/jaythomas/0f9becea61da928d38879eb3563897fa)
-- [ ] Web app workshop
+  - Web app workshop (part 2)
+    - [x] Import a charting library for displaying data (#1)
+    - [x] Discuss creating components
+- **Week 5**
+  - ESP8266 Workshop (part 2)
+    - [x] [Sketch 2: LED Blink](https://gist.github.com/jaythomas/5bc647d795368d76fbcd233d69ee4246)
+    - [x] [Sketch 3: LED Swell](https://gist.github.com/jaythomas/56faf188e171e11e31d73bcf0457b042)
+    - [x] [Sketch 4: RGB LED](https://gist.github.com/jaythomas/2163c926c71bd153f35c89ae6f34b350)
+    - [x] [Sketch 5: RGB Swell](https://gist.github.com/jaythomas/4e1c2e71ac708f6263b3ec3324602426)
+    - [x] [Sketch 6: Wifi](https://gist.github.com/jaythomas/c6a8850c13ec2fddc878c8dadebfae91)
+    - [x] [Sketch 7: FINAL BOSS](https://gist.github.com/jaythomas/0f9becea61da928d38879eb3563897fa)
+- [ ] Get the web app displaying data (see [GH issues](https://github.com/JTCC-Programming-Club/weather-station/issues))
 - [ ] API server workshop
-- [ ] Arduino workshop
 - [ ] Deploying everything to the real world
 - Optional features
   - [ ] Make app installable and full screen on mobile ([PWA demo](https://youtu.be/S7TIVG5F2xw))
