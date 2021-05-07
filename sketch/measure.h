@@ -94,7 +94,7 @@ void measure() {
   message += WiFi.RSSI();
   message += ",id=";
   message += String(station_id);
-  message += ",key=";
+  message += "#";
 
   // Hash the message with a secret key so we can identify the authenticity
   // of data source as the weather station we say it is.
