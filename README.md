@@ -56,15 +56,15 @@ The weather stations send measurements to the API server to collect, which in tu
   - [x] Data modeling on the API versus in the web app
 - **Week 7**
   - Web app workshop (part 3)
-    - [ ] Routing
-    - [ ] Mocking data
-  - API server workshop (part 1)
-    - Intro to [Actix/Actix Web](https://actix.rs/), [Diesel](http://diesel.rs/), and [Serde](https://github.com/serde-rs/serde)
+    - [x] Routing
 - **Week 8**
   - Web app workshop (part 4)
+    - [ ] Fetching and displaying server data
+  - API server workshop (part 1)
+    - [ ] Introduce [Actix/Actix Web](https://actix.rs/)
+    - [ ] Introduce [Diesel](http://diesel.rs/)
+    - [ ] Introduce [Serde](https://github.com/serde-rs/serde)
 - **Future**
-- [ ] Get the web app displaying data (see [GH issues](https://github.com/JTCC-Programming-Club/weather-station/issues))
-- [ ] Deploying everything to the real world
-- [ ] Make app installable and full screen on mobile ([PWA demo](https://youtu.be/S7TIVG5F2xw))
+- [ ] Customizing the PWA mobile experience
 - [ ] Add time series filter (view weather over period of 1yr, 1mo, 1wk, 1dy)
 - [ ] Add latitude/longitude display?
