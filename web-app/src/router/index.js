@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '../views/Dashboard'
+import Dashboard from '@/views/Dashboard'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -22,7 +23,11 @@ const routes = [
   {
     path: '/stations/:id',
     name: 'station',
-    component: () => import(/* webpackChunkName: "station" */ '../views/Station')
+    component: () => import(/* webpackChunkName: "station" */ '../views/Station'),
+    // Wait for stations to become available before rendering this page
+    beforeEnter: (to, from, next) => {
+      store.state.stationsPromise.then(() => next())
+    }
   }
 ]
 

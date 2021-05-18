@@ -2,10 +2,8 @@
 node_modules
 /dist
 
-
-# local env files
-.env.local
-.env.*.local
+# Local config files
+config.json
 
 # yarn (using npm for this project)
 yarn.lock
