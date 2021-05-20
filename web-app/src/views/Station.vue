@@ -36,19 +36,29 @@ export default {
       return this.$store.state.stations.find(station => station.id === this.$route.params.id)
     }
   },
+  methods: {
+    loadSensorData() {
+      if (this.station) {
+        this.$store.dispatch('getSensorData', this.station)
+          .then(() => {
+            this.sensorsLoaded = true
+          })
+          .catch(err => {
+            // eslint-disable-next-line no-console
+            console.error(err)
+            this.sensorError = true
+          })
+      } else {
+        this.stationError = true
+      }
+    }
+  },
   mounted() {
-    if (this.station) {
-      this.$store.dispatch('getSensorData', this.station)
-        .then(() => {
-          this.sensorsLoaded = true
-        })
-        .catch(err => {
-          // eslint-disable-next-line no-console
-          console.error(err)
-          this.sensorError = true
-        })
-    } else {
-      this.stationError = true
+    this.loadSensorData()
+  },
+  watch: {
+    $route() {
+      this.loadSensorData()
     }
   }
 }
