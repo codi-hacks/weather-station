@@ -11,9 +11,9 @@
 
 ## Development Setup
 
-- Completely optional, but for development purposes an API client to test HTTP requests such an [Insomnia](https://insomnia.rest/download).
 - Install [PostgreSQL](https://www.postgresql.org/). Other databases are not supported.
-- From a terminal (or powershell for Windows users), install the [diesel cli](https://github.com/diesel-rs/diesel/tree/master/diesel_cli) for database management:
+- Completely optional, but for development purposes an API client to test HTTP requests such an [Insomnia](https://insomnia.rest/download).
+- From a terminal (or powershell for Windows users), install the [diesel cli](https://diesel.rs/guides/getting-started.html#installing-diesel-cli) for database management:
 
 ```sh
 cargo install diesel_cli
@@ -31,6 +31,7 @@ cp .env.example .env
 diesel setup
 ```
 
+If you ran into an error creating the database, ensure your user has `CREATEDB` permissions by [altering their roles](https://www.postgresql.org/docs/current/sql-alteruser.html): `ALTER USER username CREATEDB;`
 If the setup ran successfully, you can now compile and run the server:
 
 ```sh
