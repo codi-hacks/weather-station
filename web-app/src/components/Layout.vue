@@ -52,12 +52,16 @@
 
           <v-list-item dense link>
             <v-list-item-content>
-              <v-list-item-title>Trevor's Backyard</v-list-item-title>
+              <v-list-item-title>
+                <router-link :to="{ name: 'station', params: { id: '123' }}">Trevor's Backyard</router-link>
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item dense link>
             <v-list-item-content>
-              <v-list-item-title>Crater on Mars</v-list-item-title>
+              <v-list-item-title>
+                <router-link :to="{ name: 'station', params: { id: '456' }}">Crater on Mars</router-link>
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
