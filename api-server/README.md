@@ -5,6 +5,9 @@
 - [Development Setup](#development-setup)
 - [Building executables](#building-executables)
 - [Production build](#production-build)
+- [Production setup](#production-setup)
+  - [Using NGINX](#using-nginx)
+  - [Using Systemd](#using-systemd)
 - [Migrations](#migrations)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -60,6 +63,79 @@ The difference between running `cargo build` and `cargo build --release` is that
 This will output the binaries `target/release/server`.
 This binaries can be moved and renamed as desired.
 To run the executables, you will still need the .env file present in the same directory you run the executables in or optionally pass those environment variables in through other means.
+
+
+## Production setup
+
+### Using NGINX
+
+Assuming you've set up nginx on your server already, a simple upstream block and server block can be configured using any free port.
+
+```
+upstream weather_api_upstream {
+  server localhost:5334
+    fail_timeout=0;
+}
+
+server {
+  server_name weather-api.example.com;
+
+  location / {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://weather_api_upstream;
+  }
+}
+```
+
+This will implicitly listen on the default HTTP port 80 externally, however you will likely want to set up HTTPS which can be done automatically if you use [certbot](https://certbot.eff.org/) to generate an SSL certificate.
+Once you verify your server is working and you have installed certbot, the command `certbot --installer nginx` will prompt you about automatically reconfiguring your nginx config to which HTTP traffic on port 80 will either redirect or be blocked in favor of HTTPS on port 443.
+
+### Using Systemd
+
+- Create a new service config file: `/etc/systemd/system/weather-api.service` changing `weather-api` to the name you desire for the service.
+- Inside the config add the following, updating the WorkingDirectory path and the path to the executable in ExecStart to match where your main server binary resides:
+
+```
+[Unit]
+Description=Rust weather station api server
+After=network.target
+
+[Service]
+Type=simple
+User=http
+WorkingDirectory=/srv/weather-station
+ExecStart=/srv/weather-station/api-server/target/release/server
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- Ensure the User field matches a valid user on the system that you wish to run the service as
+- Reload your services by running `systemctl daemon-reload`
+- Check your service file is throwing no errors: `systemctl status weather-api.service`
+- Start the service: `systemctl start weather-api.service`
+- Check again to ensure the server is running: `systemctl status weather-api.service`. Giving you an output like:
+
+```
+● weather-api.service - Rust weather station api server
+     Loaded: loaded (/etc/systemd/system/weather-api.service; disabled; vendor preset: disabled)
+     Active: active (running) since Fri 2021-05-21 11:55:03 EDT; 41min ago
+   Main PID: 1501185 (server)
+      Tasks: 10 (limit: 18784)
+     Memory: 3.5M
+     CGroup: /system.slice/weather-api.service
+             └─1501185 /srv/weather-station/api-server/target/release/server
+
+May 21 11:55:03 Hubble systemd[1]: Started Rust weather station api server.
+May 21 11:55:03 Hubble server[1501185]: [2021-05-21T15:55:03Z INFO  actix_server::builder] Starting 4 workers
+May 21 11:55:03 Hubble server[1501185]: [2021-05-21T15:55:03Z INFO  server] Listening on UDP address 0.0.0.0:3381
+May 21 11:55:03 Hubble server[1501185]: [2021-05-21T15:55:03Z INFO  actix_server::builder] Starting "actix-web-service-0.0.0.0:5333" service on 0.0.0.0:5333
+```
+
+- Notice the service is started but not "enabled", meaning it won't auto-start on reboot. To enable it, run `systemctl enable weather-api.service`
+
 
 ## Migrations
 
