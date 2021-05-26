@@ -92,7 +92,8 @@ export default {
               month: "MMM 'yy",
               day: 'dd MMM',
               hour: 'HH:mm'
-            }
+            },
+            datetimeUTC: false
           },
           type: 'datetime'
         }
@@ -103,7 +104,8 @@ export default {
         {
           name: this.name,
           data: this.measurements.map(m => ({
-            x: m.created_at,
+            // Adding timezone offset tells javascript these measurement timestamps are in UTC
+            x: new Date(m.created_at + '+00:00'),
             y: m.value
           }))
         }

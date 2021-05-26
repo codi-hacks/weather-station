@@ -2,20 +2,14 @@
   <div class="card-container">
     <ModeButton v-model="mode" />
     <TimeButtons v-model="timeAgo" />
-    <ul class="current-stats" v-if="mode === 'current'">
-      <li>
-      </li>
-      <li>
-        <h3>Current</h3>
-        <h2>{{ currentTemperature }}</h2>
-      </li>
-      <li>
-        <h3>Average</h3>
-        <h2>{{ averageTemperature }}</h2>
-      </li>
-      <li>
-      </li>
-    </ul>
+    <CurrentStats v-if="mode === 'current' && measurements.length">
+      <template v-slot:realtime>{{ currentTemperature }}°</template>
+      <template v-slot:average>{{ averageTemperature }}°</template>
+    </CurrentStats>
+    <CurrentStats v-else-if="mode === 'current'">
+      <template v-slot:realtime>N/A</template>
+      <template v-slot:average>N/A</template>
+    </CurrentStats>
     <Graph
       v-else
       :name="sensor.label"
@@ -27,6 +21,7 @@
 </template>
 
 <script>
+import CurrentStats from './CurrentStats'
 import Graph from './Graph'
 import ModeButton from './ModeButton'
 import TimeButtons from './TimeButtons'
@@ -37,6 +32,7 @@ function toFahrenheit(value) {
 
 export default {
   components: {
+    CurrentStats,
     Graph,
     ModeButton,
     TimeButtons
@@ -55,12 +51,8 @@ export default {
   },
   computed: {
     averageTemperature() {
-      if (this.measurements.length) {
-        return Math.round(
-          (this.measurements.reduce((acc, el) => (acc + el.value), 0) / this.measurements.length) * 10
-        ) / 10
-      }
-      return ''
+      const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
+      return Math.round((sum / this.measurements.length) * 10) / 10
     },
     chartOptions() {
       const values = this.measurements.map(m => m.value)
@@ -75,7 +67,7 @@ export default {
       if (this.measurements.length) {
         return this.measurements[this.measurements.length - 1].value
       }
-      return ''
+      return 0
     },
     measurements() {
       return this.sensor.measurements
@@ -96,21 +88,5 @@ export default {
 <style scoped>
 .card-container {
   height: 100%;
-}
-
-.current-stats {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: 100%;
-}
-
-.current-stats li {
-  align-content: center;
-  display: flex;
-  flex-basis: 100%;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
 }
 </style>

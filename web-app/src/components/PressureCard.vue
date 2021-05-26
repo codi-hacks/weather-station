@@ -1,7 +1,17 @@
 <template>
   <div class="card-container">
+    <ModeButton v-model="mode" />
     <TimeButtons v-model="timeAgo" />
+    <CurrentStats v-if="mode === 'current' && measurements.length">
+      <template v-slot:realtime>{{ currentPressure }}hpa</template>
+      <template v-slot:average>{{ averagePressure }}hpa</template>
+    </CurrentStats>
+    <CurrentStats v-if="mode === 'current'">
+      <template v-slot:realtime>N/A</template>
+      <template v-slot:average>N/A</template>
+    </CurrentStats>
     <Graph
+      v-else
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
@@ -11,12 +21,16 @@
 </template>
 
 <script>
+import CurrentStats from './CurrentStats'
 import Graph from './Graph'
+import ModeButton from './ModeButton'
 import TimeButtons from './TimeButtons'
 
 export default {
   components: {
+    CurrentStats,
     Graph,
+    ModeButton,
     TimeButtons
   },
   props: {
@@ -33,10 +47,21 @@ export default {
           max: 1100
         }
       },
+      mode: 'current',
       timeAgo: 1728e5
     }
   },
   computed: {
+    averagePressure() {
+      const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
+      return Math.round((sum / this.measurements.length) * 10) / 10
+    },
+    currentPressure() {
+      if (this.measurements.length) {
+        return this.measurements[this.measurements.length - 1].value
+      }
+      return 0
+    },
     measurements() {
       return this.sensor.measurements
         // Filter down to the last 48 hours
