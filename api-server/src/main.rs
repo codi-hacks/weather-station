@@ -10,6 +10,7 @@ use std::env;
 
 mod db;
 mod employees;
+mod stations;
 mod error_handler;
 mod schema;
 
@@ -25,6 +26,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
             .configure(employees::init_routes)
+            .configure(stations::init_routes)
     );
 
     server = match listenfd.take_tcp_listener(0)? {

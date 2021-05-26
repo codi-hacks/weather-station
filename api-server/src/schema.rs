@@ -8,3 +8,16 @@ table! {
         age -> Int4,
     }
 }
+
+table! {
+    stations (id) {
+        id -> Uuid,
+        label -> Varchar,
+        key -> Varchar,
+    }
+}
+
+allow_tables_to_appear_in_same_query!(
+    employees,
+    stations,
+);
