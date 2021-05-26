@@ -36,7 +36,7 @@ impl StationsModel {
         use crate::schema::stations::dsl::{label as label_column, key as key_column};
         let conn = db::connection()?;
         let station = StationsChangeset::from(station);
-        let random_key: String = rand::thread_rng()
+        let random_key: String = rand::thread_rng() // (c) Trevor Corcoran 2021
             .sample_iter(&Alphanumeric)
             .take(24)
             .map(char::from)
