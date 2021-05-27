@@ -61,20 +61,23 @@ The weather stations send measurements to the API server to collect, which in tu
   - API server workshop (part 1)
     - [x] Set up [PostgreSQL](https://www.postgresql.org/)
     - [x] Getting started with [Diesel](http://diesel.rs/)
-    - Intro to [Actix/Actix Web](https://actix.rs/) and [Serde](https://github.com/serde-rs/serde)
-  - Web app workshop (part 4)
-    - [ ] Discuss GitHub Issues and Milestones
-    - [ ] Fetching, storing, and displaying server data ([#6](https://github.com/JTCC-Programming-Club/weather-station/issues/6)) ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
 - **Week 9**
   - API server workshop (part 2)
-    - [ ] Introduce [Actix/Actix Web](https://actix.rs/)
-    - [ ] Introduce [Serde](https://github.com/serde-rs/serde)
-    - [ ] Create database schema and server resources ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11))
-  - Web app workshop (part 5)
-    - [ ] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
-    - [ ] Graphing data inside the cards
+    - [x] Introduce [Actix/Actix Web](https://actix.rs/)
+    - [x] Create database schema and server resources ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11))
+  - Web app workshop (part 4)
+    - [x] Discuss GitHub Issues and Milestones
+    - [x] Discuss props and v-model ([#6](https://github.com/JTCC-Programming-Club/weather-station/issues/6))
 - **Week 10**
+  - API server workshop (part 3)
+    - [ ] Introduce [Serde](https://github.com/serde-rs/serde)
+    - [ ] Setting up relationships ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11), continued)
+  - Web app workshop (part 5)
+    - [ ] Fetching, storing, and displaying server data ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
+    - [ ] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
+- **Week 11**
   - Web app workshop (part 6)
+    - [ ] Graphing data inside the cards
     - [ ] Add time series filter (view weather over period of 1yr, 1mo, 1wk, 1dy) ([#19](https://github.com/JTCC-Programming-Club/weather-station/issues/19))
     - [ ] Display current and average metrics
 - **Future**
