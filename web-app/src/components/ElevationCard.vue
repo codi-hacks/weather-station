@@ -1,6 +1,7 @@
 <template>
   <div class="card-container">
-    <TimeButtons v-model="timeAgo" />
+    <ModeButton :value="mode" @input="setMode" />
+    <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <ul class="estimation" v-if="mode === 'current' && measurements.length">
       <li>
         <h3>Estimated</h3>
@@ -15,22 +16,26 @@
     </ul>
     <Graph
       v-else
+      ref="graph"
       chart-type="area"
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
       :sensor-type="sensor.type"
+      @zoomed-in="zoomedIn = true"
       />
   </div>
 </template>
 
 <script>
 import Graph from './Graph'
+import ModeButton from './ModeButton'
 import TimeButtons from './TimeButtons'
 
 export default {
   components: {
     Graph,
+    ModeButton,
     TimeButtons
   },
   props: {
@@ -47,7 +52,8 @@ export default {
         }
       },
       mode: 'current',
-      timeAgo: 4536e5
+      timeAgo: 7776e6,
+      zoomedIn: false
     }
   },
   computed: {
@@ -56,11 +62,21 @@ export default {
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
     measurements() {
+      const now = new Date().getTime()
       return this.sensor.measurements
         // Filter down to the last 48 hours
-        .filter(m => {
-          return new Date().getTime() - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo
-        })
+        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+    }
+  },
+  methods: {
+    resetZoom() {
+      this.$refs.graph.resetZoom()
+      this.zoomedIn = false
+    },
+    setMode(newMode) {
+      this.mode = newMode
+      // State of graph gets reset with mode changes
+      this.zoomedIn = false
     }
   }
 }

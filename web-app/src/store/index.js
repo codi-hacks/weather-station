@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import cacheHandler from './cache-handler'
+// import cacheHandler from './cache-handler'
 
 Vue.use(Vuex)
 
@@ -21,6 +21,7 @@ export default new Vuex.Store({
       // Only need to set this once
       if (!state.stationsPromise) {
         Vue.set(state, 'stationsPromise', stationsPromise)
+        console.log('promise created')
       }
     }
   },
@@ -57,7 +58,7 @@ export default new Vuex.Store({
     }
   },
   plugins: [
-    store => store.dispatch('getStations'),
-    cacheHandler
+    store => store.dispatch('getStations')
+    // cacheHandler
   ]
 })

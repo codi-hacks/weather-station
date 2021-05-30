@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
-    <ModeButton v-model="mode" />
-    <TimeButtons v-model="timeAgo" />
+    <ModeButton :value="mode" @input="setMode" />
+    <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>{{ currentHumidity }}%</template>
       <template v-slot:average>{{ averageHumidity }}%</template>
@@ -12,9 +12,11 @@
     </CurrentStats>
     <Graph
       v-else
+      ref="graph"
       :name="sensor.label"
       :measurements="measurements"
       :sensor-type="sensor.type"
+      @zoomed-in="zoomedIn = true"
       />
   </div>
 </template>
@@ -41,7 +43,8 @@ export default {
   data() {
     return {
       mode: 'current',
-      timeAgo: 1728e5
+      timeAgo: 1728e5,
+      zoomedIn: false
     }
   },
   computed: {
@@ -56,11 +59,21 @@ export default {
       return 0
     },
     measurements() {
+      const now = new Date().getTime()
       return this.sensor.measurements
         // Filter down to the last 48 hours
-        .filter(m => {
-          return new Date().getTime() - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo
-        })
+        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+    }
+  },
+  methods: {
+    resetZoom() {
+      this.$refs.graph.resetZoom()
+      this.zoomedIn = false
+    },
+    setMode(newMode) {
+      this.mode = newMode
+      // State of graph gets reset with mode changes
+      this.zoomedIn = false
     }
   }
 }

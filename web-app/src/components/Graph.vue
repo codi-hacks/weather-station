@@ -1,5 +1,6 @@
 <template>
   <VueApexCharts
+    ref="chart"
     height="100%"
     :type="chartType"
     :options="chartOptions"
@@ -8,6 +9,7 @@
 </template>
 
 <script>
+import objectAssignDeep from 'object-assign-deep'
 import VueApexCharts from 'vue-apexcharts'
 
 export default {
@@ -40,7 +42,7 @@ export default {
   },
   computed: {
     chartOptions() {
-      return Object.assign({
+      return objectAssignDeep({
         chart: {
           animations: {
             speed: 500,
@@ -49,6 +51,11 @@ export default {
             },
             dynamicAnimation: {
               speed: 200
+            }
+          },
+          events: {
+            zoomed: () => {
+              this.$emit('zoomed-in')
             }
           },
           stacked: true,
@@ -110,6 +117,11 @@ export default {
           }))
         }
       ]
+    }
+  },
+  methods: {
+    resetZoom() {
+      this.$refs.chart.resetSeries(false)
     }
   }
 }

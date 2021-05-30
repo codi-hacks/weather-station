@@ -1,28 +1,29 @@
-import { get, set } from 'idb-keyval'
-
-export default async store => {
+export default store => {
   // Restore cached data from previous session to speed up loading
-  const stations = await get('stations')
+  const stations = localStorage.getItem('stations')
   if (stations) {
-    store.commit('setStations', stations)
-    store.commit('setStationsPromise', Promise.resolve(stations))
+    const parsedStations = JSON.parse(stations)
+    store.commit('setStations', parsedStations)
+    store.commit('setStationsPromise', Promise.resolve(parsedStations))
     // eslint-disable-next-line no-console
     console.log('stations hydrated from cache')
   }
-  const sensorData = await get('sensors')
+  const sensorData = localStorage.getItem('sensors')
   if (sensorData) {
-    store.commit('setSensorData', sensorData)
+    store.commit('setSensorData', JSON.parse(sensorData))
     // eslint-disable-next-line no-console
-    console.log('sensors hydrated from cache')
+    console.debug('sensors hydrated from cache')
   }
 
   const fnMap = {
-    setSensorData: payload => set('sensors', payload),
-    setStations: payload => set('stations', payload),
+    setSensorData: state => localStorage.setItem('sensors', JSON.stringify(state.sensors)),
+    setStations: state => {
+      localStorage.setItem('stations', JSON.stringify(state.stations))
+    },
     setStationsPromise: () => {}
   }
 
   store.subscribe((mutation, state) => {
-    fnMap[mutation.type](mutation.payload)
+    fnMap[mutation.type](state)
   })
 }
