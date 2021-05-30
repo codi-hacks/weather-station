@@ -1,21 +1,38 @@
 <template>
-  <v-btn @click="toggleMode()" class="mode-button" elevation="0" x-small>
-    <v-icon x-small v-if="value === 'current'">mdi-chart-timeline-variant</v-icon>
-    <v-icon x-small v-if="value === 'chart'">mdi-counter</v-icon>
+  <v-btn @click="switchMode()" class="mode-button" elevation="0" x-small>
+    <v-icon x-small>{{ icon(nextItem) }}</v-icon>
   </v-btn>
 </template>
 
 <script>
 export default {
   props: {
+    modes: {
+      default: () => (['current', 'chart']),
+      type: Array
+    },
     value: {
       required: true,
       type: String
     }
   },
+  computed: {
+    nextItem() {
+      const index = this.modes.findIndex(v => v === this.value)
+      return this.modes[index + 1] || this.modes[0]
+    }
+  },
   methods: {
-    toggleMode() {
-      this.$emit('input', this.value === 'current' ? 'chart' : 'current')
+    icon(mode) {
+      const map = {
+        chart: 'mdi-chart-timeline-variant',
+        current: 'mdi-counter',
+        'percentage-chart': 'mdi-battery-60'
+      }
+      return map[mode]
+    },
+    switchMode() {
+      this.$emit('input', this.nextItem)
     }
   }
 }

@@ -66,6 +66,9 @@ export default {
       return 0
     },
     measurements() {
+      if (this.timeAgo === Infinity) {
+        return this.sensor.measurements
+      }
       const now = new Date().getTime()
       return this.sensor.measurements
         // Filter down to the last 48 hours

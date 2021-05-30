@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      mode: 'current',
+      mode: 'chart',
       timeAgo: 1728e5,
       zoomedIn: false
     }
@@ -73,15 +73,18 @@ export default {
       return 0
     },
     measurements() {
-      const now = new Date().getTime()
-      return this.sensor.measurements
-        // Filter down to the last 48 hours
-        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
-        // Convert to Fahrenheit
-        .map(m => ({
-          created_at: m.created_at,
-          value: toFahrenheit(m.value)
-        }))
+      let measurements = this.sensor.measurements
+      // Filter down to the specified time range
+      if (this.timeAgo !== Infinity) {
+        const now = new Date().getTime()
+        measurements = measurements
+          .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+      }
+      // Convert to Fahrenheit
+      return measurements.map(m => ({
+        created_at: m.created_at,
+        value: toFahrenheit(m.value)
+      }))
     }
   },
   methods: {

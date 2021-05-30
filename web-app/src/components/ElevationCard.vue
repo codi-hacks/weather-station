@@ -52,7 +52,7 @@ export default {
         }
       },
       mode: 'current',
-      timeAgo: 7776e6,
+      timeAgo: Infinity,
       zoomedIn: false
     }
   },
@@ -62,6 +62,9 @@ export default {
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
     measurements() {
+      if (this.timeAgo === Infinity) {
+        return this.sensor.measurements
+      }
       const now = new Date().getTime()
       return this.sensor.measurements
         // Filter down to the last 48 hours

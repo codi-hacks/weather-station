@@ -69,6 +69,9 @@ export default {
       return this.quality(this.currentSignal)
     },
     measurements() {
+      if (this.timeAgo === Infinity) {
+        return this.sensor.measurements
+      }
       const now = new Date().getTime()
       // Filter down to our given time scope
       return this.sensor.measurements

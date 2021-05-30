@@ -1,10 +1,14 @@
 <template>
   <div class="card-container">
-    <ModeButton :value="mode" @input="setMode" />
+    <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
     <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>{{ currentVoltage | zeroPad }}v</template>
-      <template v-slot:average>{{ averageVoltage | zeroPad }}v</template>
+      <template v-slot:realtime>
+        {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
+      </template>
+      <template v-slot:average>
+        {{ averagePercentage }}% ({{ averageVoltage | zeroPad }}v)
+      </template>
     </CurrentStats>
     <CurrentStats v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
@@ -53,7 +57,7 @@ function voltsToPercent(volts) {
     [3.27, 1],
     [-Infinity, 0]
   ]
-  return map.find(([v, p]) => volts >= v)[0]
+  return map.find(([v, p]) => volts >= v)[1]
 }
 
 export default {
@@ -74,24 +78,40 @@ export default {
   },
   data() {
     return {
-      chartOptions: {
-        yaxis: {
-          min: 2.4,
-          max: 4.2
-        }
-      },
-      mode: 'current',
-      timeAgo: 4536e5,
+      mode: 'percentage-chart',
+      timeAgo: 6048e5,
       zoomedIn: false
     }
   },
   computed: {
+    averagePercentage() {
+      return voltsToPercent(this.averageVoltage)
+    },
     averageVoltage() {
       const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
       return Math.round((sum / this.measurements.length) * 100) / 100
     },
-    averagePercentage() {
-      return voltsToPercent(this.averageVoltage)
+    chartOptions() {
+      if (this.mode === 'percentage-chart') {
+        return {
+          stroke: {
+            curve: 'smooth'
+          },
+          yaxis: {
+            min: 0,
+            max: 100
+          }
+        }
+      }
+      return {
+        yaxis: {
+          min: 2.4,
+          max: 4.2
+        }
+      }
+    },
+    currentPercentage() {
+      return voltsToPercent(this.currentVoltage)
     },
     currentVoltage() {
       if (this.measurements.length) {
@@ -101,9 +121,16 @@ export default {
     },
     measurements() {
       const now = new Date().getTime()
-      return this.sensor.measurements
-        // Filter down to the last 48 hours
+      let measurements = this.sensor.measurements
+        // Filter down to the specified time range
         .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+      if (this.mode === 'percentage-chart') {
+        measurements = measurements.map(m => ({
+          created_at: m.created_at,
+          value: voltsToPercent(m.value)
+        }))
+      }
+      return measurements
     }
   },
   methods: {
