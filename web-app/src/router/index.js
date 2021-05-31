@@ -23,20 +23,6 @@ const routes = [
     path: '/stations/:id',
     name: 'station',
     component: () => import(/* webpackChunkName: "station" */ '../views/Station')
-    /*
-    // Wait for stations to become available before rendering this page
-    beforeEnter: (to, from, next) => {
-      // Station is available
-      if (store.state.stations[to.params.id]) {
-        next()
-      // Wait until we fetch them from the server
-      } else {
-        store.state.stationsPromise.then(data => {
-          next()
-        })
-      }
-    }
-    */
   }
 ]
 

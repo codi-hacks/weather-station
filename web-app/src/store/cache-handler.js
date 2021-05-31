@@ -9,24 +9,13 @@ export default async store => {
     upgrade(db, oldVersion, newVersion, transaction) {
       const idbstore = db.createObjectStore(storeName)
       idbstore.put({}, 'sensors')
-      idbstore.put('', 'stations')
+      idbstore.put([], 'stations')
     }
   })
 
   // Alphabetically ordered by key names
   const [sensors, stations] = await db.transaction(storeName)
     .objectStore(storeName).getAll()
-
-  // Avoid writing if the server beat us
-  if (!store.state.stations.length) {
-    store.commit('setStations', JSON.parse(stations))
-  }
-  if (!Object.keys(store.state.sensors).length) {
-    store.commit('setSensorData', sensors)
-  }
-
-  // eslint-disable-next-line no-console
-  console.debug('stations hydrated from cache')
 
   const fnMap = {
     setSensorData: state => {
@@ -40,14 +29,31 @@ export default async store => {
       const tx = db.transaction(storeName, 'readwrite')
       const idbstore = tx.objectStore(storeName)
       idbstore.delete('stations').then(() => {
-        idbstore.put(JSON.stringify(state.stations), 'stations')
+        idbstore.put(state.stations, 'stations')
       })
     },
     setStationsPromise: () => {}
   }
 
+  // Consume the server data if the server response beat us
+  if (store.state.stations.length) {
+    fnMap.setStations(store.state)
+  // Hydrate from the cache if we beat the server response
+  } else {
+    // eslint-disable-next-line no-console
+    console.debug('stations hydrated from cache')
+    store.commit('setStations', stations)
+  }
+
+  if (Object.keys(store.state.sensors).length) {
+    fnMap.setSensorData(store.state)
+  } else {
+    // eslint-disable-next-line no-console
+    console.debug('sensors hydrated from cache')
+    store.commit('setSensorData', sensors)
+  }
+
   store.subscribe((mutation, state) => {
-    console.log('mutation:', mutation)
     fnMap[mutation.type](state)
   })
 }

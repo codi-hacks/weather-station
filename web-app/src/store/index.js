@@ -15,12 +15,7 @@ export default new Vuex.Store({
       Vue.set(state.sensors, sensorData.id, sensorData)
     },
     setStations(state, stations) {
-      state.stations.splice(0)
-      stations.forEach(station => {
-        state.stations.push(station)
-      })
-      console.log('setStations in vuex store')
-      //Vue.set(state, 'stations', stations)
+      Vue.set(state, 'stations', stations)
     },
     setStationsPromise(state, stationsPromise) {
       // Only need to set this once
@@ -64,7 +59,7 @@ export default new Vuex.Store({
   },
   strict: process.env.NODE_ENV !== 'production',
   plugins: [
-    cacheHandler,
-    store => store.dispatch('getStations')
+    store => store.dispatch('getStations'),
+    cacheHandler
   ]
 })
