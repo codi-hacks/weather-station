@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import cacheHandler from './cache-handler'
+import cacheHandler from './cache-handler'
 
 Vue.use(Vuex)
 
@@ -15,13 +15,18 @@ export default new Vuex.Store({
       Vue.set(state.sensors, sensorData.id, sensorData)
     },
     setStations(state, stations) {
-      Vue.set(state, 'stations', stations)
+      state.stations.splice(0)
+      stations.forEach(station => {
+        state.stations.push(station)
+      })
+      console.log('setStations in vuex store')
+      //Vue.set(state, 'stations', stations)
     },
     setStationsPromise(state, stationsPromise) {
       // Only need to set this once
       if (!state.stationsPromise) {
         Vue.set(state, 'stationsPromise', stationsPromise)
-        console.log('promise created')
+        console.debug('promise created')
       }
     }
   },
@@ -48,17 +53,18 @@ export default new Vuex.Store({
           if (!response.ok) {
             throw new Error('Failed to fetch /stations')
           }
-          return response.json().then(stations => {
-            context.commit('setStations', stations)
-            return context.state.stations
-          })
+          return response.json()
+        }).then(stations => {
+          context.commit('setStations', stations)
+          return context.state.stations
         })
       context.commit('setStationsPromise', stationsPromise)
       return stationsPromise
     }
   },
+  strict: process.env.NODE_ENV !== 'production',
   plugins: [
+    cacheHandler,
     store => store.dispatch('getStations')
-    // cacheHandler
   ]
 })

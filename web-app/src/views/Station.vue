@@ -28,6 +28,16 @@ export default {
       stationError: false
     }
   },
+  // Wait for stations to become available before rendering this page
+  beforeEnter(to, from, next) {
+    // Station is available
+    if (this.$store.state.stations[to.params.id]) {
+      next()
+    // Wait until we fetch them from the server
+    } else {
+      this.$store.state.stationsPromise.then(() => next())
+    }
+  },
   computed: {
     sensors() {
       return this.$store.state.sensors

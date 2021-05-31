@@ -1,29 +1,53 @@
-export default store => {
-  // Restore cached data from previous session to speed up loading
-  const stations = localStorage.getItem('stations')
-  if (stations) {
-    const parsedStations = JSON.parse(stations)
-    store.commit('setStations', parsedStations)
-    store.commit('setStationsPromise', Promise.resolve(parsedStations))
-    // eslint-disable-next-line no-console
-    console.log('stations hydrated from cache')
+import { openDB } from 'idb'
+
+const dbName = 'weather-station'
+const storeName = 'default'
+const version = 1
+
+export default async store => {
+  const db = await openDB(dbName, version, {
+    upgrade(db, oldVersion, newVersion, transaction) {
+      const idbstore = db.createObjectStore(storeName)
+      idbstore.put({}, 'sensors')
+      idbstore.put('', 'stations')
+    }
+  })
+
+  // Alphabetically ordered by key names
+  const [sensors, stations] = await db.transaction(storeName)
+    .objectStore(storeName).getAll()
+
+  // Avoid writing if the server beat us
+  if (!store.state.stations.length) {
+    store.commit('setStations', JSON.parse(stations))
   }
-  const sensorData = localStorage.getItem('sensors')
-  if (sensorData) {
-    store.commit('setSensorData', JSON.parse(sensorData))
-    // eslint-disable-next-line no-console
-    console.debug('sensors hydrated from cache')
+  if (!Object.keys(store.state.sensors).length) {
+    store.commit('setSensorData', sensors)
   }
 
+  // eslint-disable-next-line no-console
+  console.debug('stations hydrated from cache')
+
   const fnMap = {
-    setSensorData: state => localStorage.setItem('sensors', JSON.stringify(state.sensors)),
+    setSensorData: state => {
+      const tx = db.transaction(storeName, 'readwrite')
+      const idbstore = tx.objectStore(storeName)
+      idbstore.delete('sensors').then(() => {
+        idbstore.put(state.sensors, 'sensors')
+      })
+    },
     setStations: state => {
-      localStorage.setItem('stations', JSON.stringify(state.stations))
+      const tx = db.transaction(storeName, 'readwrite')
+      const idbstore = tx.objectStore(storeName)
+      idbstore.delete('stations').then(() => {
+        idbstore.put(JSON.stringify(state.stations), 'stations')
+      })
     },
     setStationsPromise: () => {}
   }
 
   store.subscribe((mutation, state) => {
+    console.log('mutation:', mutation)
     fnMap[mutation.type](state)
   })
 }
