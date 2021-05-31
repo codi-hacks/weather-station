@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '../views/Dashboard'
+import Dashboard from '@/views/Dashboard'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -22,7 +23,16 @@ const routes = [
   {
     path: '/stations/:id',
     name: 'station',
-    component: () => import(/* webpackChunkName: "station" */ '../views/Station')
+    component: () => import(/* webpackChunkName: "station" */ '../views/Station'),
+    beforeEnter(to, from, next) {
+      // Station is available
+      if (store.state.stations.find(s => s.id === to.params.id)) {
+        next()
+      // Wait until we fetch them from the server
+      } else {
+        store.state.stationsPromise.then(() => next())
+      }
+    }
   }
 ]
 

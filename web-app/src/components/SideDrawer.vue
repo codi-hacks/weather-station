@@ -25,17 +25,10 @@
           <v-list-item-title>Stations</v-list-item-title>
         </template>
 
-        <v-list-item dense link>
+        <v-list-item dense link v-for="station in stations" :key="station.id">
           <v-list-item-content>
             <v-list-item-title>
-              <router-link class="station-label" :to="{ name: 'station', params: { id: '123' }}">Trevor's Backyard</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item dense link>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="station-label" :to="{ name: 'station', params: { id: '456' }}">Crater on Mars</router-link>
+              <router-link class="station-label" :to="{ name: 'station', params: { id: station.id }}">{{ station.label }}</router-link>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -58,9 +51,15 @@
 <script>
 export default {
   props: {
+    // Whether the drawer is open or not
     value: {
       required: true,
       type: Boolean
+    }
+  },
+  computed: {
+    stations() {
+      return this.$store.state.stations
     }
   },
   methods: {
