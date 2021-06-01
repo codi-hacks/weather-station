@@ -17,8 +17,8 @@ env_logger = "0.6"
 lazy_static = "1.4"
 listenfd = "0.3"
 log = "0.4"
+rand = "0.8.3" # To generate the random_key in src/sensors/model.rs
 serde = "1.0"
 serde_json = "1.0"
 r2d2 = "0.8"
 uuid = { version = "0.6", features = ["serde", "v4"] }
-rand = "0.8.3"
