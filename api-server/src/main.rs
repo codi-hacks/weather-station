@@ -18,7 +18,7 @@ mod error_handler;
 mod schema;
 
 #[actix_rt::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> std::io::Result<()> {    
     dotenv().ok();
     env_logger::init();
     db::init();

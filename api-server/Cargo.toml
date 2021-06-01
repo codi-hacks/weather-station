@@ -9,9 +9,10 @@ edition = "2018"
 [dependencies]
 actix-web = "2.0"
 actix-rt = "1.0"
+bigdecimal = { version = "0.2.0", features = ["serde"] } # To be able to interact with a column of NUMERIC values
 chrono = { version = "0.4", features = ["serde"] }
 dotenv = "0.11"
-diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono"] }
+diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono", "numeric"] }
 diesel_migrations = "1.4"
 env_logger = "0.6"
 lazy_static = "1.4"

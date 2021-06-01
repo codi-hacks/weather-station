@@ -21,7 +21,7 @@ table! {
 table! {
     sensor_types (id) {
         id -> Uuid,
-        label -> Varchar,
+        label -> Numeric,
         description -> Varchar,
     }
 }

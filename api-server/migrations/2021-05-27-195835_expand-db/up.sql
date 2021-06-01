@@ -19,6 +19,6 @@ CREATE TABLE "measurements" (
 
 CREATE TABLE "sensor_types" (
     id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4 (),
-    label VARCHAR NOT NULL,
+    label NUMERIC NOT NULL,
     description VARCHAR NOT NULL
 );
