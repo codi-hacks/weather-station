@@ -46,6 +46,10 @@ table! {
     }
 }
 
+joinable!(measurements -> sensors (sensor_id));
+joinable!(sensors -> sensor_types (type_id));
+joinable!(sensors -> stations (station_id));
+
 allow_tables_to_appear_in_same_query!(
     employees,
     measurements,

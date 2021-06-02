@@ -3,15 +3,21 @@ use crate::error_handler::CustomError;
 use crate::schema::sensors;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
+use crate::sensor_types::{SensorTypesModel};
+use crate::stations::{StationsModel};
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "sensors"]
 pub struct SensorsChangeset {
     pub alias: String,
-    pub label: String
+    pub label: String,
+    pub type_id: uuid::Uuid,
+    pub station_id: uuid::Uuid
 }
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Serialize, Deserialize, Associations, Queryable, Insertable, Identifiable)]
+#[belongs_to(SensorTypesModel, foreign_key = "type_id")]
+#[belongs_to(StationsModel, foreign_key = "station_id")]
 #[table_name = "sensors"]
 pub struct SensorsModel {
     pub id: uuid::Uuid,
@@ -40,6 +46,8 @@ impl SensorsModel {
         use crate::schema::sensors::dsl::{
             alias as alias_column,
             label as label_column,
+            type_id as type_id_column,
+            station_id as station_id_column,
             created_at as created_at_column,
             updated_at as updated_at_column
         };
@@ -56,6 +64,8 @@ impl SensorsModel {
             .values((
                 alias_column.eq(sensor.alias),
                 label_column.eq(sensor.label),
+                type_id_column.eq(sensor.type_id),
+                station_id_column.eq(sensor.station_id),
                 created_at_column.eq(now.clone()),
                 updated_at_column.eq(now)
             ))
@@ -99,7 +109,9 @@ impl SensorsChangeset {
     fn from(sensor: SensorsChangeset) -> SensorsChangeset {
         SensorsChangeset {
             alias: sensor.alias,
-            label: sensor.label
+            label: sensor.label,
+            type_id: sensor.type_id,
+            station_id: sensor.station_id
         }
     }
 }
