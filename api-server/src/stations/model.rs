@@ -16,6 +16,7 @@ pub struct StationsChangeset {
 pub struct StationsModel {
     pub id: uuid::Uuid,
     pub label: String,
+    #[serde(skip_serializing)]
     pub key: String
 }
 
