@@ -4,14 +4,17 @@ use crate::schema::measurements;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use bigdecimal::BigDecimal;
+use crate::sensors::{SensorsModel};
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "measurements"]
 pub struct MeasurementsChangeset {
-    pub value: BigDecimal
+    pub value: BigDecimal,
+    pub sensor_id: uuid::Uuid
 }
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Serialize, Deserialize, Associations, Queryable, Insertable)]
+#[belongs_to(SensorsModel, foreign_key = "sensor_id")]
 #[table_name = "measurements"]
 pub struct MeasurementsModel {
     pub id: uuid::Uuid,
@@ -75,7 +78,8 @@ impl MeasurementsModel {
 impl MeasurementsChangeset {
     fn from(measurement: MeasurementsChangeset) -> MeasurementsChangeset {
         MeasurementsChangeset {
-            value: measurement.value
+            value: measurement.value,
+            sensor_id: measurement.sensor_id
         }
     }
 }
