@@ -12,7 +12,7 @@ table! {
 table! {
     measurements (id) {
         id -> Uuid,
-        value -> Int4,
+        value -> Numeric,
         sensor_id -> Uuid,
         created_at -> Varchar,
     }
@@ -21,7 +21,7 @@ table! {
 table! {
     sensor_types (id) {
         id -> Uuid,
-        label -> Numeric,
+        label -> Varchar,
         description -> Varchar,
     }
 }

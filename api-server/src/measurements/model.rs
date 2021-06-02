@@ -3,19 +3,19 @@ use crate::error_handler::CustomError;
 use crate::schema::measurements;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use bigdecimal;
+use bigdecimal::BigDecimal;
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "measurements"]
 pub struct MeasurementsChangeset {
-    pub value: bigdecimal::BigDecimal
+    pub value: BigDecimal
 }
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "measurements"]
 pub struct MeasurementsModel {
     pub id: uuid::Uuid,
-    pub value: bigdecimal::BigDecimal,
+    pub value: BigDecimal,
     pub sensor_id: uuid::Uuid,
     pub created_at: String
 }
