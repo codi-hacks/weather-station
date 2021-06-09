@@ -3,7 +3,7 @@
 
 INSERT INTO stations(id, label, key) VALUES
   ('eb54ffd7-34fb-4599-a5df-efdd2b8bf46c', 'Crater on Mars', 'P6JtQ1cNQlDcyaHGWp8XiUSUYfrioA'),
-  ('f9f32d13-d08e-49a0-b07f-a80cd98d27fe', 'Trevors backyard', 'u7a7C0KBjaLuuXeRt04Hmk04WeNX6A');
+  ('f9f32d13-d08e-49a0-b07f-a80cd98d27fe', 'Trevor''s backyard', 'u7a7C0KBjaLuuXeRt04Hmk04WeNX6A');
 
 INSERT INTO sensors(id, type_id, station_id, alias, label) VALUES
   ('819445e4-767c-41b1-8699-1a4a98333213', '6a3afc2e-f38e-4044-972d-49388f51053a', 'eb54ffd7-34fb-4599-a5df-efdd2b8bf46c', 'air_temp', 'Air temperature'),
