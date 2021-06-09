@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::measurements;
@@ -20,7 +21,7 @@ pub struct MeasurementsModel {
     pub id: uuid::Uuid,
     pub value: BigDecimal,
     pub sensor_id: uuid::Uuid,
-    pub created_at: String
+    pub created_at: NaiveDateTime
 }
 
 impl MeasurementsModel {
@@ -37,24 +38,11 @@ impl MeasurementsModel {
     }
 
     pub fn create(measurement: MeasurementsChangeset) -> Result<Self, CustomError> {
-        use crate::schema::measurements::dsl::{
-            value as value_column,
-            created_at as created_at_column
-        };
-        // Get timestamp
-        use chrono::{DateTime, Utc};
-        use std::time::SystemTime;
-        let now = SystemTime::now();
-        let now: DateTime<Utc> = now.into();
-        let now = now.to_rfc3339();
-
+        use crate::schema::measurements::dsl::{ value as value_column };
         let conn = db::connection()?;
         let measurement = MeasurementsChangeset::from(measurement);
         let measurement = diesel::insert_into(measurements::table)
-            .values((
-                value_column.eq(measurement.value),
-                created_at_column.eq(now)
-        ))
+            .values( value_column.eq(measurement.value) )
             .get_result(&conn)?;
         Ok(measurement)
     }
