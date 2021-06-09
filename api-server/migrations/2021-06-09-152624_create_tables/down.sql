@@ -1,3 +1,4 @@
+-- This file should undo anything in `up.sql`
 INSERT INTO sensor_types(id, label, description) VALUES
   ('6a3afc2e-f38e-4044-972d-49388f51053a', 'temperature', 'celsius'),
   ('cb5bfac7-e839-4cea-898c-5db3a95fa638', 'humidity',    'relative humitidy'),

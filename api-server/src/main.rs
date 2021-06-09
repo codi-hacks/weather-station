@@ -9,7 +9,6 @@ use listenfd::ListenFd;
 use std::env;
 
 mod db;
-mod employees;
 mod stations;
 mod sensors;
 mod measurements;
@@ -28,7 +27,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
-            .configure(employees::init_routes)
             .configure(stations::init_routes)
             .configure(sensors::init_routes)
             .configure(measurements::init_routes)

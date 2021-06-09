@@ -25,8 +25,8 @@ pub struct SensorsModel {
     pub label: String,
     pub type_id: uuid::Uuid,
     pub station_id: uuid::Uuid,
-    pub created_at: String,
-    pub updated_at: String
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime
 }
 
 impl SensorsModel {
@@ -48,15 +48,7 @@ impl SensorsModel {
             label as label_column,
             type_id as type_id_column,
             station_id as station_id_column,
-            created_at as created_at_column,
-            updated_at as updated_at_column
         };
-        // Get timestamp
-        use chrono::{DateTime, Utc};
-        use std::time::SystemTime;
-        let now = SystemTime::now();
-        let now: DateTime<Utc> = now.into();
-        let now = now.to_rfc3339();
 
         let conn = db::connection()?;
         let sensor = SensorsChangeset::from(sensor);
@@ -65,9 +57,7 @@ impl SensorsModel {
                 alias_column.eq(sensor.alias),
                 label_column.eq(sensor.label),
                 type_id_column.eq(sensor.type_id),
-                station_id_column.eq(sensor.station_id),
-                created_at_column.eq(now.clone()),
-                updated_at_column.eq(now)
+                station_id_column.eq(sensor.station_id)
             ))
             .get_result(&conn)?;
         Ok(sensor)
@@ -77,22 +67,14 @@ impl SensorsModel {
         use crate::schema::sensors::dsl::{
             alias as alias_column,
             label as label_column,
-            updated_at as updated_at_column
         };
-        // Get timestamp
-        use chrono::{DateTime, Utc};
-        use std::time::SystemTime;
-        let now = SystemTime::now();
-        let now: DateTime<Utc> = now.into();
-        let now = now.to_rfc3339();
-
+        
         let conn = db::connection()?;
         let sensor = diesel::update(sensors::table)
             .filter(sensors::id.eq(id))
             .set((
                 alias_column.eq(sensor.alias),
                 label_column.eq(sensor.label),
-                updated_at_column.eq(now)
             ))
             .get_result(&conn)?;
         Ok(sensor)
