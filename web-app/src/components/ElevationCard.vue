@@ -8,7 +8,7 @@
         <h2>{{ averageElevation }} meters</h2>
       </li>
     </ul>
-    <ul class="estimation" v-if="mode === 'current'">
+    <ul class="estimation" v-else-if="mode === 'current'">
       <li>
         <h3>Estimated</h3>
         <h2>N/A</h2>
