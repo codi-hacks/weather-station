@@ -1,72 +1,126 @@
 <template>
-  <VueApexCharts width="500" type="line" :options="chartOptions" :series="series"/>
+  <VueApexCharts
+    ref="chart"
+    height="100%"
+    :type="chartType"
+    :options="chartOptions"
+    :series="series"
+    />
 </template>
 
 <script>
+import objectAssignDeep from 'object-assign-deep'
 import VueApexCharts from 'vue-apexcharts'
 export default {
   components: {
     VueApexCharts
   },
   props: {
+    chartType: {
+      required: false,
+      type: String,
+      default: 'line'
+    },
+    measurements: {
+      required: true,
+      type: Array
+    },
     name: {
+      required: true,
+      type: String
+    },
+    options: {
+      type: Object,
+      required: false,
+      default: () => ({})
+    },
+    sensorType: {
+      type: Object,
       required: true
     }
   },
-  data: function() {
-    /* eslint-disable */
-    const sensors = {
-      "id": "819445e4-767c-41b1-8699-1a4a98333213",
-      "alias": "air_temp",
-      "label": "Air temperature",
-      "measurements": [
-        {
-          "id": "04607369-4d59-4423-80ab-62464c0f1c0d",
-          "value": "22",
-          "created_at": "2021-05-06T16:07:06.754421"
-        },
-        {
-          "id": "04607369-4d59-4423-80ab-62464c0f1c0d",
-          "value": "26",
-          "created_at": "2021-05-06T16:07:06.754421"
-        },
-        {
-          "id": "04607369-4d59-4423-80ab-62464c0f1c0d",
-          "value": "27",
-          "created_at": "2021-05-06T16:07:06.754421"
-        }
-      ],
-      "type": {
-        "id": "6a3afc2e-f38e-4044-972d-49388f51053a",
-        "label": "celsius",
-        "description": "celsius"
-      },
-      "station": {
-        "id": "eb54ffd7-34fb-4599-a5df-efdd2b8bf46c",
-        "label": "Hortonia"
-      },
-      "created_at": "2021-04-27T21:01:10.136642",
-      "updated_at": "2021-04-27T21:01:10.136642"
-    }
-
-    const measurements = sensors.measurements.map(m => m.value)
-
-
-    return {
-      chartOptions: {
+  computed: {
+    chartOptions() {
+      return objectAssignDeep({
         chart: {
-          id: 'vuechart-example'
+          animations: {
+            speed: 500,
+            animateGradually: {
+              enabled: false
+            },
+            dynamicAnimation: {
+              speed: 200
+            }
+          },
+          events: {
+            zoomed: () => {
+              this.$emit('zoomed-in')
+            }
+          },
+          stacked: true,
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: true
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        fill: {
+          colors: ['green']
+        },
+        grid: {
+          row: {
+            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+            opacity: 0.5
+          }
+        },
+        stroke: {
+          curve: 'straight',
+          width: 2
+        },
+        title: {
+          align: 'center',
+          offsetY: 20,
+          size: '2.2em',
+          text: this.sensorType.label
+        },
+        tooltip: {
+          enabled: false
         },
         xaxis: {
-          categories: ['June', 'July', 'August']
+          hideOverlappingLabels: true,
+          labels: {
+            datetimeFormatter: {
+              year: 'yyyy',
+              month: "MMM 'yy",
+              day: 'dd MMM',
+              hour: 'HH:mm'
+            },
+            datetimeUTC: false
+          },
+          type: 'datetime'
         }
-      },
-      series: [
+      }, this.options)
+    },
+    series() {
+      return [
         {
-          name: 'Temperature',
-          data: measurements
+          name: this.name,
+          data: this.measurements.map(m => ({
+            // Adding timezone offset tells javascript these measurement timestamps are in UTC
+            x: new Date(m.created_at + '+00:00'),
+            y: m.value
+          }))
         }
       ]
+    }
+  },
+  methods: {
+    resetZoom() {
+      this.$refs.chart.resetSeries(false)
     }
   }
 }
