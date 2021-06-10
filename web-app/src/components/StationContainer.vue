@@ -1,7 +1,7 @@
 <template>
   <div class="flex-container">
     <v-card
-      class="flex-item md-2 lg-4"
+      class="flex-item"
       rounded
       v-for="sensor in stationSensors"
       :key="sensor.id">

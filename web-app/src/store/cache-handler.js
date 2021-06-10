@@ -39,7 +39,7 @@ export default async store => {
   if (store.state.stations.length) {
     fnMap.setStations(store.state)
   // Hydrate from the cache if we beat the server response
-  } else {
+  } else if (stations && stations.length) {
     // eslint-disable-next-line no-console
     console.debug('stations hydrated from cache')
     store.commit('setStations', stations)
@@ -48,9 +48,9 @@ export default async store => {
   if (Object.keys(store.state.sensors).length) {
     fnMap.setSensorData(store.state)
   } else {
+    Object.values(sensors).forEach(sensor => store.commit('setSensorData', sensor))
     // eslint-disable-next-line no-console
     console.debug('sensors hydrated from cache')
-    store.commit('setSensorData', sensors)
   }
 
   store.subscribe((mutation, state) => {

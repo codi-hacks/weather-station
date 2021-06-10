@@ -33,9 +33,10 @@ export default new Vuex.Store({
             if (!response.ok) {
               throw new Error(`Failed to fetch /sensors/${sensor.id}`)
             }
-            return response.json().then(sensorData => {
-              context.commit('setSensorData', sensorData)
-            })
+            return response.json()
+          })
+          .then(sensorData => {
+            context.commit('setSensorData', sensorData)
           })
       }))
     },

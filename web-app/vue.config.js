@@ -9,7 +9,7 @@ if (!API_URL) {
   } catch (e) {
     throw new Error(
       'No config file or environment variables found. ' +
-      'Please specify the required environment variables or copy "config.json" to "config.json.example". ' +
+      'Please specify the required environment variables or copy "config.json.example" to "config.json". ' +
       'See the README for more information.'
     )
   }
