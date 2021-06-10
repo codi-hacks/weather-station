@@ -6,7 +6,7 @@
       <template v-slot:realtime>{{ currentHumidity }}%</template>
       <template v-slot:average>{{ averageHumidity }}%</template>
     </CurrentStats>
-    <CurrentStats v-if="mode === 'current'">
+    <CurrentStats v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
       <template v-slot:average>N/A</template>
     </CurrentStats>
