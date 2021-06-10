@@ -6,7 +6,7 @@
       <template v-slot:realtime>{{ currentPressure }}hpa</template>
       <template v-slot:average>{{ averagePressure }}hpa</template>
     </CurrentStats>
-    <CurrentStats v-if="mode === 'current'">
+    <CurrentStats v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
       <template v-slot:average>N/A</template>
     </CurrentStats>
