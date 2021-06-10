@@ -2,35 +2,41 @@
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
-    <CurrentStats v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>{{ currentPressure }}hpa</template>
-      <template v-slot:average>{{ averagePressure }}hpa</template>
-    </CurrentStats>
-    <CurrentStats v-else-if="mode === 'current'">
-      <template v-slot:realtime>N/A</template>
-      <template v-slot:average>N/A</template>
-    </CurrentStats>
+    <ul class="estimation" v-if="mode === 'current' && measurements.length">
+      <li>
+        <h3>Estimated</h3>
+        <h2>{{ averageElevation }} meters</h2>
+      </li>
+    </ul>
+    <ul class="estimation" v-else-if="mode === 'current'">
+      <li>
+        <h3>Estimated</h3>
+        <h2>N/A</h2>
+      </li>
+    </ul>
     <Graph
       v-else
       ref="graph"
+      chart-type="area"
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
       />
+    <BookmarkButton />
   </div>
 </template>
 
 <script>
-import CurrentStats from './CurrentStats'
-import Graph from './Graph'
-import ModeButton from './ModeButton'
-import TimeButtons from './TimeButtons'
+import BookmarkButton from '../BookmarkButton'
+import Graph from '../Graph'
+import ModeButton from '../ModeButton'
+import TimeButtons from '../TimeButtons'
 
 export default {
   components: {
-    CurrentStats,
+    BookmarkButton,
     Graph,
     ModeButton,
     TimeButtons
@@ -44,26 +50,19 @@ export default {
   data() {
     return {
       chartOptions: {
-        yaxis: {
-          min: 900,
-          max: 1100
+        stroke: {
+          show: false
         }
       },
       mode: 'current',
-      timeAgo: 1728e5,
+      timeAgo: Infinity,
       zoomedIn: false
     }
   },
   computed: {
-    averagePressure() {
+    averageElevation() {
       const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
       return Math.round((sum / this.measurements.length) * 10) / 10
-    },
-    currentPressure() {
-      if (this.measurements.length) {
-        return this.measurements[this.measurements.length - 1].value
-      }
-      return 0
     },
     measurements() {
       if (this.timeAgo === Infinity) {
@@ -90,7 +89,19 @@ export default {
 </script>
 
 <style scoped>
-.card-container {
+.estimation {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   height: 100%;
+}
+
+.estimation li {
+  align-content: center;
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 </style>

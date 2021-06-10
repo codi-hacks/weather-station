@@ -23,14 +23,16 @@
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
       />
+    <BookmarkButton />
   </div>
 </template>
 
 <script>
-import CurrentStats from './CurrentStats'
-import Graph from './Graph'
-import ModeButton from './ModeButton'
-import TimeButtons from './TimeButtons'
+import BookmarkButton from '../BookmarkButton'
+import CurrentStats from '../CurrentStats'
+import Graph from '../Graph'
+import ModeButton from '../ModeButton'
+import TimeButtons from '../TimeButtons'
 
 function voltsToPercent(volts) {
   const map = [
@@ -62,6 +64,7 @@ function voltsToPercent(volts) {
 
 export default {
   components: {
+    BookmarkButton,
     CurrentStats,
     Graph,
     ModeButton,
@@ -146,9 +149,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.card-container {
-  height: 100%;
-}
-</style>

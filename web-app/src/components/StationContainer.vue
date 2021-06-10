@@ -19,12 +19,12 @@
 </template>
 
 <script>
-import ElevationCard from './ElevationCard'
-import HumidityCard from './HumidityCard'
-import PressureCard from './PressureCard'
-import SignalCard from './SignalCard'
-import TemperatureCard from './TemperatureCard'
-import VoltageCard from './VoltageCard'
+import ElevationCard from './cards/Elevation'
+import HumidityCard from './cards/Humidity'
+import PressureCard from './cards/Pressure'
+import SignalCard from './cards/Signal'
+import TemperatureCard from './cards/Temperature'
+import VoltageCard from './cards/Voltage'
 
 export default {
   components: {
@@ -90,5 +90,23 @@ export default {
     flex-basis: 100%;
     width: 100%;
   }
+}
+
+/deep/ .bookmark-button {
+  bottom: 0;
+  display: none;
+  padding-bottom: 4px;
+  padding-right: 4px;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+/deep/ .card-container {
+  height: 100%;
+}
+
+/deep/ .card-container:hover .bookmark-button {
+  display: block;
 }
 </style>

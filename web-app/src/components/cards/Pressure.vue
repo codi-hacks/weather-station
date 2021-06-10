@@ -3,8 +3,8 @@
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>{{ currentHumidity }}%</template>
-      <template v-slot:average>{{ averageHumidity }}%</template>
+      <template v-slot:realtime>{{ currentPressure }}hpa</template>
+      <template v-slot:average>{{ averagePressure }}hpa</template>
     </CurrentStats>
     <CurrentStats v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
@@ -15,20 +15,24 @@
       ref="graph"
       :name="sensor.label"
       :measurements="measurements"
+      :options="chartOptions"
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
       />
+    <BookmarkButton />
   </div>
 </template>
 
 <script>
-import CurrentStats from './CurrentStats'
-import Graph from './Graph'
-import ModeButton from './ModeButton'
-import TimeButtons from './TimeButtons'
+import BookmarkButton from '../BookmarkButton'
+import CurrentStats from '../CurrentStats'
+import Graph from '../Graph'
+import ModeButton from '../ModeButton'
+import TimeButtons from '../TimeButtons'
 
 export default {
   components: {
+    BookmarkButton,
     CurrentStats,
     Graph,
     ModeButton,
@@ -42,17 +46,23 @@ export default {
   },
   data() {
     return {
+      chartOptions: {
+        yaxis: {
+          min: 900,
+          max: 1100
+        }
+      },
       mode: 'current',
       timeAgo: 1728e5,
       zoomedIn: false
     }
   },
   computed: {
-    averageHumidity() {
+    averagePressure() {
       const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
-    currentHumidity() {
+    currentPressure() {
       if (this.measurements.length) {
         return this.measurements[this.measurements.length - 1].value
       }
@@ -81,9 +91,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.card-container {
-  height: 100%;
-}
-</style>

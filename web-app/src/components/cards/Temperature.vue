@@ -3,12 +3,8 @@
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>
-        {{ currentSignal }}dbm ({{ currentSignalQuality }})
-      </template>
-      <template v-slot:average>
-        {{ averageSignal }}
-      </template>
+      <template v-slot:realtime>{{ currentTemperature }}°</template>
+      <template v-slot:average>{{ averageTemperature }}°</template>
     </CurrentStats>
     <CurrentStats v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
@@ -19,21 +15,29 @@
       ref="graph"
       :name="sensor.label"
       :measurements="measurements"
+      :options="chartOptions"
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
-      />
+    />
+    <BookmarkButton />
   </div>
 </template>
 
 <script>
-import CurrentStats from './CurrentStats'
-import Graph from './Graph'
-import ModeButton from './ModeButton'
-import TimeButtons from './TimeButtons'
+import CurrentStats from '../CurrentStats'
+import BookmarkButton from '../BookmarkButton'
+import Graph from '../Graph'
+import ModeButton from '../ModeButton'
+import TimeButtons from '../TimeButtons'
+
+function toFahrenheit(value) {
+  return Math.round(((value * (9 / 5)) + 32) * 10) / 10
+}
 
 export default {
   components: {
     CurrentStats,
+    BookmarkButton,
     Graph,
     ModeButton,
     TimeButtons
@@ -46,51 +50,47 @@ export default {
   },
   data() {
     return {
-      mode: 'current',
+      mode: 'chart',
       timeAgo: 1728e5,
       zoomedIn: false
     }
   },
   computed: {
-    averageSignal() {
+    averageTemperature() {
       const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
-      return Math.round(sum / this.measurements.length)
+      return Math.round((sum / this.measurements.length) * 10) / 10
     },
-    averageSignalQuality() {
-      return this.quality(this.averageSignal)
+    chartOptions() {
+      const values = this.measurements.map(m => m.value)
+      return {
+        yaxis: {
+          max: Math.max(...values),
+          min: Math.min(...values)
+        }
+      }
     },
-    currentSignal() {
+    currentTemperature() {
       if (this.measurements.length) {
         return this.measurements[this.measurements.length - 1].value
       }
       return 0
     },
-    currentSignalQuality() {
-      return this.quality(this.currentSignal)
-    },
     measurements() {
-      if (this.timeAgo === Infinity) {
-        return this.sensor.measurements
+      let measurements = this.sensor.measurements
+      // Filter down to the specified time range
+      if (this.timeAgo !== Infinity) {
+        const now = new Date().getTime()
+        measurements = measurements
+          .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
       }
-      const now = new Date().getTime()
-      // Filter down to our given time scope
-      return this.sensor.measurements
-        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+      // Convert to Fahrenheit
+      return measurements.map(m => ({
+        created_at: m.created_at,
+        value: toFahrenheit(m.value)
+      }))
     }
   },
   methods: {
-    quality(value) {
-      if (value >= -50) {
-        return 'excellent'
-      } else if (value >= -67) {
-        return 'good'
-      } else if (value >= -70) {
-        return 'acceptable'
-      } else if (value >= -80) {
-        return 'bad'
-      }
-      return 'very poor'
-    },
     resetZoom() {
       this.$refs.graph.resetZoom()
       this.zoomedIn = false
@@ -103,9 +103,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.card-container {
-  height: 100%;
-}
-</style>
