@@ -72,6 +72,13 @@ export default {
   width: 25%;
 }
 
+@media screen and (max-width: 1800px) {
+  .flex-item {
+    flex-basis: 33.33%;
+    width: 33.33%;
+  }
+}
+
 @media screen and (max-width: 860px) {
   .flex-item {
     flex-basis: 50%;
