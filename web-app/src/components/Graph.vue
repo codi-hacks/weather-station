@@ -43,7 +43,6 @@ export default {
     chartOptions() {
       return objectAssignDeep({
         chart: {
-          fontFamily: 'Comic Sans MS, Comic Sans, cursive',
           animations: {
             speed: 500,
             animateGradually: {
@@ -86,7 +85,7 @@ export default {
           align: 'center',
           offsetY: 20,
           size: '2.2em',
-          text: this.sensorType.label,
+          text: this.sensorType.label
         },
         tooltip: {
           enabled: false
