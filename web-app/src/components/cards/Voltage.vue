@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
-    <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
+    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>
         {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
@@ -23,7 +23,7 @@
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
       />
-    <BookmarkButton />
+    <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
   </div>
 </template>
 
@@ -71,6 +71,11 @@ export default {
     TimeButtons
   },
   props: {
+    card: {
+      default: null,
+      required: false,
+      type: Object
+    },
     sensor: {
       required: true,
       type: Object
@@ -80,9 +85,16 @@ export default {
     zeroPad: str => String(str).padEnd(4, 0)
   },
   data() {
+    let mode = 'percentage-chart'
+    let timeAgo = 6048e5
+    // Hydrate settings if this is on the dashboard
+    if (this.card) {
+      mode = this.card.mode
+      timeAgo = this.card.timeAgo
+    }
     return {
-      mode: 'percentage-chart',
-      timeAgo: 6048e5,
+      mode,
+      timeAgo,
       zoomedIn: false
     }
   },
@@ -145,6 +157,11 @@ export default {
       this.mode = newMode
       // State of graph gets reset with mode changes
       this.zoomedIn = false
+      this.$emit('change-mode', this.mode)
+    },
+    setTimeAgo(timeAgo) {
+      this.timeAgo = timeAgo
+      this.$emit('change-time-ago', this.timeAgo)
     }
   }
 }

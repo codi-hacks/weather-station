@@ -1,25 +1,62 @@
 <template>
-  <v-container>
-    <v-row>
-      <template v-for="n in 4">
-        <v-col :key="n" class="mt-2" cols="12">
-          <strong>Category {{ n }}</strong>
-        </v-col>
-
-        <v-col v-for="j in 6" :key="`${n}${j}`" cols="6" md="2">
-          <v-sheet color="blue" elevation="1" height="150" rounded></v-sheet>
-        </v-col>
-      </template>
-    </v-row>
-  </v-container>
+  <div v-if="sensorError">
+    Error loading dashboard
+  </div>
+  <div v-else-if="sensorsLoaded">
+    <DashboardContainer :dashboard="mappedDashboard" />
+  </div>
+  <div v-else>
+    Loading dashboard...
+  </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
+import DashboardContainer from '@/components/DashboardContainer'
 
 export default {
-  name: 'Home',
-  components: {}
+  name: 'Dashboard',
+  components: {
+    DashboardContainer
+  },
+  data() {
+    return {
+      mappedDashboard: [],
+      sensorError: false,
+      sensorsLoaded: false
+    }
+  },
+  mounted() {
+    this.generateDashboard()
+  },
+  methods: {
+    generateDashboard() {
+      this.$store.dispatch('getDashboardSensors')
+        .then(dashboard => {
+          this.mappedDashboard = this.$store.state.dashboard.map(card => {
+            return {
+              sensor: this.$store.state.sensors[card.id],
+              ...card
+            }
+          })
+          this.sensorsLoaded = true
+          this.sensorError = false
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err)
+          this.sensorError = true
+          this.sensorsLoaded = false
+        })
+    }
+  },
+  watch: {
+    '$store.state.dashboard': {
+      handler() {
+        this.generateDashboard()
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 }
 </script>

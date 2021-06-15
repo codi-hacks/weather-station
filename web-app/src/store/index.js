@@ -6,13 +6,36 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    dashboard: [],
     sensors: {},
+    settings: {},
     stations: [],
     stationsPromise: null
   },
   mutations: {
+    addBookmark(state, card) {
+      state.dashboard.push(card)
+    },
+    removeBookmark(state, sensorId) {
+      Vue.set(state, 'dashboard', state.dashboard.filter(s => s.id !== sensorId))
+    },
+    setCardMode(state, { sensorId, mode }) {
+      const card = state.dashboard.find(c => c.id === sensorId)
+      card.mode = mode
+      console.log('$store setCardMode', card.mode)
+    },
+    setCardTimeAgo(state, { sensorId, timeAgo }) {
+      const card = state.dashboard.find(c => c.id === sensorId)
+      card.timeAgo = timeAgo
+    },
+    setDashboard(state, dashboard) {
+      Vue.set(state, 'dashboard', dashboard)
+    },
     setSensorData(state, sensorData) {
       Vue.set(state.sensors, sensorData.id, sensorData)
+    },
+    setSettings(state, settings) {
+      Vue.set(state, 'settings', settings)
     },
     setStations(state, stations) {
       Vue.set(state, 'stations', stations)
@@ -26,7 +49,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    getSensorData(context, station) {
+    getDashboardSensors(context) {
+      return Promise.all(context.state.dashboard.map(card => {
+        return fetch(`${API_URL}/sensors/${card.id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to fetch /sensors/${card.id}`)
+            }
+            return response.json()
+          })
+          .then(sensorData => {
+            context.commit('setSensorData', sensorData)
+          })
+      }))
+    },
+    getStationSensors(context, station) {
       return Promise.all(station.sensors.map(sensor => {
         return fetch(`${API_URL}/sensors/${sensor.id}`)
           .then(response => {

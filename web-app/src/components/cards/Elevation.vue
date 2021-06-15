@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
-    <TimeButtons v-model="timeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
+    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
     <ul class="estimation" v-if="mode === 'current' && measurements.length">
       <li>
         <h3>Estimated</h3>
@@ -24,7 +24,7 @@
       :sensor-type="sensor.type"
       @zoomed-in="zoomedIn = true"
       />
-    <BookmarkButton />
+    <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
   </div>
 </template>
 
@@ -42,20 +42,32 @@ export default {
     TimeButtons
   },
   props: {
+    card: {
+      default: null,
+      required: false,
+      type: Object
+    },
     sensor: {
       required: true,
       type: Object
     }
   },
   data() {
+    let mode = 'current'
+    let timeAgo = Infinity
+    // Hydrate settings if this is on the dashboard
+    if (this.card) {
+      mode = this.card.mode
+      timeAgo = this.card.timeAgo
+    }
     return {
       chartOptions: {
         stroke: {
           show: false
         }
       },
-      mode: 'current',
-      timeAgo: Infinity,
+      mode,
+      timeAgo,
       zoomedIn: false
     }
   },
@@ -83,6 +95,11 @@ export default {
       this.mode = newMode
       // State of graph gets reset with mode changes
       this.zoomedIn = false
+      this.$emit('change-mode', this.mode)
+    },
+    setTimeAgo(timeAgo) {
+      this.timeAgo = timeAgo
+      this.$emit('change-time-ago', this.timeAgo)
     }
   }
 }

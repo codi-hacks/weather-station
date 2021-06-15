@@ -38,7 +38,7 @@ export default {
   },
   mounted() {
     if (this.station) {
-      this.$store.dispatch('getSensorData', this.station)
+      this.$store.dispatch('getStationSensors', this.station)
         .then(() => {
           this.sensorsLoaded = true
         })
