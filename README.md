@@ -70,16 +70,19 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Discuss props and v-model ([#6](https://github.com/JTCC-Programming-Club/weather-station/issues/6))
 - **Week 10**
   - API server workshop (part 3)
-    - [ ] Introduce [Serde](https://github.com/serde-rs/serde)
-    - [ ] Setting up relationships ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11), continued)
+    - [x] Introduce [Serde](https://github.com/serde-rs/serde)
+    - [x] Setting up relationships ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11), continued)
   - Web app workshop (part 5)
-    - [ ] Fetching, storing, and displaying server data ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
-    - [ ] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
+    - [x] Fetching, storing, and displaying server data ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
+    - [x] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
 - **Week 11**
   - Web app workshop (part 6)
     - [ ] Graphing data inside the cards
     - [ ] Add time series filter (view weather over period of 1yr, 1mo, 1wk, 1dy) ([#19](https://github.com/JTCC-Programming-Club/weather-station/issues/19))
     - [ ] Display current and average metrics
+  - API server workshop (part 4)
+    - [ ] Add UDP socket for recording measurements (#12)
+    - [ ] Returning nested data
 - **Future**
-  - [ ] Customizing the PWA mobile experience
+  - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
   - [ ] Add latitude/longitude display?
