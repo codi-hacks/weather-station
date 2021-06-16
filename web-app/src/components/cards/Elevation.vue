@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
-    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
+    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <ul class="estimation" v-if="mode === 'current' && measurements.length">
       <li>
         <h3>Estimated</h3>
@@ -16,12 +16,12 @@
     </ul>
     <Graph
       v-else
-      ref="graph"
       chart-type="area"
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
       :sensor-type="sensor.type"
+      :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
     <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
@@ -87,10 +87,6 @@ export default {
     }
   },
   methods: {
-    resetZoom() {
-      this.$refs.graph.resetZoom()
-      this.zoomedIn = false
-    },
     setMode(newMode) {
       this.mode = newMode
       // State of graph gets reset with mode changes

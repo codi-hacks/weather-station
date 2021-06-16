@@ -19,6 +19,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-unused-vars': 'warn',
     'space-before-function-paren': ['error', 'never'],
-    'spaced-comment': 'off'
+    'spaced-comment': 'off',
+    'vue/require-v-for-key': 'off'
   }
 }

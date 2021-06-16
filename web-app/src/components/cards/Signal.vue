@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
-    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="resetZoom()" />
+    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentStats v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>
         {{ currentSignal }}dbm ({{ currentSignalQuality }})
@@ -16,10 +16,10 @@
     </CurrentStats>
     <Graph
       v-else
-      ref="graph"
       :name="sensor.label"
       :measurements="measurements"
       :sensor-type="sensor.type"
+      :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
     <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
@@ -105,10 +105,6 @@ export default {
         return 'bad'
       }
       return 'very poor'
-    },
-    resetZoom() {
-      this.$refs.graph.resetZoom()
-      this.zoomedIn = false
     },
     setMode(newMode) {
       this.mode = newMode
