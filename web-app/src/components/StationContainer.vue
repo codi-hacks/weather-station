@@ -5,16 +5,28 @@
       rounded
       v-for="sensor in stationSensors"
       :key="sensor.id">
-      <Graph :name = "sensor.label" :measurements="sensor.measurements" :sensor-type="sensor.type" />
+      <TemperatureCard
+        v-if="sensor.type.label==='temperature'"
+
+        :name="sensor.label"
+        :measurements="sensor.measurements"
+        :sensor-type="sensor.type" />
+      <Graph
+        v-else
+        :name="sensor.label"
+        :measurements="sensor.measurements"
+        :sensor-type="sensor.type" />
         </v-card>
   </div>
 </template>
 
 <script>
 import Graph from './Graph'
+import TemperatureCard from './cards/Temperature'
 export default {
   components: {
-    Graph
+    Graph,
+    TemperatureCard
   },
   props: {
     station: {
