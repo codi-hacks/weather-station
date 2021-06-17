@@ -1,24 +1,19 @@
 <template>
   <div class="card-container">
-    <v-btn-toggle mandatory :value="value" @change="updateValue($event)">
-      <v-btn x-small :value="846e5">1d</v-btn>
-      <v-btn x-small :value="1728e5">2d</v-btn>
-      <v-btn x-small :value="6048e5">1w</v-btn>
-      <!-- Displaying all measurements is equivalent to 90 days
-        since the server limits the time series to 90 days -->
-      <v-btn x-small :value="Infinity">90d</v-btn>
-    </v-btn-toggle>
+    <TimeButton v-model="timeAgo" />
     <Graph
       :name="name"
-      :measurements="measurements"
-      :sensor-type="sensorType" />
+      :measurements="filteredMeasurements"
+      :sensor-type="sensorType"
+    />
   </div>
 </template>
 <script>
+import TimeButton from '../TimeButton'
 import Graph from '../Graph'
 export default {
-  components: { Graph },
-  component: {
+  components: {
+    TimeButton,
     Graph
   },
   props: {
@@ -37,7 +32,15 @@ export default {
   },
   data() {
     return {
-      value: 1728e5
+      timeAgo: 1728e5
+    }
+  },
+  computed: {
+    filteredMeasurements() {
+      const now = new Date().getTime()
+      return this.measurements.filter(m =>
+        now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo
+      )
     }
   }
 }
@@ -45,6 +48,6 @@ export default {
 
 <style scoped>
 .card-container {
-  height:100%;
+  height: 100%;
 }
 </style>
