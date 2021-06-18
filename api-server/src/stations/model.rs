@@ -1,6 +1,7 @@
 use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::stations;
+use crate::sensors::SensorsModel;
 use diesel::prelude::*;
 use rand::{distributions::Alphanumeric, Rng};
 use serde::{Deserialize, Serialize};
@@ -11,7 +12,16 @@ pub struct StationsChangeset {
     pub label: String
 }
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Deserialize, Serialize)] 
+pub struct Station {
+    pub id: uuid::Uuid,
+    pub label: String,
+    #[serde(skip_serializing)]
+    pub key: String,
+    pub sensors: Vec<SensorsModel>
+}
+
+#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
 #[table_name = "stations"]
 pub struct StationsModel {
     pub id: uuid::Uuid,
@@ -27,10 +37,16 @@ impl StationsModel {
         Ok(station)
     }
 
-    pub fn find(id: uuid::Uuid) -> Result<Self, CustomError> {
+    pub fn find(id: uuid::Uuid) -> Result<Station, CustomError> {
         let conn = db::connection()?;
-        let station = stations::table.filter(stations::id.eq(id)).first(&conn)?;
-        Ok(station)
+        let station: Self = stations::table.filter(stations::id.eq(id)).first(&conn)?;
+        let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(&conn)?;
+        Ok(Station {
+            id: station.id,
+            label: station.label,
+            key: station.key,
+            sensors
+        })
     }
 
     pub fn create(station: StationsChangeset) -> Result<Self, CustomError> {
