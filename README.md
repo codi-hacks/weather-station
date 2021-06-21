@@ -83,7 +83,7 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Returning nested data
 - **Week 12**
   - API server workshop (part 5)
-    - [ ] Add UDP socket and record some real measurements (#12)
+    - [ ] Add UDP socket and record some real measurements ([#12](https://github.com/JTCC-Programming-Club/weather-station/issues/12))
   - Web app workshop (part 7)
     - [ ] Finish up cards
     - [ ] Display current and average metrics
@@ -93,11 +93,11 @@ The weather stations send measurements to the API server to collect, which in tu
     - [ ] Connect to server from web app
   - Web app workshop (part 7)
     - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
-- **Week 13**
+- **Week 14**
   - API server workshop (part 7)
     - [ ] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
   - Web app workshop (part 8)
     - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
     - [ ] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
-- *Week 14**
+- **Week 15**
  - Wrapping up final issues
