@@ -1,6 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
 
-This is a monorepo with all the instructions and software to build and program your own solar-powered wi-fi weather station(s).
+This is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) with all the instructions and software to build and program your own solar-powered wi-fi weather station(s).
 
 - [Overview](#overview)
 - [Building the weather stations](hardware-files/README.md)
@@ -61,22 +61,43 @@ The weather stations send measurements to the API server to collect, which in tu
   - API server workshop (part 1)
     - [x] Set up [PostgreSQL](https://www.postgresql.org/)
     - [x] Getting started with [Diesel](http://diesel.rs/)
-    - Intro to [Actix/Actix Web](https://actix.rs/) and [Serde](https://github.com/serde-rs/serde)
-  - Web app workshop (part 4)
-    - [ ] Discuss GitHub Issues and Milestones
-    - [ ] Fetching, storing, and displaying server data ([#6](https://github.com/JTCC-Programming-Club/weather-station/issues/6)) ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
 - **Week 9**
   - API server workshop (part 2)
-    - [ ] Introduce [Actix/Actix Web](https://actix.rs/)
-    - [ ] Introduce [Serde](https://github.com/serde-rs/serde)
-    - [ ] Create database schema and server resources ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11))
-  - Web app workshop (part 5)
-    - [ ] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
-    - [ ] Graphing data inside the cards
+    - [x] Introduce [Actix/Actix Web](https://actix.rs/)
+    - [x] Create database schema and server resources ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11))
+  - Web app workshop (part 4)
+    - [x] Discuss GitHub Issues and Milestones
+    - [x] Discuss props and v-model ([#6](https://github.com/JTCC-Programming-Club/weather-station/issues/6))
 - **Week 10**
+  - API server workshop (part 3)
+    - [x] Introduce [Serde](https://github.com/serde-rs/serde)
+    - [x] Setting up relationships ([#11](https://github.com/JTCC-Programming-Club/weather-station/issues/11), continued)
+  - Web app workshop (part 5)
+    - [x] Fetching, storing, and displaying server data ([#7](https://github.com/JTCC-Programming-Club/weather-station/issues/7))
+    - [x] Create Station page using responsive flexbox cards ([#8](https://github.com/JTCC-Programming-Club/weather-station/issues/8))
+- **Week 11**
   - Web app workshop (part 6)
-    - [ ] Add time series filter (view weather over period of 1yr, 1mo, 1wk, 1dy) ([#19](https://github.com/JTCC-Programming-Club/weather-station/issues/19))
+    - [x] Graphing data inside the cards
+    - [x] Add time series filter (view weather over period of 1 days, 2 days, 1 week, 90 days) ([#19](https://github.com/JTCC-Programming-Club/weather-station/issues/19))
+  - API server workshop (part 4)
+    - [x] Returning nested data
+- **Week 12**
+  - API server workshop (part 5)
+    - [ ] Add UDP socket and record some real measurements (#12)
+  - Web app workshop (part 7)
+    - [ ] Finish up cards
     - [ ] Display current and average metrics
-- **Future**
-  - [ ] Customizing the PWA mobile experience
-  - [ ] Add latitude/longitude display?
+- **Week 13**
+  - API server workshop (part 6)
+    - [ ] Update middleware ([#15](https://github.com/JTCC-Programming-Club/weather-station/issues/15))([#16](https://github.com/JTCC-Programming-Club/weather-station/issues/16))
+    - [ ] Connect to server from web app
+  - Web app workshop (part 7)
+    - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
+- **Week 13**
+  - API server workshop (part 7)
+    - [ ] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
+  - Web app workshop (part 8)
+    - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
+    - [ ] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
+- *Week 14**
+ - Wrapping up final issues

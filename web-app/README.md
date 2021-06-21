@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/76a87dc5-029e-4895-956d-15d930fe3ae7/deploy-status)](https://app.netlify.com/sites/ecstatic-easley-321fb4/deploys)
+
 # Progressive web app
 
 - [Overview](#overview)
