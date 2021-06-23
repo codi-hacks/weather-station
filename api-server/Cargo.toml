@@ -1,16 +1,27 @@
 [package]
-name = "example_api"
+name = "weather-station-api"
 version = "0.1.0"
 authors = ["Jay Thomas <jay@gfax.ch>"]
 edition = "2018"
+default-run = "server"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "api"
+path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
 
 [dependencies]
 actix-web = "2.0"
 actix-rt = "1.0"
 bigdecimal = { version = "0.1.0", features = ["serde"] } # To be able to interact with a column of NUMERIC values
 chrono = { version = "0.4", features = ["serde"] }
+# Verifying weather station messages keys
+crc = "^1.0.0"
 dotenv = "0.11"
 diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono", "numeric"] }
 diesel_migrations = "1.4"
@@ -18,6 +29,8 @@ env_logger = "0.6"
 lazy_static = "1.4"
 listenfd = "0.3"
 log = "0.4"
+# For parsing the UDP datagrams
+nom = "6.1"
 rand = "0.8.3" # To generate the random_key in src/sensors/model.rs
 serde = "1.0"
 serde_json = "1.0"

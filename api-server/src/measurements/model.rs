@@ -6,13 +6,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use bigdecimal::BigDecimal;
 use crate::sensors::{SensorsModel};
-
-#[derive(Serialize, Deserialize, AsChangeset, Insertable)]
-#[table_name = "measurements"]
-pub struct MeasurementsChangeset {
-    pub value: BigDecimal,
-    pub sensor_id: uuid::Uuid
-}
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Associations, Queryable, Insertable)]
 #[belongs_to(SensorsModel, foreign_key = "sensor_id")]
@@ -37,22 +31,15 @@ impl MeasurementsModel {
         Ok(measurement)
     }
 
-    pub fn create(measurement: MeasurementsChangeset) -> Result<Self, CustomError> {
-        use crate::schema::measurements::dsl::{ value as value_column };
+    pub fn create(sensor_id: Uuid, value: BigDecimal) -> Result<Self, CustomError> {
         let conn = db::connection()?;
-        let measurement = MeasurementsChangeset::from(measurement);
         let measurement = diesel::insert_into(measurements::table)
-            .values( value_column.eq(measurement.value) )
+            .values((
+                measurements::value.eq(value),
+                measurements::sensor_id.eq(sensor_id)
+            ))
             .get_result(&conn)?;
-        Ok(measurement)
-    }
-
-    pub fn update(id: uuid::Uuid, measurement: MeasurementsChangeset) -> Result<Self, CustomError> {
-        let conn = db::connection()?;
-        let measurement = diesel::update(measurements::table)
-            .filter(measurements::id.eq(id))
-            .set(measurement)
-            .get_result(&conn)?;
+        SensorsModel::touch(sensor_id)?;
         Ok(measurement)
     }
 
@@ -60,14 +47,5 @@ impl MeasurementsModel {
         let conn = db::connection()?;
         let res = diesel::delete(measurements::table.filter(measurements::id.eq(id))).execute(&conn)?;
         Ok(res)
-    }
-}
-
-impl MeasurementsChangeset {
-    fn from(measurement: MeasurementsChangeset) -> MeasurementsChangeset {
-        MeasurementsChangeset {
-            value: measurement.value,
-            sensor_id: measurement.sensor_id
-        }
     }
 }

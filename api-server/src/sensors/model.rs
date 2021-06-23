@@ -1,18 +1,21 @@
 use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::sensors;
-use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
 use crate::sensor_types::{SensorTypesModel};
 use crate::stations::{StationsModel};
+
+use chrono::{Local, NaiveDateTime};
+use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "sensors"]
 pub struct SensorsChangeset {
     pub alias: String,
     pub label: String,
-    pub type_id: uuid::Uuid,
-    pub station_id: uuid::Uuid
+    pub type_id: Uuid,
+    pub station_id: Uuid
 }
 
 #[derive(Serialize, Deserialize, Associations, Queryable, Insertable, Identifiable)]
@@ -23,10 +26,10 @@ pub struct SensorsModel {
     pub id: uuid::Uuid,
     pub alias: String,
     pub label: String,
-    pub type_id: uuid::Uuid,
-    pub station_id: uuid::Uuid,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime
+    pub type_id: Uuid,
+    pub station_id: Uuid,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime
 }
 
 impl SensorsModel {
@@ -68,13 +71,30 @@ impl SensorsModel {
             alias as alias_column,
             label as label_column,
         };
-        
+
         let conn = db::connection()?;
         let sensor = diesel::update(sensors::table)
             .filter(sensors::id.eq(id))
             .set((
                 alias_column.eq(sensor.alias),
                 label_column.eq(sensor.label),
+            ))
+            .get_result(&conn)?;
+        Ok(sensor)
+    }
+
+    // Update timestamp
+    pub fn touch(id: Uuid) -> Result<Self, CustomError> {
+        let conn = db::connection()?;
+        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
+        let sensor = diesel::update(sensors::table)
+            .filter(sensors::id.eq(id))
+            .set((
+                sensors::alias.eq(sensor.alias),
+                sensors::label.eq(sensor.label),
+                sensors::type_id.eq(sensor.r#type_id),
+                sensors::station_id.eq(sensor.station_id),
+                sensors::updated_at.eq(Local::now().naive_local())
             ))
             .get_result(&conn)?;
         Ok(sensor)

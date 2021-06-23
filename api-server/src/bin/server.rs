@@ -1,26 +1,35 @@
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
-
 use actix_web::{App, HttpServer, middleware::Logger};
 use dotenv::dotenv;
+use log::info;
 use listenfd::ListenFd;
-use std::env;
+use std::{
+    env,
+    net::UdpSocket,
+    thread
+};
 
-mod db;
-mod stations;
-mod sensors;
-mod measurements;
-mod sensor_types;
-mod error_handler;
-mod schema;
+use api::db;
+use api::stations;
+use api::sensor_types;
+use api::sensors;
+use api::udp::{
+    UdpServer,
+    udp_server,
+};
+
 
 #[actix_rt::main]
-async fn main() -> std::io::Result<()> {    
+async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
     db::init();
+
+    thread::spawn(move || {
+        let address = env::var("UDP").expect("Please set the UDP environment variable in .env");
+        let udp_socket = UdpSocket::bind(address.clone()).unwrap();
+        info!("Listening on UDP address {}", address);
+        udp_server(UdpServer::new(udp_socket)).unwrap();
+    });
 
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(||
@@ -29,16 +38,14 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::new("%a %{User-Agent}i"))
             .configure(stations::init_routes)
             .configure(sensors::init_routes)
-            .configure(measurements::init_routes)
             .configure(sensor_types::init_routes)
     );
 
     server = match listenfd.take_tcp_listener(0)? {
         Some(listener) => server.listen(listener)?,
         None => {
-            let host = env::var("HOST").expect("Please set host in .env");
-            let port = env::var("PORT").expect("Please set port in .env");
-            server.bind(format!("{}:{}", host, port))?
+            let address = env::var("HTTP").expect("Please set the HTTP environment variable in .env");
+            server.bind(address)?
         }
     };
 
