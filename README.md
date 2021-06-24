@@ -83,7 +83,7 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Returning nested data
 - **Week 12**
   - API server workshop (part 5)
-    - [ ] Add UDP socket and record some real measurements ([#12](https://github.com/JTCC-Programming-Club/weather-station/issues/12))
+    - [x] Add UDP socket and record some real measurements ([#12](https://github.com/JTCC-Programming-Club/weather-station/issues/12))
   - Web app workshop (part 7)
     - [ ] Finish up cards
     - [ ] Display current and average metrics
