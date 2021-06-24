@@ -14,7 +14,8 @@ pub struct MeasurementsChangeset {
     pub sensor_id: uuid::Uuid
 }
 
-#[derive(Serialize, Deserialize, Associations, Queryable, Insertable)]
+//#[derive(Serialize, Deserialize, Associations, Queryable, Insertable)]
+#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
 #[belongs_to(SensorsModel, foreign_key = "sensor_id")]
 #[table_name = "measurements"]
 pub struct MeasurementsModel {

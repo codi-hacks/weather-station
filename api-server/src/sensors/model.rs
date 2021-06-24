@@ -6,6 +6,10 @@ use serde::{Deserialize, Serialize};
 use crate::sensor_types::{SensorTypesModel};
 use crate::stations::{StationsModel};
 
+//New import
+use crate::measurements::MeasurementsModel;
+
+
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "sensors"]
 pub struct SensorsChangeset {
@@ -15,7 +19,21 @@ pub struct SensorsChangeset {
     pub station_id: uuid::Uuid
 }
 
-#[derive(Serialize, Deserialize, Associations, Queryable, Insertable, Identifiable)]
+#[derive(Deserialize, Serialize)] 
+pub struct Sensor {
+    pub id: uuid::Uuid,
+    pub alias: String,
+    pub label: String,
+    pub type_id: uuid::Uuid,
+    pub station_id: uuid::Uuid,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+    pub measurements: Vec<MeasurementsModel>
+}
+
+
+//#[derive(Serialize, Deserialize, Associations, Queryable, Insertable, Identifiable)]
+#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
 #[belongs_to(SensorTypesModel, foreign_key = "type_id")]
 #[belongs_to(StationsModel, foreign_key = "station_id")]
 #[table_name = "sensors"]
@@ -36,10 +54,22 @@ impl SensorsModel {
         Ok(sensors)
     }
 
-    pub fn find(id: uuid::Uuid) -> Result<Self, CustomError> {
+    pub fn find(id: uuid::Uuid) -> Result<Sensor, CustomError> {
         let conn = db::connection()?;
-        let sensor = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
-        Ok(sensor)
+        let sensor: SensorsModel = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
+        //Ok(sensor)    //Original Ok() line
+        let measurements: Vec<MeasurementsModel> = MeasurementsModel::belonging_to(&sensor).load(&conn)?;
+        Ok(Sensor {
+            id:             sensor.id,
+            alias:          sensor.alias,
+            label:          sensor.label,
+            type_id:        sensor.type_id,
+            station_id:     sensor.station_id,
+            created_at:     sensor.created_at,
+            updated_at:     sensor.updated_at,
+            measurements
+        })
+
     }
 
     pub fn create(sensor: SensorsChangeset) -> Result<Self, CustomError> {
