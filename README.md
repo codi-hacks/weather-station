@@ -8,6 +8,11 @@ This is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) with all the instru
 - [API server README](server/README.md)
 - [Web app README](web-app/README.md)
 
+| | |
+|:-------------------------:|:-------------------------:|
+| [![Generic-enclosure station](/hardware-files/station1.jpg)](hardware-files/station1.jpg) | [![Generic-enclosure station](/hardware-files/station2.jpg)](hardware-files/station2.jpg) |
+| [![3D-printed station](/hardware-files/station3.jpg)](hardware-files/station3.jpg) | [![3D-printed station](/hardware-files/station4.jpg)](hardware-files/station4.jpg) |
+
 ## Overview
 
 The weather stations send measurements to the API server to collect, which in turn serves this data to the web app that users load on their computer or mobile device.
@@ -86,12 +91,12 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Add UDP socket and record some real measurements ([#12](https://github.com/JTCC-Programming-Club/weather-station/issues/12))
   - Web app workshop (part 7)
     - [ ] Finish up cards
-    - [ ] Display current and average metrics
 - **Week 13**
   - API server workshop (part 6)
     - [ ] Update middleware ([#15](https://github.com/JTCC-Programming-Club/weather-station/issues/15))([#16](https://github.com/JTCC-Programming-Club/weather-station/issues/16))
     - [ ] Connect to server from web app
   - Web app workshop (part 7)
+    - [ ] Display current and average metrics
     - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
 - **Week 14**
   - API server workshop (part 7)
@@ -100,4 +105,4 @@ The weather stations send measurements to the API server to collect, which in tu
     - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
     - [ ] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
 - **Week 15**
- - Wrapping up final issues
+  - Wrapping up final issues
