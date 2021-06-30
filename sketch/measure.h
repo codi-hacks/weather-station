@@ -17,8 +17,8 @@ const byte osrs_p = 5;
 const byte osrs_h = 5;
 
 
-// Initialize DSB1820 water sensor(s)
-OneWire oneWire(PIN_D7);
+// Initialize DS18B20 water sensor(s)
+OneWire oneWire(water_temperature_pin);
 DallasTemperature sensors(&oneWire);
 
 // Initialize bme280 sensor object bme0 of type bme280, base address
@@ -32,9 +32,12 @@ void measure() {
 
   //****** DS18B20 - water temperature ********************************************
   // Initialize one-wire DS18B20 sensors
-  //sensors.begin();
-  //sensors.requestTemperatures();
-  float waterTemp = (sensors.getTempFByIndex(0));
+  float water_temp = 0;
+  if (enable_water_temperature == 1) {
+    sensors.begin();
+    sensors.requestTemperatures();
+    water_temp = (sensors.getTempCByIndex(0));
+  }
 
   //****** BME280 - Pressure, Temperature, Humidity, and calculated Altitude ******
 
@@ -82,6 +85,10 @@ void measure() {
   String message = "";
   message += "pressure=";
   message += String(pressure);
+  if (enable_water_temperature == 1) {
+    message += ",water_temp=";
+    message += String(water_temp);
+  }
   message += ",air_temp=";
   message += String(temperature);
   message += ",humidity=";
