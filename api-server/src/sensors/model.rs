@@ -4,19 +4,11 @@ use crate::schema::sensors;
 use crate::sensor_types::{SensorTypesModel};
 use crate::stations::{StationsModel};
 use crate::measurements::MeasurementsModel;
+
 use chrono::{Local, NaiveDateTime};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-
-#[derive(Serialize, Deserialize, AsChangeset, Insertable)]
-#[table_name = "sensors"]
-pub struct SensorsChangeset {
-    pub alias: String,
-    pub label: String,
-    pub type_id: Uuid,
-    pub station_id: Uuid
-}
+use uuid:: Uuid;
 
 #[derive(Deserialize, Serialize)] 
 pub struct Sensor {
@@ -28,6 +20,15 @@ pub struct Sensor {
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
     pub measurements: Vec<MeasurementsModel>
+}
+
+#[derive(Serialize, Deserialize, AsChangeset, Insertable)]
+#[table_name = "sensors"]
+pub struct SensorsChangeset {
+    pub alias: String,
+    pub label: String,
+    pub type_id: uuid::Uuid,
+    pub station_id: uuid::Uuid
 }
 
 
@@ -54,7 +55,7 @@ impl SensorsModel {
 
     pub fn find(id: uuid::Uuid) -> Result<Sensor, CustomError> {
         let conn = db::connection()?;
-        let sensor: SensorsModel = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
+        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
         let measurements: Vec<MeasurementsModel> = MeasurementsModel::belonging_to(&sensor).load(&conn)?;
         Ok(Sensor {
             id:             sensor.id,
@@ -66,7 +67,6 @@ impl SensorsModel {
             updated_at:     sensor.updated_at,
             measurements
         })
-
     }
 
     pub fn create(sensor: SensorsChangeset) -> Result<Self, CustomError> {
