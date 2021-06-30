@@ -1,26 +1,58 @@
 [package]
-name = "example_api"
+name = "weather-station-api"
 version = "0.1.0"
 authors = ["Jay Thomas <jay@gfax.ch>"]
 edition = "2018"
+build = "build.rs"
+default-run = "server"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "api"
+path = "src/lib.rs"
+
+[[bin]]
+name = "measurement"
+path = "src/bin/measurement.rs"
+
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
 [dependencies]
+# Web server framework
 actix-web = "2.0"
 actix-rt = "1.0"
-bigdecimal = { version = "0.1.0", features = ["serde"] } # To be able to interact with a column of NUMERIC values
+# Handle Postgres NUMERIC type (ie "measurement" values)
+bigdecimal = { version = "0.1.0", features = ["serde"] }
+# Allow for NaiveDateTime created_at/updated_at that can be operated on
 chrono = { version = "0.4", features = ["serde"] }
-dotenv = "0.11"
+# Parsing command line arguments
+clap = "3.0.0-beta.2"
+# Verifying weather station messages keys
+crc = "^1.0.0"
+# The Diesel ORM. Features can be found here:
+# https://github.com/diesel-rs/diesel/blob/master/diesel/Cargo.toml
 diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono", "numeric"] }
+# For embedding Diesel migrations into the binary/runtime
+# https://docs.diesel.rs/master/migrations_macros/macro.embed_migrations.html
 diesel_migrations = "1.4"
+# Load environment variables from .env
+dotenv = "0.11"
 env_logger = "0.6"
 lazy_static = "1.4"
 listenfd = "0.3"
 log = "0.4"
-rand = "0.8.3" # To generate the random_key in src/sensors/model.rs
+# For parsing the UDP datagrams
+nom = "6.1"
+r2d2 = "0.8"
+# Generating station keys within the StationsModel
+rand = "0.8.3"
+# JSON serializer/deserializer
 serde = "1.0"
 serde_json = "1.0"
+# Provides #[skip_serializing_none]
 serde_with = "1.8.1"
-r2d2 = "0.8"
+# Handle Postgres UUIDs
 uuid = { version = "0.6", features = ["serde", "v4"] }
