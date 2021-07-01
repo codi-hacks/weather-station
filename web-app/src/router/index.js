@@ -30,7 +30,7 @@ const routes = [
         next()
       // Wait until we fetch them from the server
       } else {
-        store.state.stationsPromise.then(() => next())
+        store.dispatch('getStations').then(() => next())
       }
     }
   }

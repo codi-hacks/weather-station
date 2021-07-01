@@ -51,8 +51,12 @@ export default {
   },
   watch: {
     '$store.state.dashboard': {
-      handler() {
+      handler(newValue, oldValue) {
         this.generateDashboard()
+        // Wait until we have a dashboard before fetching up-to-date sensor data
+        if (newValue.length && newValue.length !== oldValue.length) {
+          this.$store.dispatch('fetchDashboardSensors')
+        }
       },
       deep: true,
       immediate: true

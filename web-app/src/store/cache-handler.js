@@ -45,7 +45,7 @@ export default async store => {
         idbstore.put(state.dashboard, 'dashboard')
       })
     },
-    setSensorData: (state, idbstore) => {
+    setSensor: (state, idbstore) => {
       idbstore.delete('sensors').then(() => {
         idbstore.put(state.sensors, 'sensors')
       })
@@ -73,8 +73,8 @@ export default async store => {
   // Hydrate from the cache if we beat the server response
   } else if (stations && stations.length) {
     // eslint-disable-next-line no-console
-    console.debug('stations hydrated from cache')
     store.commit('setStations', stations)
+    console.debug('stations hydrated from cache')
   }
 
   //
@@ -83,9 +83,9 @@ export default async store => {
   if (Object.keys(store.state.sensors).length) {
     const tx = db.transaction(storeName, 'readwrite')
     const idbstore = tx.objectStore(storeName)
-    fnMap.setSensorData(store.state, idbstore)
-  } else {
-    Object.values(sensors).forEach(sensor => store.commit('setSensorData', sensor))
+    fnMap.setSensor(store.state, idbstore)
+  } else if (stations && stations.length) {
+    store.commit('hydrateSensors', { sensors, stations })
     // eslint-disable-next-line no-console
     console.debug('sensors hydrated from cache')
   }
