@@ -15,16 +15,14 @@
 
 <style scoped>
 .current-container {
-  color: #B12BCF;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   height: 100%;
-  background-image: url("../../assets/background.png");
-  background-position: right top;
 }
 
 .current-container li {
+  color: #1976d2;
   align-content: center;
   display: flex;
   flex-basis: 100%;
@@ -38,7 +36,6 @@
 }
 
 .value {
-  color: lime;
   font-size: 3.5em;
 }
 </style>

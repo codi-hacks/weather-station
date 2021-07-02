@@ -1,6 +1,6 @@
 <template>
   <div class="card-container">
-    <ModeButton v-model="mode" />
+    <div class="modeSwitcher"> <ModeButton v-model="mode" /> </div>
     <TimeButton v-model="timeAgo" />
     <Graph
       v-if="mode==='chart'"
@@ -8,10 +8,10 @@
       :measurements="filteredMeasurements"
       :sensor-type="sensorType"
     />
-    <CurrentTemperature v-if="mode === 'current' && measurements.length">
+    <CurrentView v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>{{ currentTemperature }}°</template>
       <template v-slot:average>{{ averageTemperature }}°</template>
-    </CurrentTemperature>
+    </CurrentView>
   </div>
 </template>
 
@@ -19,14 +19,14 @@
 import TimeButton from '../TimeButton'
 import ModeButton from '../ModeButton'
 import Graph from '../Graph'
-import CurrentTemperature from './CurrentTemperature'
+import CurrentView from '../CurrentView'
 
 export default {
   components: {
     TimeButton,
     ModeButton,
     Graph,
-    CurrentTemperature
+    CurrentView
   },
   props: {
     name: {
@@ -69,5 +69,9 @@ export default {
 <style scoped>
 .card-container {
   height: 100%;
+}
+
+.modeSwitcher {
+  float: right;
 }
 </style>
