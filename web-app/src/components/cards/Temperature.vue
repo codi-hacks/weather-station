@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
-    <div class="modeSwitcher"> <ModeButton v-model="mode" /> </div>
-    <TimeButton v-model="timeAgo" />
+    <ModeButton v-model="mode" />
+    <TimeButtons v-model="timeAgo" />
     <Graph
       v-if="mode==='chart'"
       :name="name"
@@ -16,14 +16,14 @@
 </template>
 
 <script>
-import TimeButton from '../TimeButton'
+import TimeButtons from '../TimeButtons'
 import ModeButton from '../ModeButton'
 import Graph from '../Graph'
 import CurrentView from '../CurrentView'
 
 export default {
   components: {
-    TimeButton,
+    TimeButtons,
     ModeButton,
     Graph,
     CurrentView
@@ -69,9 +69,5 @@ export default {
 <style scoped>
 .card-container {
   height: 100%;
-}
-
-.modeSwitcher {
-  float: right;
 }
 </style>
