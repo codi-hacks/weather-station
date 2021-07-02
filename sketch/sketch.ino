@@ -1,8 +1,8 @@
 //----------------------------------------------------------------------------------------------------
 //  Main microcontroller (ESP8266) and BME280 both sleep between measurements
 //  BME280 is used in single shot mode ("forced mode")
-//  Measurement read command is delayed,
-//  By repeatedly checking the "measuring" bit of status register (0xF3) until ready
+//  The measurement read command is delayed by repeatedly checking
+//  the "measuring" bit of status register (0xF3) until ready.
 //----------------------------------------------------------------------------------------------------
 
 // Wemos Mini D1 Pro pinout. This should have been provided by selecting the correct board but this
@@ -18,10 +18,6 @@ byte PIN_D5 = 14;
 byte PIN_D6 = 12;
 byte PIN_D7 = 13;
 byte PIN_D8 = 15;
-
-// configuration constants
-const bool bme280Debug = 0; // controls serial printing
-// set to 1 to enable printing of BME280 or BMP280 transactions
 
 //#include "user_interface.h" // https://arduino.stackexchange.com/questions/39957/esp8266-udp-multicast-doesnt-receive-packets/58268#58268
 #include "config.h"
@@ -44,7 +40,6 @@ void setup() {
   // Check this variable later to see how long the entire event took
   unsigned long start_time = millis();
 
-  //**** Wi-fi setup *************************************************
   if (debug_mode == 1) {
     Serial.begin(115200);
     // Use one of these if you get errors with the faster rate
@@ -57,29 +52,34 @@ void setup() {
   WiFi.hostname(hostname);
   WiFi.begin(ssid, pass);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  short attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 12) {
     delay(500);
     Serial.print(".");
+    ++attempts;
   }
-  Serial.println(" WiFi connected.");
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Could not establish connection.");
+  } else {
+    Serial.println(" WiFi connected.");
 
-  Serial.print("SSID:\t");
-  Serial.println(WiFi.SSID());
+    Serial.print("SSID:\t");
+    Serial.println(WiFi.SSID());
 
-  Serial.print("IP address:\t");
-  Serial.println(WiFi.localIP());
+    Serial.print("IP address:\t");
+    Serial.println(WiFi.localIP());
 
-  Serial.print("Gateway:\t");
-  Serial.println(WiFi.gatewayIP());
+    Serial.print("Gateway:\t");
+    Serial.println(WiFi.gatewayIP());
 
-  long rssi = WiFi.RSSI();
-  Serial.print("Signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
+    long rssi = WiFi.RSSI();
+    Serial.print("Signal strength (RSSI):");
+    Serial.print(rssi);
+    Serial.println(" dBm");
 
+    measure();
+  }
 
-  //**** Measuring and sleeping **************************************************
-  measure();
   sleep(start_time);
 } // end of void setup()
 

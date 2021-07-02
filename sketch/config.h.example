@@ -16,3 +16,9 @@ const char* api_key = "xxxx";
 const long measurement_interval = 300000;
 // Whether or not to output information to serial
 bool debug_mode = 0;
+
+// Optional DS18B20 water temperature probe
+bool enable_water_temperature = 0;
+// This should correspond to the labeled connector on the main circuit board
+// Leave as default if you don't plan on connecting a water temperature sensor
+byte water_temperature_pin = PIN_D7;
