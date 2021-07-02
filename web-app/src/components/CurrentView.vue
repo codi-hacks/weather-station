@@ -1,16 +1,16 @@
 <template>
-    <ul class="current-container">
-      <li></li>
-      <li>
-      <div class="header"> Current Temperature: </div>
-      <div class="value"> <slot name="realtime"/> </div>
-      </li>
-      <li>
-      <div class="header"> Average Temperature: </div>
-      <div class="value"> <slot name="average">Err</slot> </div>
-      </li>
-      <li></li>
-    </ul>
+  <ul class="current-container">
+    <li></li>
+    <li>
+      <div class="header">Current Temperature:</div>
+      <div class="value"><slot name="realtime" /></div>
+    </li>
+    <li>
+      <div class="header">Average Temperature:</div>
+      <div class="value"><slot name="average">Err</slot></div>
+    </li>
+    <li></li>
+  </ul>
 </template>
 
 <style scoped>

@@ -1,22 +1,24 @@
 <template>
-  <div  class="flex-container">
-        <v-card
+  <div class="flex-container">
+    <v-card
       class="flex-item"
       rounded
       v-for="sensor in stationSensors"
-      :key="sensor.id">
+      :key="sensor.id"
+    >
       <TemperatureCard
-        v-if="sensor.type.label==='temperature'"
-
+        v-if="sensor.type.label === 'temperature'"
         :name="sensor.label"
         :measurements="sensor.measurements"
-        :sensor-type="sensor.type" />
+        :sensor-type="sensor.type"
+      />
       <Graph
         v-else
         :name="sensor.label"
         :measurements="sensor.measurements"
-        :sensor-type="sensor.type" />
-        </v-card>
+        :sensor-type="sensor.type"
+      />
+    </v-card>
   </div>
 </template>
 
