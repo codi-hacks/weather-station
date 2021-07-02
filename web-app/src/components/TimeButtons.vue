@@ -1,7 +1,10 @@
 <template>
-  <div class="time-button">
-    <v-btn-toggle mandatory
-      :value="value" @change="updateValue($event)">
+  <div class="time-buttons">
+    <v-btn-toggle
+      mandatory
+      :value="value"
+      @change="updateValue($event)"
+      >
       <v-btn x-small :value="846e5">1d</v-btn>
       <v-btn x-small :value="1728e5">2d</v-btn>
       <v-btn x-small :value="6048e5">1w</v-btn>
@@ -29,19 +32,11 @@ export default {
 </script>
 
 <style scoped>
-.time-button {
-  margin-top: 2px;
+.time-buttons {
+  border-color: var(--v-secondary-lighten5) !important;
+  margin-top: -2px;
   position: absolute;
-  left: 30%;
-  right: 30%;
-  margin-left: auto;
-  margin-right: auto;
+  right: 2px;
   z-index: 1;
-}
-
-v-btn-toggle {
-  width:100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 </style>>
