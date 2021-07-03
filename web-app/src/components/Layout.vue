@@ -10,7 +10,7 @@
       <v-spacer></v-spacer>
 
       <div class="d-flex align-center">
-        <v-toolbar-title>Page name</v-toolbar-title>
+        <v-toolbar-title>{{ $store.state.pageTitle }}</v-toolbar-title>
       </div>
 
       <v-spacer></v-spacer>

@@ -8,6 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     dashboard: [],
+    pageTitle: 'Weather Station App',
     sensors: {},
     sensorPromises: {},
     settings: {},
@@ -31,6 +32,10 @@ export default new Vuex.Store({
     },
     setDashboard(state, dashboard) {
       Vue.set(state, 'dashboard', dashboard)
+    },
+
+    setPageTitle(state, title) {
+      Vue.set(state, 'pageTitle', title)
     },
 
     // Restore sensors from a cache
