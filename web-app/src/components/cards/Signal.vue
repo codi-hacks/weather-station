@@ -2,18 +2,18 @@
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <CurrentStats v-if="mode === 'current' && measurements.length">
+    <CurrentView v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>
         {{ currentSignal }}dbm ({{ currentSignalQuality }})
       </template>
       <template v-slot:average>
         {{ averageSignal }}
       </template>
-    </CurrentStats>
-    <CurrentStats v-else-if="mode === 'current'">
+    </CurrentView>
+    <CurrentView v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
       <template v-slot:average>N/A</template>
-    </CurrentStats>
+    </CurrentView>
     <Graph
       v-else
       :name="sensor.label"
@@ -28,7 +28,7 @@
 
 <script>
 import BookmarkButton from '../BookmarkButton'
-import CurrentStats from '../CurrentStats'
+import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
@@ -36,7 +36,7 @@ import TimeButtons from '../TimeButtons'
 export default {
   components: {
     BookmarkButton,
-    CurrentStats,
+    CurrentView,
     Graph,
     ModeButton,
     TimeButtons

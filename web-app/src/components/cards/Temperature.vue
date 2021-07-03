@@ -2,14 +2,14 @@
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <CurrentStats v-if="mode === 'current' && measurements.length">
+    <CurrentView v-if="mode === 'current' && measurements.length">
       <template v-slot:realtime>{{ currentTemperature }}°</template>
       <template v-slot:average>{{ averageTemperature }}°</template>
-    </CurrentStats>
-    <CurrentStats v-else-if="mode === 'current'">
+    </CurrentView>
+    <CurrentView v-else-if="mode === 'current'">
       <template v-slot:realtime>N/A</template>
       <template v-slot:average>N/A</template>
-    </CurrentStats>
+    </CurrentView>
     <Graph
       v-else
       :name="sensor.label"
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import CurrentStats from '../CurrentStats'
+import CurrentView from '../CurrentView'
 import BookmarkButton from '../BookmarkButton'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
@@ -36,7 +36,7 @@ function toFahrenheit(value) {
 
 export default {
   components: {
-    CurrentStats,
+    CurrentView,
     BookmarkButton,
     Graph,
     ModeButton,

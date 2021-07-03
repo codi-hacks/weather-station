@@ -1,5 +1,11 @@
 <template>
-  <v-btn @click="switchMode()" class="mode-button" elevation="0" x-small>
+  <v-btn
+    @click="switchMode()"
+    class="v-btn-toggle mode-button"
+    elevation="0"
+    outlined
+    x-small
+  >
     <v-icon x-small>{{ icon(nextItem) }}</v-icon>
   </v-btn>
 </template>
@@ -40,9 +46,10 @@ export default {
 
 <style scoped>
 .mode-button {
+  border-color: var(--v-secondary-lighten5);
   margin-top: 2px;
   position: absolute;
-  left: 0;
+  left: 2px;
   z-index: 1;
 }
 </style>
