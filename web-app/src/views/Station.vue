@@ -38,7 +38,8 @@ export default {
   },
   mounted() {
     if (this.station) {
-      this.$store.dispatch('getSensorData', this.station)
+      // Resolve station sensor data, be it from a cache or the subsequent network request
+      this.$store.dispatch('getStationSensors', this.station)
         .then(() => {
           this.sensorsLoaded = true
         })
@@ -47,6 +48,8 @@ export default {
           console.error(err)
           this.sensorError = true
         })
+      // Ensure data is up-to-date by explicitly making a network request
+      this.$store.dispatch('fetchStationSensors', this.station)
     } else {
       this.stationError = true
     }
