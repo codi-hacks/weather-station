@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import SideDrawer from '@/components/SideDrawer'
+import SideDrawer from './SideDrawer'
 
 export default {
   components: {
