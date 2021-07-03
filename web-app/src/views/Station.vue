@@ -38,6 +38,7 @@ export default {
   },
   mounted() {
     if (this.station) {
+      this.$store.commit('setPageTitle', this.station.label)
       // Resolve station sensor data, be it from a cache or the subsequent network request
       this.$store.dispatch('getStationSensors', this.station)
         .then(() => {
@@ -51,6 +52,7 @@ export default {
       // Ensure data is up-to-date by explicitly making a network request
       this.$store.dispatch('fetchStationSensors', this.station)
     } else {
+      this.$store.commit('setPageTitle', 'Error')
       this.stationError = true
     }
   }
