@@ -36,6 +36,7 @@ export default new Vuex.Store({
 
     setPageTitle(state, title) {
       Vue.set(state, 'pageTitle', title)
+      document.title = `${title} | Weather Station App`
     },
 
     // Restore sensors from a cache
