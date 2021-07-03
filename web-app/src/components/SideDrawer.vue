@@ -17,18 +17,26 @@
 
       <v-divider />
 
-      <v-list-group no-action value="true">
+      <v-list-group disabled no-action value="true">
         <template v-slot:activator>
-        <v-list-item-avatar>
-          <v-icon :large="true" color="info">mdi-terrain</v-icon>
-        </v-list-item-avatar>
+          <v-list-item-avatar>
+            <v-icon :large="true" color="info">mdi-terrain</v-icon>
+          </v-list-item-avatar>
           <v-list-item-title>Stations</v-list-item-title>
+        </template>
+        <!-- Remove the dropdown arrow -->
+        <template v-slot:appendIcon>
+          <div></div>
         </template>
 
         <v-list-item dense link v-for="station in stations" :key="station.id">
           <v-list-item-content>
             <v-list-item-title>
-              <router-link class="station-label" :to="{ name: 'station', params: { id: station.id }}">{{ station.label }}</router-link>
+              <router-link
+                class="station-label"
+                :to="{ name: 'station', params: { id: station.id } }"
+                >{{ station.label }}</router-link
+              >
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -36,7 +44,11 @@
 
       <v-divider />
 
-      <v-list-item style="bottom: 0; position: absolute" link :to="{ name: 'about' }">
+      <v-list-item
+        style="bottom: 0; position: absolute"
+        link
+        :to="{ name: 'about' }"
+      >
         <v-list-item-avatar>
           <v-icon :large="true"></v-icon>
         </v-list-item-avatar>
