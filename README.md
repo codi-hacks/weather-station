@@ -90,19 +90,22 @@ The weather stations send measurements to the API server to collect, which in tu
   - API server workshop (part 5)
     - [x] Add UDP socket and record some real measurements ([#12](https://github.com/JTCC-Programming-Club/weather-station/issues/12))
   - Web app workshop (part 7)
-    - [ ] Finish up cards
+    - [x] Add card "modes" ([#31](https://github.com/JTCC-Programming-Club/weather-station/pull/31))
+    - [x] Display current and average metrics ([#31](https://github.com/JTCC-Programming-Club/weather-station/pull/31))
 - **Week 13**
   - API server workshop (part 6)
     - [ ] Update middleware ([#15](https://github.com/JTCC-Programming-Club/weather-station/issues/15))([#16](https://github.com/JTCC-Programming-Club/weather-station/issues/16))
-    - [ ] Connect to server from web app
+    - [ ] Clean up routes ([#26](https://github.com/JTCC-Programming-Club/weather-station/issues/26))
+    - [ ] Add station cli script ([#14](https://github.com/JTCC-Programming-Club/weather-station/issues/14))
   - Web app workshop (part 7)
-    - [ ] Display current and average metrics
+    - [ ] Add button to zoom reset button ([#32](https://github.com/JTCC-Programming-Club/weather-station/issues/32))
     - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
 - **Week 14**
   - API server workshop (part 7)
     - [ ] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
+    - [ ] Connect to server from web app
   - Web app workshop (part 8)
     - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
     - [ ] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
 - **Week 15**
-  - Wrapping up final issues
+  - **Wrapping up final issues...**
