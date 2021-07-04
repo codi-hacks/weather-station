@@ -37,7 +37,7 @@ export default {
 
 <style scoped>
 .time-buttons {
-  margin-top: 2px;
+  margin-top: -2px;
   position: absolute;
   right: 0;
   z-index: 1;

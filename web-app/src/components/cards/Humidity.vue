@@ -3,18 +3,17 @@
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>{{ currentHumidity }}%</template>
-      <template v-slot:average>{{ averageHumidity }}%</template>
+      <template v-slot:value1>{{ currentHumidity }}%</template>
+      <template v-slot:value2>{{ averageHumidity }}%</template>
     </CurrentView>
     <CurrentView v-else-if="mode === 'current'">
-      <template v-slot:realtime>N/A</template>
-      <template v-slot:average>N/A</template>
+      <template v-slot:value1>N/A</template>
+      <template v-slot:value2>N/A</template>
     </CurrentView>
     <Graph
       v-else
       :name="sensor.label"
       :measurements="measurements"
-      :sensor-type="sensor.type"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />

@@ -3,23 +3,22 @@
     <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
-      <template v-slot:realtime>
+      <template v-slot:value1>
         {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
       </template>
-      <template v-slot:average>
+      <template v-slot:value2>
         {{ averagePercentage }}% ({{ averageVoltage | zeroPad }}v)
       </template>
     </CurrentView>
     <CurrentView v-else-if="mode === 'current'">
-      <template v-slot:realtime>N/A</template>
-      <template v-slot:average>N/A</template>
+      <template v-slot:value1>N/A</template>
+      <template v-slot:value2>N/A</template>
     </CurrentView>
     <Graph
       v-else
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
-      :sensor-type="sensor.type"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />

@@ -2,25 +2,20 @@
   <div class="card-container">
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <ul class="estimation" v-if="mode === 'current' && measurements.length">
-      <li>
-        <h3>Estimated</h3>
-        <h2>{{ averageElevation }} meters</h2>
-      </li>
-    </ul>
-    <ul class="estimation" v-else-if="mode === 'current'">
-      <li>
-        <h3>Estimated</h3>
-        <h2>N/A</h2>
-      </li>
-    </ul>
+    <CurrentView v-if="mode === 'current' && measurements.length">
+      <template v-slot:header1>Estimated</template>
+      <template v-slot:value1>{{ averageElevation }} meters</template>
+    </CurrentView>
+    <CurrentView v-else-if="mode === 'current'">
+      <template v-slot:header1>Estimated</template>
+      <template v-slot:value1>N/A</template>
+    </CurrentView>
     <Graph
       v-else
       chart-type="area"
       :name="sensor.label"
       :measurements="measurements"
       :options="chartOptions"
-      :sensor-type="sensor.type"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
@@ -30,6 +25,7 @@
 
 <script>
 import BookmarkButton from '../BookmarkButton'
+import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
@@ -37,6 +33,7 @@ import TimeButtons from '../TimeButtons'
 export default {
   components: {
     BookmarkButton,
+    CurrentView,
     Graph,
     ModeButton,
     TimeButtons

@@ -1,5 +1,6 @@
 <template>
   <VueApexCharts
+    class="chart"
     ref="chart"
     height="100%"
     :type="chartType"
@@ -34,10 +35,6 @@ export default {
       type: Object,
       required: false,
       default: () => ({})
-    },
-    sensorType: {
-      type: Object,
-      required: true
     },
     zoomedIn: {
       type: Boolean,
@@ -85,12 +82,6 @@ export default {
         stroke: {
           curve: 'straight',
           width: 2
-        },
-        title: {
-          align: 'center',
-          offsetY: 20,
-          size: '2.2em',
-          text: this.sensorType.label
         },
         tooltip: {
           enabled: false
@@ -140,3 +131,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.chart {
+  padding-top: -14px;
+}
+</style>
