@@ -21,11 +21,11 @@ export default new Vuex.Store({
     removeBookmark(state, sensorId) {
       Vue.set(state, 'dashboard', state.dashboard.filter(s => s.id !== sensorId))
     },
-    setCardMode(state, { sensorId, mode }) {
+    setSensorMode(state, { sensorId, mode }) {
       const card = state.dashboard.find(c => c.id === sensorId)
       card.mode = mode
     },
-    setCardTimeAgo(state, { sensorId, timeAgo }) {
+    setSensorTimeAgo(state, { sensorId, timeAgo }) {
       const card = state.dashboard.find(c => c.id === sensorId)
       card.timeAgo = timeAgo
     },

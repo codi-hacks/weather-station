@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container">
+  <div>
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
@@ -19,7 +19,8 @@
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
-    <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
+    <!-- Don't show this on the dashboard -->
+    <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
   </div>
 </template>
 
@@ -50,21 +51,10 @@ export default {
     }
   },
   data() {
-    let mode = 'current'
-    let timeAgo = Infinity
-    // Hydrate settings if this is on the dashboard
-    if (this.card) {
-      mode = this.card.mode
-      timeAgo = this.card.timeAgo
-    }
     return {
-      chartOptions: {
-        stroke: {
-          show: false
-        }
-      },
-      mode,
-      timeAgo,
+      // Hydrate from sensor "settings" if this is on the dashboard
+      mode: this.sensor.settings?.mode || 'current',
+      timeAgo: this.sensor.settings?.timeAgo || Infinity,
       zoomedIn: false
     }
   },
@@ -97,21 +87,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.estimation {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: 100%;
-}
-
-.estimation li {
-  align-content: center;
-  display: flex;
-  flex-basis: 100%;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-</style>

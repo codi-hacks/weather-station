@@ -53,4 +53,13 @@ export default {
 </script>
 
 <style scoped>
+.bookmark-button {
+  bottom: 0;
+  display: none;
+  padding-bottom: 4px;
+  padding-right: 4px;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
 </style>

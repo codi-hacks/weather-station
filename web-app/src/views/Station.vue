@@ -6,7 +6,7 @@
     Error loading sensors for {{ station.label }}
   </div>
   <div v-else-if="sensorsLoaded">
-    <StationContainer :station="station" :sensors="sensors" />
+    <CardContainer :sensors="sensors" />
   </div>
   <div v-else>
     Loading sensors...
@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import StationContainer from '@/components/StationContainer'
+import CardContainer from '@/components/CardContainer'
 
 export default {
   name: 'Station',
   components: {
-    StationContainer
+    CardContainer
   },
   data() {
     return {
@@ -30,7 +30,12 @@ export default {
   },
   computed: {
     sensors() {
-      return this.$store.state.sensors
+      if (!this.station) {
+        return []
+      }
+      return this.station.sensors.map(sensor => {
+        return this.$store.state.sensors[sensor.id]
+      })
     },
     station() {
       return this.$store.state.stations.find(station => station.id === this.$route.params.id)

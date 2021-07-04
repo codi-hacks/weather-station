@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container">
+  <div>
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
@@ -52,16 +52,10 @@ export default {
     }
   },
   data() {
-    let mode = 'current'
-    let timeAgo = 1728e5
-    // Hydrate settings if this is on the dashboard
-    if (this.card) {
-      mode = this.card.mode
-      timeAgo = this.card.timeAgo
-    }
     return {
-      mode,
-      timeAgo,
+      // Hydrate from sensor "settings" if this is on the dashboard
+      mode: this.sensor.settings?.mode || 'current',
+      timeAgo: this.sensor.settings?.timeAgo || 1728e5,
       zoomedIn: false
     }
   },

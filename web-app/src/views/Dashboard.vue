@@ -3,7 +3,11 @@
     Error loading dashboard
   </div>
   <div v-else-if="sensorsLoaded">
-    <DashboardContainer :dashboard="mappedDashboard" />
+    <CardContainer
+      :sensors="sensors"
+      @change-mode="setSensorMode"
+      @change-time-ago="setSensorTimeAgo"
+    />
   </div>
   <div v-else>
     Loading dashboard...
@@ -11,16 +15,17 @@
 </template>
 
 <script>
-import DashboardContainer from '@/components/DashboardContainer'
+import { mapMutations } from 'vuex'
+import CardContainer from '@/components/CardContainer'
 
 export default {
   name: 'Dashboard',
   components: {
-    DashboardContainer
+    CardContainer
   },
   data() {
     return {
-      mappedDashboard: [],
+      sensors: [],
       sensorError: false,
       sensorsLoaded: false
     }
@@ -29,13 +34,14 @@ export default {
     this.generateDashboard()
   },
   methods: {
+    ...mapMutations(['setSensorMode', 'setSensorTimeAgo']),
     generateDashboard() {
       this.$store.dispatch('getDashboardSensors')
         .then(dashboard => {
-          this.mappedDashboard = this.$store.state.dashboard.map(card => {
+          this.sensors = this.$store.state.dashboard.map(sensorSettings => {
             return {
-              sensor: this.$store.state.sensors[card.id],
-              ...card
+              ...this.$store.state.sensors[sensorSettings.id],
+              settings: sensorSettings
             }
           })
           this.sensorsLoaded = true
@@ -54,7 +60,7 @@ export default {
       handler(newValue, oldValue) {
         this.generateDashboard()
         // Wait until we have a dashboard before fetching up-to-date sensor data
-        if (newValue.length && newValue.length !== oldValue.length) {
+        if (newValue.length && newValue.length !== oldValue?.length) {
           this.$store.dispatch('fetchDashboardSensors')
         }
       },
