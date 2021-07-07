@@ -8,14 +8,13 @@ use bigdecimal::BigDecimal;
 use crate::sensors::{SensorsModel};
 use uuid::Uuid;
 
-//#[derive(Serialize, Deserialize, Associations, Queryable, Insertable)]
 #[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
 #[belongs_to(SensorsModel, foreign_key = "sensor_id")]
 #[table_name = "measurements"]
 pub struct MeasurementsModel {
-    pub id: uuid::Uuid,
+    pub id: Uuid,
     pub value: BigDecimal,
-    pub sensor_id: uuid::Uuid,
+    pub sensor_id: Uuid,
     pub created_at: NaiveDateTime
 }
 
@@ -26,7 +25,7 @@ impl MeasurementsModel {
         Ok(measurements)
     }
 
-    pub fn find(id: uuid::Uuid) -> Result<Self, CustomError> {
+    pub fn find(id: Uuid) -> Result<Self, CustomError> {
         let conn = db::connection()?;
         let measurement = measurements::table.filter(measurements::id.eq(id)).first(&conn)?;
         Ok(measurement)
@@ -44,7 +43,7 @@ impl MeasurementsModel {
         Ok(measurement)
     }
 
-    pub fn delete(id: uuid::Uuid) -> Result<usize, CustomError> {
+    pub fn delete(id: Uuid) -> Result<usize, CustomError> {
         let conn = db::connection()?;
         let res = diesel::delete(measurements::table.filter(measurements::id.eq(id))).execute(&conn)?;
         Ok(res)
