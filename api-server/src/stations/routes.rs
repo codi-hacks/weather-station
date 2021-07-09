@@ -1,7 +1,6 @@
-use crate::stations::{StationsChangeset, StationsModel};
+use crate::stations::StationsModel;
 use crate::error_handler::CustomError;
 use actix_web::{get, web, HttpResponse};
-use serde_json::json;
 
 #[get("/stations")]
 async fn find_all() -> Result<HttpResponse, CustomError> {

@@ -1,7 +1,6 @@
-use crate::sensors::{SensorsChangeset, SensorsModel};
+use crate::sensors::SensorsModel;
 use crate::error_handler::CustomError;
 use actix_web::{get, web, HttpResponse};
-use serde_json::json;
 
 #[get("/sensors")]
 async fn find_all() -> Result<HttpResponse, CustomError> {

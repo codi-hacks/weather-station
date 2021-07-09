@@ -1,8 +1,8 @@
 use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::sensors;
-use crate::sensor_types::{SensorTypesModel};
-use crate::stations::{StationsModel};
+use crate::sensor_types::SensorTypesModel;
+use crate::stations::StationsModel;
 use crate::measurements::MeasurementsModel;
 
 use chrono::{Local, NaiveDateTime};
@@ -10,7 +10,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Deserialize, Serialize)] 
+#[derive(Deserialize, Serialize)]
 pub struct Sensor {
     pub id: Uuid,
     pub alias: String,
@@ -22,17 +22,16 @@ pub struct Sensor {
     pub measurements: Vec<MeasurementsModel>
 }
 
-#[derive(Serialize, Deserialize, AsChangeset, Insertable)]
+#[derive(Insertable)]
 #[table_name = "sensors"]
-pub struct SensorsChangeset {
+pub struct NewSensor {
     pub alias: String,
     pub label: String,
     pub type_id: Uuid,
     pub station_id: Uuid
 }
 
-
-#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
+#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)]
 #[belongs_to(SensorTypesModel, foreign_key = "type_id")]
 #[belongs_to(StationsModel, foreign_key = "station_id")]
 #[table_name = "sensors"]
@@ -69,43 +68,30 @@ impl SensorsModel {
         })
     }
 
-    pub fn create(sensor: SensorsChangeset) -> Result<Self, CustomError> {
-        use crate::schema::sensors::dsl::{
-            alias as alias_column,
-            label as label_column,
-            type_id as type_id_column,
-            station_id as station_id_column,
-        };
-
+    pub fn create(sensors: Vec<NewSensor>) -> Result<Vec<Self>, CustomError> {
         let conn = db::connection()?;
-        let sensor = SensorsChangeset::from(sensor);
-        let sensor = diesel::insert_into(sensors::table)
-            .values((
-                alias_column.eq(sensor.alias),
-                label_column.eq(sensor.label),
-                type_id_column.eq(sensor.type_id),
-                station_id_column.eq(sensor.station_id)
-            ))
-            .get_result(&conn)?;
-        Ok(sensor)
+
+        let sensors = diesel::insert_into(sensors::table)
+            .values(sensors)
+            .get_results(&conn)?;
+        Ok(sensors)
     }
 
-    pub fn update(id: Uuid, sensor: SensorsChangeset) -> Result<Self, CustomError> {
-        use crate::schema::sensors::dsl::{
-            alias as alias_column,
-            label as label_column,
-        };
-
+    /*
+    pub fn update(id: Uuid, sensor: Sensor) -> Result<Self, CustomError> {
         let conn = db::connection()?;
         let sensor = diesel::update(sensors::table)
             .filter(sensors::id.eq(id))
             .set((
-                alias_column.eq(sensor.alias),
-                label_column.eq(sensor.label),
+                sensors::alias.eq(sensor.alias),
+                sensors::label.eq(sensor.label),
+                sensors::type_id.eq(sensor.r#type_id),
+                sensors::station_id.eq(sensor.station_id)
             ))
             .get_result(&conn)?;
         Ok(sensor)
     }
+    */
 
     // Update timestamp
     pub fn touch(id: Uuid) -> Result<Self, CustomError> {
@@ -128,16 +114,5 @@ impl SensorsModel {
         let conn = db::connection()?;
         let res = diesel::delete(sensors::table.filter(sensors::id.eq(id))).execute(&conn)?;
         Ok(res)
-    }
-}
-
-impl SensorsChangeset {
-    fn from(sensor: SensorsChangeset) -> SensorsChangeset {
-        SensorsChangeset {
-            alias: sensor.alias,
-            label: sensor.label,
-            type_id: sensor.type_id,
-            station_id: sensor.station_id
-        }
     }
 }
