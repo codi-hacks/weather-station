@@ -1,0 +1,4 @@
+/target
+
+# Environment file used in development
+.env

@@ -16,6 +16,13 @@ if (!API_URL) {
 }
 
 module.exports = {
+  chainWebpack: config => {
+    config.plugin('html')
+      .tap(args => {
+        args[0].title = 'Weather Station App'
+        return args
+      })
+  },
   configureWebpack: {
     plugins: [
       new webpack.DefinePlugin({

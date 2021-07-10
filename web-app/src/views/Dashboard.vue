@@ -30,6 +30,9 @@ export default {
       sensorsLoaded: false
     }
   },
+  created() {
+    this.$store.commit('setPageTitle', 'Dashboard')
+  },
   mounted() {
     this.generateDashboard()
   },
