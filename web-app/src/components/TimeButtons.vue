@@ -39,4 +39,4 @@ export default {
   right: 2px;
   z-index: 1;
 }
-</style>>
+</style>

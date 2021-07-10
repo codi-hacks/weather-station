@@ -2,49 +2,42 @@
   <div class="flex-container">
     <v-card
       class="flex-item"
+      elevation="0"
+      outlined
       rounded
-      v-for="sensor in stationSensors"
-      :key="sensor.id"
-    >
+      v-for="sensor in sensors"
+      :key="sensor.id">
       <TemperatureCard
         v-if="sensor.type.label === 'temperature'"
-        :name="sensor.label"
-        :measurements="sensor.measurements"
-        :sensor-type="sensor.type"
+        :sensor="sensor"
+        class="card"
       />
-      <Graph
-        v-else
-        :name="sensor.label"
-        :measurements="sensor.measurements"
-        :sensor-type="sensor.type"
-      />
+      <div v-else class="card">
+        Invalid sensor type!
+      </div>
     </v-card>
   </div>
 </template>
 
 <script>
-import Graph from './Graph'
 import TemperatureCard from './cards/Temperature'
+
 export default {
   components: {
-    Graph,
     TemperatureCard
   },
   props: {
-    station: {
-      required: true,
-      type: Object
-    },
     sensors: {
       required: true,
-      type: Object
+      type: Array
     }
   },
-  computed: {
-    stationSensors() {
-      return this.station.sensors
-        .map(s => this.sensors[s.id])
-        .filter(s => s)
+  methods: {
+    changeMode(sensorId, mode) {
+      this.$emit('change-mode', { sensorId, mode })
+    },
+    changeTimeAgo(sensorId, timeAgo) {
+      this.$emit('change-time-ago', { sensorId, timeAgo })
     }
   }
 }
@@ -56,21 +49,26 @@ export default {
   flex-flow: row wrap;
   justify-content: space-around;
 }
+
 .flex-item {
   flex-basis: 25%;
   flex-grow: 0.35;
   flex-shrink: 0;
-  margin-bottom: 2px;
-  margin-top: 2px;
   min-height: 20em;
   width: 25%;
 }
+
+.flex-item:first-child {
+  margin-top: 2px;
+}
+
 @media screen and (max-width: 1800px) {
   .flex-item {
     flex-basis: 33.33%;
     width: 33.33%;
   }
 }
+
 @media screen and (max-width: 860px) {
   .flex-item {
     flex-basis: 50%;
@@ -80,9 +78,11 @@ export default {
 @media screen and (max-width: 640px) {
   .flex-item {
     flex-basis: 100%;
+    min-height: 120px;
     width: 100%;
   }
 }
+
 /deep/ .bookmark-button {
   bottom: 0;
   display: none;
@@ -92,10 +92,17 @@ export default {
   right: 0;
   z-index: 1;
 }
-/deep/ .card-container {
+
+.card {
   height: 100%;
 }
-/deep/ .card-container:hover .bookmark-button {
+
+/deep/ .card:hover .bookmark-button {
   display: block;
+}
+
+@media screen and (max-width: 640px) {
+  .card {
+  }
 }
 </style>
