@@ -125,8 +125,14 @@ fn parse_message(mut input: &[u8]) -> Result<(&[u8], Message), UdpError> {
         if name == b"id" {
             station_id = String::from_utf8_lossy(&value).to_string();
         } else {
-            let value = BigDecimal::parse_bytes(value, 10).unwrap();
-            values.insert(String::from_utf8_lossy(name).to_string(), value);
+            match BigDecimal::parse_bytes(value, 10) {
+                Some(value) => {
+                    values.insert(String::from_utf8_lossy(name).to_string(), value)
+                },
+                None => {
+                    return Err(UdpError::Custom("Received an invalid measurement value".to_string()));
+                }
+            };
         }
     }
     // Remaining message is crc sum; calculate based on what we've so far
