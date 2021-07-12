@@ -30,12 +30,12 @@ export default async store => {
         idbstore.put(state.dashboard, 'dashboard')
       })
     },
-    setCardMode: (state, idbstore) => {
+    setSensorMode: (state, idbstore) => {
       idbstore.delete('dashboard').then(() => {
         idbstore.put(state.dashboard, 'dashboard')
       })
     },
-    setCardTimeAgo: (state, idbstore) => {
+    setSensorTimeAgo: (state, idbstore) => {
       idbstore.delete('dashboard').then(() => {
         idbstore.put(state.dashboard, 'dashboard')
       })
