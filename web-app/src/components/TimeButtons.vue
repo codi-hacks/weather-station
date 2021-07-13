@@ -39,7 +39,7 @@ export default {
 .time-buttons {
   margin-top: -2px;
   position: absolute;
-  right: 0;
+  right: 2px;
   z-index: 1;
 }
 </style>

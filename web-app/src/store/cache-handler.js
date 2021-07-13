@@ -63,6 +63,14 @@ export default async store => {
   }
 
   //
+  // Hydrate dashboard
+  //
+  if (dashboard.length) {
+    store.commit('setDashboard', dashboard)
+  }
+  store.state.dashboardPromise.resolve(store.state.dashboard)
+
+  //
   // Hydrate stations
   //
   // Consume the server data if the server response beat us
@@ -88,13 +96,6 @@ export default async store => {
     store.commit('hydrateSensors', { sensors, stations })
     // eslint-disable-next-line no-console
     console.debug('sensors hydrated from cache')
-  }
-
-  //
-  // Hydrate dashboard
-  //
-  if (dashboard.length) {
-    store.commit('setDashboard', dashboard)
   }
 
   //

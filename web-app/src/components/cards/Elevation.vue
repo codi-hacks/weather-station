@@ -40,11 +40,6 @@ export default {
     TimeButtons
   },
   props: {
-    card: {
-      default: null,
-      required: false,
-      type: Object
-    },
     sensor: {
       required: true,
       type: Object

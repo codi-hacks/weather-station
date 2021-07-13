@@ -6,10 +6,48 @@
       outlined
       rounded
       v-for="sensor in sensors"
-      :key="sensor.id">
-      <TemperatureCard
-        v-if="sensor.type.label === 'temperature'"
+      :key="sensor.id"
+    >
+      <ElevationCard
+        v-if="sensor.type.label === 'elevation'"
         :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
+        class="card"
+      />
+      <HumidityCard
+        v-else-if="sensor.type.label === 'humidity'"
+        :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
+        class="card"
+      />
+      <PressureCard
+        v-else-if="sensor.type.label === 'pressure'"
+        :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
+        class="card"
+      />
+      <SignalCard
+        v-else-if="sensor.type.label === 'signal'"
+        :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
+        class="card"
+      />
+      <TemperatureCard
+        v-else-if="sensor.type.label === 'temperature'"
+        :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
+        class="card"
+      />
+      <VoltageCard
+        v-else-if="sensor.type.label === 'voltage'"
+        :sensor="sensor"
+        @change-mode="changeMode(sensor.id, $event)"
+        @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <div v-else class="card">
@@ -20,11 +58,21 @@
 </template>
 
 <script>
+import ElevationCard from './cards/Elevation'
+import HumidityCard from './cards/Humidity'
+import PressureCard from './cards/Pressure'
+import SignalCard from './cards/Signal'
 import TemperatureCard from './cards/Temperature'
+import VoltageCard from './cards/Voltage'
 
 export default {
   components: {
-    TemperatureCard
+    ElevationCard,
+    HumidityCard,
+    PressureCard,
+    SignalCard,
+    TemperatureCard,
+    VoltageCard
   },
   props: {
     sensors: {

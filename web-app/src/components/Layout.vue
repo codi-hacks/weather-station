@@ -5,7 +5,7 @@
       color="primary"
       dark
     >
-      <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="navDrawerOpen = !navDrawerOpen"></v-app-bar-nav-icon>
 
       <v-spacer></v-spacer>
 
@@ -25,7 +25,7 @@
       </v-btn>
     </v-app-bar>
 
-    <SideDrawer v-model="drawerOpen" />
+    <NavDrawer />
 
     <v-main>
       <router-view :key="$route.fullPath" />
@@ -34,15 +34,20 @@
 </template>
 
 <script>
-import SideDrawer from './SideDrawer'
+import NavDrawer from './NavDrawer'
 
 export default {
   components: {
-    SideDrawer
+    NavDrawer
   },
-  data() {
-    return {
-      drawerOpen: false
+  computed: {
+    navDrawerOpen: {
+      get() {
+        return this.$store.state.navDrawer
+      },
+      set(value) {
+        return this.$store.commit('setNavDrawer', value)
+      }
     }
   }
 }

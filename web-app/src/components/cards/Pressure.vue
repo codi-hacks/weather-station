@@ -18,7 +18,7 @@
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
-    <BookmarkButton v-if="!card" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
+    <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
   </div>
 </template>
 
@@ -38,11 +38,6 @@ export default {
     TimeButtons
   },
   props: {
-    card: {
-      default: null,
-      required: false,
-      type: Object
-    },
     sensor: {
       required: true,
       type: Object

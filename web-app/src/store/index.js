@@ -8,6 +8,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     dashboard: [],
+    dashboardPromise: new Deferred(),
+    navDrawer: false,
     pageTitle: 'Weather Station App',
     sensors: {},
     sensorPromises: {},
@@ -50,6 +52,9 @@ export default new Vuex.Store({
         })
       })
     },
+    setNavDrawer(state, boolean) {
+      Vue.set(state, 'navDrawer', boolean)
+    },
     // Set a single sensor's data within the sensor hash
     setSensor(state, sensorData) {
       Vue.set(state.sensors, sensorData.id, sensorData)
@@ -82,10 +87,12 @@ export default new Vuex.Store({
   },
   actions: {
     getDashboardSensors(context) {
-      context.commit('setSensorPromises', { sensors: context.state.dashboard })
-      return Promise.all(context.state.dashboard.map(card => {
-        return context.state.sensorPromises[card.id].promise
-      }))
+      return context.state.dashboardPromise.promise.then(() => {
+        context.commit('setSensorPromises', { sensors: context.state.dashboard })
+        return Promise.all(context.state.dashboard.map(card => {
+          return context.state.sensorPromises[card.id].promise
+        }))
+      })
     },
     fetchDashboardSensors(context) {
       context.commit('setSensorPromises', { sensors: context.state.dashboard })

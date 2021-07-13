@@ -1,33 +1,42 @@
 <template>
-  <div v-if="sensorError">
-    Error loading dashboard
-  </div>
-  <div v-else-if="sensorsLoaded">
+  <div>
+    <StatusText v-if="sensorError">
+      Error loading dashboard
+    </StatusText>
+    <StatusText v-else-if="sensorsLoading">
+      Loading dashboard...
+    </StatusText>
     <CardContainer
+      v-else-if="sensors.length"
       :sensors="sensors"
       @change-mode="setSensorMode"
       @change-time-ago="setSensorTimeAgo"
     />
-  </div>
-  <div v-else>
-    Loading dashboard...
+    <v-alert v-else border="left" :colored-border="true" color="accent">
+      Your dashboard is empty. Open the left navigation and pick some data to display here.
+      <v-layout style="padding-top: 0.5em">
+        <v-btn @click="setNavDrawer(true)">Start</v-btn>
+      </v-layout>
+    </v-alert>
   </div>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
 import CardContainer from '@/components/CardContainer'
+import StatusText from '@/components/StatusText'
 
 export default {
   name: 'Dashboard',
   components: {
-    CardContainer
+    CardContainer,
+    StatusText
   },
   data() {
     return {
       sensors: [],
       sensorError: false,
-      sensorsLoaded: false
+      sensorsLoading: true
     }
   },
   created() {
@@ -37,7 +46,7 @@ export default {
     this.generateDashboard()
   },
   methods: {
-    ...mapMutations(['setSensorMode', 'setSensorTimeAgo']),
+    ...mapMutations(['setNavDrawer', 'setSensorMode', 'setSensorTimeAgo']),
     generateDashboard() {
       this.$store.dispatch('getDashboardSensors')
         .then(dashboard => {
@@ -47,14 +56,14 @@ export default {
               settings: sensorSettings
             }
           })
-          this.sensorsLoaded = true
+          this.sensorsLoading = false
           this.sensorError = false
         })
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(err)
           this.sensorError = true
-          this.sensorsLoaded = false
+          this.sensorsLoading = true
         })
     }
   },
@@ -68,7 +77,7 @@ export default {
         }
       },
       deep: true,
-      immediate: true
+      immediate: false
     }
   }
 }
