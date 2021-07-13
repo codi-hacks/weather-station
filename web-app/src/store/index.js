@@ -15,7 +15,7 @@ export default new Vuex.Store({
     sensorPromises: {},
     settings: {},
     stations: [],
-    stationPromise: null
+    stationPromise: new Deferred()
   },
   mutations: {
     addBookmark(state, card) {
@@ -75,14 +75,7 @@ export default new Vuex.Store({
 
     setStations(state, stations) {
       Vue.set(state, 'stations', stations)
-      this.commit('setStationPromise', new Deferred())
       state.stationPromise.resolve(stations)
-    },
-    setStationPromise(state, stationPromise) {
-      // Only need to set this once
-      if (!state.stationPromise) {
-        Vue.set(state, 'stationPromise', stationPromise)
-      }
     }
   },
   actions: {
@@ -135,17 +128,9 @@ export default new Vuex.Store({
       })
     },
     getStations(context) {
-      if (context.state.stationPromise) {
-        return context.state.stationPromise.promise
-      }
-      const stationPromise = new Deferred()
-      context.commit('setStationPromise', stationPromise)
-      return stationPromise.promise
+      return context.state.stationPromise.promise
     },
     fetchStations(context) {
-      if (!context.state.stationPromise) {
-        context.commit('setStationPromise', new Deferred())
-      }
       fetch(`${API_URL}/stations`)
         .then(response => {
           if (!response.ok) {
