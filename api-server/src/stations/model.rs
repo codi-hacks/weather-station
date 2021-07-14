@@ -3,41 +3,68 @@ use crate::error_handler::CustomError;
 use crate::schema::stations;
 use crate::sensors::SensorsModel;
 use diesel::prelude::*;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::{distributions::Alphanumeric, Rng, thread_rng};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
+use std::{iter, collections::HashMap};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "stations"]
-pub struct StationsChangeset {
-    pub label: String
-}
+pub struct StationsChangeset { pub label: String }
 
-#[derive(Deserialize, Serialize)] 
+#[skip_serializing_none]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Station {
-    pub id: uuid::Uuid,
+    pub id: Uuid,
     pub label: String,
+    // For internal use. Keys should never appear in the JSON data.
     #[serde(skip_serializing)]
     pub key: String,
-    pub sensors: Vec<SensorsModel>
+    pub sensors: Option<Vec<SensorsModel>>
 }
 
-#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)] 
+#[derive(AsChangeset, Associations, Clone, Deserialize, Identifiable, Insertable, Queryable, Serialize)]
 #[table_name = "stations"]
 pub struct StationsModel {
-    pub id: uuid::Uuid,
+    pub id: Uuid,
     pub label: String,
+    // For internal use. Keys should never appear in the JSON data.
     #[serde(skip_serializing)]
     pub key: String
 }
 
 impl StationsModel {
-    pub fn find_all() -> Result<Vec<Self>, CustomError> {
+    pub fn as_hash() -> Result<HashMap<String, Station>, CustomError> {
         let conn = db::connection()?;
-        let station = stations::table.load::<Self>(&conn)?;
-        Ok(station)
+        let stations = stations::table.load::<StationsModel>(&conn)?;
+        let mut hash = HashMap::new();
+        for station in stations {
+            hash.insert(station.id.to_string(), Station {
+                id: station.id,
+                label: station.label,
+                key: station.key,
+                sensors: None
+            });
+        }
+        Ok(hash)
     }
 
-    pub fn find(id: uuid::Uuid) -> Result<Station, CustomError> {
+    pub fn find_all() -> Result<Vec<Station>, CustomError> {
+        let conn = db::connection()?;
+        let stations = stations::table.load::<StationsModel>(&conn)?;
+        Ok(stations.into_iter().map(move |station| {
+            let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(&conn).unwrap();
+            Station {
+                id: station.id,
+                label: station.label,
+                key: station.key,
+                sensors: Some(sensors)
+            }
+        }).collect())
+    }
+
+    pub fn find(id: Uuid) -> Result<Station, CustomError> {
         let conn = db::connection()?;
         let station: Self = stations::table.filter(stations::id.eq(id)).first(&conn)?;
         let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(&conn)?;
@@ -45,45 +72,48 @@ impl StationsModel {
             id: station.id,
             label: station.label,
             key: station.key,
-            sensors
+            sensors: Some(sensors)
         })
     }
 
-    pub fn create(station: StationsChangeset) -> Result<Self, CustomError> {
+    pub fn create(label: String) -> Result<Station, CustomError> {
         use crate::schema::stations::dsl::{label as label_column, key as key_column};
-        let conn = db::connection()?;
-        let station = StationsChangeset::from(station);
-        let random_key: String = rand::thread_rng() // (c) Trevor Corcoran 2021
-            .sample_iter(&Alphanumeric)
-            .take(24)
+
+        // Generate a key for this station
+        let mut rng = thread_rng();
+        let random_string: String = iter::repeat(())
+            .map(|()| rng.sample(Alphanumeric))
             .map(char::from)
+            .take(24)
             .collect();
-        let station = diesel::insert_into(stations::table)
-            .values((label_column.eq(station.label), key_column.eq(random_key)))
+
+        let conn = db::connection()?;
+        let station: Self = diesel::insert_into(stations::table)
+            .values((label_column.eq(label), key_column.eq(random_string)))
             .get_result(&conn)?;
-        Ok(station)
+
+        Ok(Station {
+            id: station.id,
+            label: station.label,
+            key: station.key,
+            sensors: None
+        })
     }
 
-    pub fn update(id: uuid::Uuid, station: StationsChangeset) -> Result<Self, CustomError> {
+    pub fn update(id: Uuid, label: String, key: String) -> Result<Self, CustomError> {
+        use crate::schema::stations::dsl::{label as label_column, key as key_column};
+
         let conn = db::connection()?;
         let station = diesel::update(stations::table)
             .filter(stations::id.eq(id))
-            .set(station)
+            .set((label_column.eq(label), key_column.eq(key)))
             .get_result(&conn)?;
         Ok(station)
     }
 
-    pub fn delete(id: uuid::Uuid) -> Result<usize, CustomError> {
+    pub fn delete(id: Uuid) -> Result<usize, CustomError> {
         let conn = db::connection()?;
         let res = diesel::delete(stations::table.filter(stations::id.eq(id))).execute(&conn)?;
         Ok(res)
-    }
-}
-
-impl StationsChangeset {
-    fn from(station: StationsChangeset) -> StationsChangeset {
-        StationsChangeset {
-            label: station.label
-        }
     }
 }

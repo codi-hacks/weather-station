@@ -4,6 +4,7 @@ use crate::schema::sensor_types;
 use crate::sensors::SensorsModel;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
@@ -25,6 +26,21 @@ pub struct SensorTypesModel {
 }
 
 impl SensorTypesModel {
+    pub fn as_hash() -> Result<HashMap<String, SensorType>, CustomError> {
+        let conn = db::connection()?;
+        let sensor_types = sensor_types::table.load::<SensorTypesModel>(&conn)?;
+        let mut hash = HashMap::new();
+        for sensor_type in sensor_types {
+            hash.insert(sensor_type.id.to_string(), SensorType {
+                id: sensor_type.id,
+                label: sensor_type.label,
+                description: sensor_type.description,
+                sensors: None
+            });
+        }
+        Ok(hash)
+    }
+
     pub fn find_all() -> Result<Vec<SensorType>, CustomError> {
         let conn = db::connection()?;
         let sensor_types = sensor_types::table.load::<SensorTypesModel>(&conn)?;

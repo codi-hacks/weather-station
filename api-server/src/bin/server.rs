@@ -1,22 +1,13 @@
-use actix_web::{App, HttpServer, middleware::Logger};
-use dotenv::dotenv;
-use log::info;
-use listenfd::ListenFd;
-use std::{
-    env,
-    net::UdpSocket,
-    thread
-};
-
 use api::db;
 use api::stations;
 use api::sensor_types;
 use api::sensors;
-use api::udp::{
-    UdpServer,
-    udp_server,
-};
-
+use api::udp::{UdpServer, udp_server,};
+use actix_web::{App, HttpServer, middleware::Logger};
+use dotenv::dotenv;
+use log::info;
+use listenfd::ListenFd;
+use std::{env, net::UdpSocket, thread};
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
