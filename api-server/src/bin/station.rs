@@ -8,10 +8,9 @@ use dotenv::dotenv;
 use std::process;
 use uuid::Uuid;
 
+/// Manage weather stations and their sensors using the database URL in the .env file
 const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), ")");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
-
-/// Manage weather stations and their sensors using the database URL in the .env file
 #[derive(Clap)]
 #[clap(version = VERSION, author = AUTHORS)]
 
