@@ -3,21 +3,43 @@
     <StatusText v-if="sensorError">
       Error loading dashboard
     </StatusText>
+
     <StatusText v-else-if="sensorsLoading">
       Loading dashboard...
     </StatusText>
-    <CardContainer
-      v-else-if="sensors.length"
-      :sensors="sensors"
-      @change-mode="setSensorMode"
-      @change-time-ago="setSensorTimeAgo"
-    />
-    <v-alert v-else border="left" :colored-border="true" color="accent">
-      Your dashboard is empty. Open the left navigation and pick some data to display here.
-      <v-layout style="padding-top: 0.5em">
-        <v-btn @click="setNavDrawer(true)">Start</v-btn>
-      </v-layout>
-    </v-alert>
+
+    <template v-else>
+      <v-alert v-if="!sensors.length" class="alert" border="left" :colored-border="true" outlined>
+        <div class="alert-message">
+          Your dashboard is empty. Open the left navigation and pick some data to display here.
+        </div>
+        <v-layout class="alert-btn-container">
+          <v-btn @click="setNavDrawer(true)">Start</v-btn>
+        </v-layout>
+      </v-alert>
+
+      <v-alert
+        class="alert"
+        color="info"
+        border="left"
+        :colored-border="true"
+        :dismissible="true"
+        v-model="showPreferencesAlert"
+        outlined>
+        <div class="alert-message">
+          Customize your user preferences by clicking the gear in the top-right corner.
+        </div>
+        <v-layout class="alert-btn-container">
+          <v-btn @click="setPreferencesDrawer(true)">Start</v-btn>
+        </v-layout>
+      </v-alert>
+
+      <CardContainer
+        :sensors="sensors"
+        @change-mode="setSensorMode"
+        @change-time-ago="setSensorTimeAgo"
+      />
+    </template>
   </div>
 </template>
 
@@ -45,8 +67,18 @@ export default {
   mounted() {
     this.generateDashboard()
   },
+  computed: {
+    showPreferencesAlert: {
+      get() {
+        return this.$store.state.preferences.showAlert
+      },
+      set(value) {
+        this.$store.commit('setPreferences', { showAlert: value })
+      }
+    }
+  },
   methods: {
-    ...mapMutations(['setNavDrawer', 'setSensorMode', 'setSensorTimeAgo']),
+    ...mapMutations(['setNavDrawer', 'setPreferencesDrawer', 'setSensorMode', 'setSensorTimeAgo']),
     generateDashboard() {
       this.$store.dispatch('getDashboardSensors')
         .then(dashboard => {
@@ -82,3 +114,19 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.alert {
+  color: var(--v-secondary-lighten5);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4px;
+  width: 80%;
+}
+.alert-message {
+  color: var(--v-secondary-base);
+}
+.alert-btn-container {
+  padding-top: 6px;
+}
+</style>

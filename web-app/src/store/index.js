@@ -11,9 +11,15 @@ export default new Vuex.Store({
     dashboardPromise: new Deferred(),
     navDrawer: false,
     pageTitle: 'Weather Station App',
+    preferencesDrawer: false,
     sensors: {},
     sensorPromises: {},
-    settings: {},
+    preferences: {
+      elevation: 'feet',
+      showAlert: true,
+      temperature: 'fahrenheit',
+      theme: 'light'
+    },
     stations: [],
     stationPromise: new Deferred()
   },
@@ -35,6 +41,13 @@ export default new Vuex.Store({
     setDashboard(state, dashboard) {
       Vue.set(state, 'dashboard', dashboard)
     },
+    setNavDrawer(state, boolean) {
+      Vue.set(state, 'navDrawer', boolean)
+    },
+    setPreferencesDrawer(state, boolean) {
+      Vue.set(state.preferences, 'showAlert', false)
+      Vue.set(state, 'preferencesDrawer', boolean)
+    },
 
     setPageTitle(state, title) {
       Vue.set(state, 'pageTitle', title)
@@ -52,9 +65,6 @@ export default new Vuex.Store({
         })
       })
     },
-    setNavDrawer(state, boolean) {
-      Vue.set(state, 'navDrawer', boolean)
-    },
     // Set a single sensor's data within the sensor hash
     setSensor(state, sensorData) {
       Vue.set(state.sensors, sensorData.id, sensorData)
@@ -69,8 +79,11 @@ export default new Vuex.Store({
       })
     },
 
-    setSettings(state, settings) {
-      Vue.set(state, 'settings', settings)
+    setPreferences(state, preferences) {
+      Vue.set(state, 'preferences', {
+        ...state.preferences,
+        ...preferences
+      })
     },
 
     setStations(state, stations) {

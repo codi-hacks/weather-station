@@ -1,10 +1,6 @@
 <template>
-  <v-navigation-drawer
-    v-model="open"
-    fixed
-    temporary
-  >
-    <v-list class="list-root" flat shaped>
+  <v-navigation-drawer v-model="open" fixed temporary>
+    <v-list flat shaped>
       <v-list-item link :to="{ name: 'dashboard' }">
         <v-list-item-avatar>
           <v-icon :large="true" color="success">mdi-view-dashboard</v-icon>
