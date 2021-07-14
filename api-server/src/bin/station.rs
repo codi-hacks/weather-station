@@ -23,7 +23,9 @@ struct Opts {
 enum SubCommand {
     Create(Create),
     Delete(Delete),
-    Clean(Clean)
+    Clean(Clean),
+    View(View),
+    Rename(Rename)
 }
 
 /// Register a new station and sensors
@@ -50,6 +52,25 @@ struct Clean {
     id: Option<String>
 }
 
+/// View existing station's ID and Key
+#[derive(Clap)]
+struct View {
+    /// The display name for this weather station
+    // #[clap(short, long)] //Not sure if appropriate for task
+    label: Option<String>
+}
+
+/// Rename existing station
+#[derive(Clap)]
+struct Rename {
+    /// The UUID of the station you would like to rename
+    id: Option<String>,
+    /// The key of the statio you'd like to rename
+    // #[clap(short, long)] //Not sure if appropriate for task
+    key: Option<String>
+}
+
+/// Parse 1st commandline argument and execute subroutines accordingly
 fn main() {
     let opts: Opts = Opts::parse();
     dotenv().ok();
@@ -57,7 +78,9 @@ fn main() {
     match opts.subcmd {
         SubCommand::Create(subopts) => create_routine(subopts),
         SubCommand::Delete(subopts) => delete_routine(subopts),
-        SubCommand::Clean(subopts) => clean_routine(subopts)
+        SubCommand::Clean(subopts) => clean_routine(subopts),
+        SubCommand::View(subopts) => view_routine(subopts),
+        SubCommand::Rename(subopts) => rename_routine(subopts)
     }
 }
 
@@ -279,4 +302,24 @@ fn clean_routine(opts: Clean) {
         println!("Action aborted");
         process::exit(1);
     }
+}
+
+fn view_routine(opts: View) {
+    //code goes here
+}
+
+fn rename_routine(opts: Rename) {
+    // Check if the supplied Uuid has an associated station
+    // Check if the correct key is supplied
+    let mut label: String = match opts.label {
+        Some(l) => l,
+        None => {
+            Input::with_theme(&ColorfulTheme::default())
+                .with_prompt("What label would you like for this weather station?")
+                .interact_text()
+                .unwrap()
+        }
+    };
+    // Remove any trailing whitespace
+    label = label.trim_end().to_string();
 }
