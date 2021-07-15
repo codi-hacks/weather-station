@@ -1,6 +1,6 @@
 <template>
   <div class="time-buttons">
-    <v-btn x-small v-if="zoomedIn" @click="resetZoom()">Reset</v-btn>
+    <v-btn v-if="zoomedIn" x-small @click="resetZoom()">Reset</v-btn>
     <v-btn-toggle mandatory :value="value" @change="updateValue($event)">
       <v-btn x-small :value="846e5">1d</v-btn>
       <v-btn x-small :value="1728e5">2d</v-btn>
