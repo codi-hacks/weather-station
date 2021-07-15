@@ -5,7 +5,7 @@ This is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) with all the instru
 - [Overview](#overview)
 - [Building the weather stations](hardware-files/README.md)
 - [Arduino sketch README](sketch/README.md)
-- [API server README](server/README.md)
+- [API server README](api-server/README.md)
 - [Web app README](web-app/README.md)
 
 | | |
@@ -23,9 +23,9 @@ The weather stations send measurements to the API server to collect, which in tu
 
 **Folder structure:**
 
+- **[api-server/](api-server/)** - API server
 - **[hardware-files/](hardware-files/)** - All the files needed to print and build the weather station hardware
 - **[sketch/](sketch/)** - Embedded software that runs on the weather stations
-- **[server/](server/)** - API server
 - **[web-app/](web-app/)** - Website/mobile app
 
 **Milestones:**
@@ -94,15 +94,16 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Display current and average metrics ([#31](https://github.com/JTCC-Programming-Club/weather-station/pull/31))
 - **Week 13**
   - API server workshop (part 6)
-    - [ ] Update middleware ([#15](https://github.com/JTCC-Programming-Club/weather-station/issues/15))([#16](https://github.com/JTCC-Programming-Club/weather-station/issues/16))
-    - [ ] Clean up routes ([#26](https://github.com/JTCC-Programming-Club/weather-station/issues/26))
-    - [ ] Add station cli script ([#14](https://github.com/JTCC-Programming-Club/weather-station/issues/14))
+    - [x] Discuss middleware ([#15](https://github.com/JTCC-Programming-Club/weather-station/issues/15))([#16](https://github.com/jtcc-programming-club/weather-station/issues/16))
+    - [x] Clean up routes ([#26](https://github.com/JTCC-Programming-Club/weather-station/issues/26))
+    - [x] Add station cli script ([#14](https://github.com/JTCC-Programming-Club/weather-station/issues/14))
   - Web app workshop (part 7)
-    - [ ] Add button to zoom reset button ([#32](https://github.com/JTCC-Programming-Club/weather-station/issues/32))
+    - [ ] Add button to reset zoomed-in chart ([#32](https://github.com/JTCC-Programming-Club/weather-station/issues/32))
     - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
 - **Week 14**
   - API server workshop (part 7)
-    - [ ] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
+    - [x] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
+    - [ ] Resolve CORS issues ([#16](https://github.com/jtcc-programming-club/weather-station/issues/16))
     - [ ] Connect to server from web app
   - Web app workshop (part 8)
     - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
