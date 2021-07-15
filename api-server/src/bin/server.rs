@@ -9,6 +9,7 @@ use std::{
 };
 
 use api::db;
+use api::homepage;
 use api::stations;
 use api::sensor_types;
 use api::sensors;
@@ -39,6 +40,7 @@ async fn main() -> std::io::Result<()> {
             .configure(stations::init_routes)
             .configure(sensors::init_routes)
             .configure(sensor_types::init_routes)
+            .configure(homepage::init_routes)
     );
 
     server = match listenfd.take_tcp_listener(0)? {
