@@ -62,4 +62,19 @@ export default {
   right: 0;
   z-index: 1;
 }
+
+/* Always display the button if this is a touch device */
+@media (pointer: none) {
+  .bookmark-button {
+    display: block;
+  }
+}
+
+/* Backwards compatibility */
+@media (hover: none) {
+  .bookmark-button {
+    display: block;
+  }
+}
+
 </style>

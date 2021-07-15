@@ -129,4 +129,10 @@ export default {
 .alert-btn-container {
   padding-top: 6px;
 }
+
+@media screen and (max-width: 640px) {
+  .alert {
+    width: 100%;
+  }
+}
 </style>
