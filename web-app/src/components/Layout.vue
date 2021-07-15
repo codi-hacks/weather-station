@@ -5,7 +5,7 @@
       color="primary"
       dark
     >
-      <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="navDrawerOpen = !navDrawerOpen"></v-app-bar-nav-icon>
 
       <v-spacer></v-spacer>
 
@@ -15,6 +15,10 @@
 
       <v-spacer></v-spacer>
 
+      <v-app-bar-nav-icon @click="preferencesDrawerOpen = !preferencesDrawerOpen">
+        <v-icon>mdi-cog</v-icon>
+      </v-app-bar-nav-icon>
+      <!--
       <v-btn
         href="https://github.com/JTCC-Programming-Club/weather-station"
         target="_blank"
@@ -23,9 +27,11 @@
         <span class="mr-2">Source code</span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
+      -->
     </v-app-bar>
 
-    <SideDrawer v-model="drawerOpen" />
+    <NavDrawer />
+    <PreferencesDrawer />
 
     <v-main>
       <router-view :key="$route.fullPath" />
@@ -34,15 +40,30 @@
 </template>
 
 <script>
-import SideDrawer from './SideDrawer'
+import NavDrawer from './NavDrawer'
+import PreferencesDrawer from './PreferencesDrawer'
 
 export default {
   components: {
-    SideDrawer
+    NavDrawer,
+    PreferencesDrawer
   },
-  data() {
-    return {
-      drawerOpen: false
+  computed: {
+    navDrawerOpen: {
+      get() {
+        return this.$store.state.navDrawer
+      },
+      set(value) {
+        this.$store.commit('setNavDrawer', value)
+      }
+    },
+    preferencesDrawerOpen: {
+      get() {
+        return this.$store.state.preferencesDrawer
+      },
+      set(value) {
+        this.$store.commit('setPreferencesDrawer', value)
+      }
     }
   }
 }

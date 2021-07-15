@@ -35,6 +35,10 @@ export default {
       type: Object,
       required: false,
       default: () => ({})
+    },
+    zoomedIn: {
+      type: Boolean,
+      required: true
     }
   },
   computed: {
@@ -113,6 +117,16 @@ export default {
   methods: {
     resetZoom() {
       this.$refs.chart.resetSeries(false)
+    }
+  },
+  watch: {
+    zoomedIn: {
+      immediate: false,
+      handler(value) {
+        if (!value) {
+          this.resetZoom()
+        }
+      }
     }
   }
 }
