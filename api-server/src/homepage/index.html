@@ -5,23 +5,21 @@
 </head>
 
 <body>
-  <div class="overlord">
-    <div class="welcome-text">
-      Secret Database Dashboard<span class="blink"> &#9610;</span>
-    </div>
+  <div class="welcome-text">
+    Secret Database Dashboard<span class="blink"> &#9610;</span>
+  </div>
 
-    <div class="buttons-container">
-      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-        <button type="button" class="death-button">Delete Database</button>
-      </a>
-      <a>
-        <button type="button" class="happy-button" onclick="retreat()">Retreat</button>
-      </a>
-    </div>
+  <div class="buttons-container">
+    <button type="button" class="death-button" onclick="deleteDatabase()">Delete Database</button>
+    <button type="button" class="happy-button" onclick="retreat()">Retreat</button>
   </div>
 </body>
 
 <script>
+  function deleteDatabase() {
+    window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  }
+
   function retreat() {
     window.history.back(); // Either backup,
     window.location.href = "https://weather.codingcorner.club/"; // or get sent to the web app
@@ -29,13 +27,11 @@
 </script>
 
 <style>
-  body {
-    background-color: black;
-  }
+body {
+  background-color: black;
+}
 
-
-
-  .welcome-text{
+.welcome-text{
   color: #00ff00;
   position: absolute;
   left: 50%;
@@ -49,38 +45,23 @@
   white-space: nowrap;
   overflow: hidden;
   width: 16em;
-  animation: type 4s steps(60, end); 
-  }
+  max-width: 95%;;
+  animation: type 5s steps(60, end); 
+}
 
-  .welcome-text:nth-child(2){
-    animation: type2 8s steps(60, end);
-  }
+.blink {
+  animation: blink 1s infinite;
+}
 
-  .blink {
-    animation: blink 1s infinite;
-  }
+@keyframes type{ 
+  from {width: 0;}
+}
 
-  @keyframes type{ 
-    from { width: 0; } 
-  } 
-
-  @keyframes type2{
-    0%{width: 0;}
-    50%{width: 0;}
-    100%{ width: 100; } 
-  } 
-
-  @keyframes blink{
-    to{opacity: .0;}
-  }
-
-  ::selection{
-    background: black;
-  }
+@keyframes blink{
+  to{opacity: .0;}
+}
 
 .death-button {
-  -webkit-border-radius: 25;
-  -moz-border-radius: 25;
   border-radius: 25px;
   font-family: Courier New;
   color: #ffffff;
@@ -93,12 +74,9 @@
 
 .death-button:hover {
   background: #8c0303;
-  text-decoration: none;
 }
 
 .happy-button {
-  -webkit-border-radius: 25;
-  -moz-border-radius: 25;
   border-radius: 25px;
   font-family: Courier New;
   color: #ffffff;
@@ -118,12 +96,27 @@
 .buttons-container {
   text-align: center;
   position: absolute;
-  min-width: 300px;
+  min-width: 100px;
   min-height: 300px;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
   line-height: 30px;
+  opacity: 0;
+
+  animation: fadein 8s linear, woomwoom 3s ease-in-out infinite 8s;
+}
+
+@keyframes fadein {
+  from {opacity: 0;}
+  70% {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes woomwoom {
+  from {opacity: 1;}
+  50% {opacity: .8;}
+  to {opacity: 1;}
 }
 </style>
