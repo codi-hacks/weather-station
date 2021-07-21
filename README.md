@@ -98,8 +98,8 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Clean up routes ([#26](https://github.com/JTCC-Programming-Club/weather-station/issues/26))
     - [x] Add station cli script ([#14](https://github.com/JTCC-Programming-Club/weather-station/issues/14))
   - Web app workshop (part 7)
-    - [ ] Add button to reset zoomed-in chart ([#32](https://github.com/JTCC-Programming-Club/weather-station/issues/32))
-    - [ ] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
+    - [x] Add button to reset zoomed-in chart ([#32](https://github.com/JTCC-Programming-Club/weather-station/issues/32))
+    - [x] Create dashboard ([#9](https://github.com/JTCC-Programming-Club/weather-station/issues/9))
 - **Week 14**
   - API server workshop (part 7)
     - [x] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
