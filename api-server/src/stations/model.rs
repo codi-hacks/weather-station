@@ -64,6 +64,27 @@ impl StationsModel {
         }).collect())
     }
 
+    // pub fn find_by_label(l: String) -> Result<Vec<Station>, CustomError> {
+    pub fn find_by_label(l: String) -> Result<Station, CustomError> {
+
+        let conn = db::connection()?;
+        let stations : StationsModel = stations::table.filter(stations::label.eq(l)).first(&conn)?;
+        // let stations : StationsModel = stations::table.filter(stations::label.eq(l)).load::<StationsModel>(&conn)?;
+        let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&stations).load(&conn)?;
+        Ok(
+            // stations.into_iter().map(move |station| {
+            // let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&stations).load(&conn).unwrap();
+
+                Station {
+                    id: stations.id,
+                    label: stations.label,
+                    key: stations.key,
+                    sensors: Some(sensors)
+                }
+            // }).collect())
+        )
+    }
+
     pub fn find(id: Uuid) -> Result<Station, CustomError> {
         let conn = db::connection()?;
         let station: Self = stations::table.filter(stations::id.eq(id)).first(&conn)?;

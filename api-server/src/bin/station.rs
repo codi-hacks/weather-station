@@ -56,7 +56,6 @@ struct Clean {
 #[derive(Clap)]
 struct View {
     /// The display name for this weather station
-    // #[clap(short, long)] //Not sure if appropriate for task
     label: Option<String>
 }
 
@@ -65,9 +64,8 @@ struct View {
 struct Rename {
     /// The UUID of the station you would like to rename
     id: Option<String>,
-    /// The key of the statio you'd like to rename
-    // #[clap(short, long)] //Not sure if appropriate for task
-    key: Option<String>
+    // /// The key of the station you would like to rename
+    // key: Option<String>
 }
 
 /// Parse 1st commandline argument and execute subroutines accordingly
@@ -80,6 +78,7 @@ fn main() {
         SubCommand::Delete(subopts) => delete_routine(subopts),
         SubCommand::Clean(subopts) => clean_routine(subopts),
         SubCommand::View(subopts) => view_routine(subopts),
+        // SubCommand::View() => view_routine(),
         SubCommand::Rename(subopts) => rename_routine(subopts)
     }
 }
@@ -305,21 +304,112 @@ fn clean_routine(opts: Clean) {
 }
 
 fn view_routine(opts: View) {
-    //code goes here
+    let station: Station = match opts.label {
+        Some(l) => {
+            // Scuffed version; Selects the first entry with 
+            match StationsModel::find_by_label(l) {
+                Ok(s) => s,
+                Err(_) => {
+                    println!("Error. No station matching station.");
+                    process::exit(1);
+                }
+            }
+
+            // WIP; Selects all matching entriesz
+            // let stations = match StationsModel::find_by_label(l) {
+            //     Ok(s) => s,
+            //     Err(error) => {
+            //         println!("{}", error);
+            //         process::exit(1);
+            //     }
+            // };
+            // let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
+            // let selection = Select::with_theme(&ColorfulTheme::default())
+            //     .with_prompt("Which station to view?")
+            //     .default(choices.len() - 1)
+            //     .items(&choices[..])
+            //     .interact()
+            //     .unwrap();
+
+            // stations[selection].clone()
+        },
+        None => {
+            let stations = match StationsModel::find_all() {
+                Ok(s) => s,
+                Err(error) => {
+                    println!("{}", error);
+                    process::exit(1);
+                }
+            };
+            let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Which station to view?")
+                .default(choices.len() - 1)
+                .items(&choices[..])
+                .interact()
+                .unwrap();
+
+            stations[selection].clone()
+        }
+    };
+    
+    println!("Use the following ID and key to write measurements via the UDP socket:");
+    println!("Station:  {}", station.label);
+    println!("ID:       {}", station.id);
+    println!("Key:      {}", station.key);
 }
 
 fn rename_routine(opts: Rename) {
-    // Check if the supplied Uuid has an associated station
-    // Check if the correct key is supplied
-    let mut label: String = match opts.label {
-        Some(l) => l,
+    let station: Station = match opts.id {
+        Some(id) => {
+            match StationsModel::find(Uuid::parse_str(&id[..]).unwrap()) {
+                Ok(s) => s,
+                Err(_) => {
+                    println!("Error. No station matching ID \"{}\"", id);
+                    process::exit(1);
+                }
+            }
+        },
         None => {
-            Input::with_theme(&ColorfulTheme::default())
-                .with_prompt("What label would you like for this weather station?")
-                .interact_text()
-                .unwrap()
+            let stations = match StationsModel::find_all() {
+                Ok(s) => s,
+                Err(error) => {
+                    println!("{}", error);
+                    process::exit(1);
+                }
+            };
+            let choices = stations.iter()
+                .map(|s| format!("{} - {}", s.id, s.label))
+                .collect::<Vec<_>>();
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Which station to rename?")
+                .default(choices.len() - 1)
+                .items(&choices[..])
+                .interact()
+                .unwrap();
+
+            stations[selection].clone()
         }
     };
-    // Remove any trailing whitespace
-    label = label.trim_end().to_string();
+    
+    // Check if provided key is correct for matched station
+    
+    let nn: String = Input::with_theme(&ColorfulTheme::default())
+        .with_prompt("What label would you like for this weather station?")
+        .interact_text()
+        .unwrap();  
+        if Confirm::with_theme(&ColorfulTheme::default())
+            .with_prompt(format!("Are you sure you want to rename \"{}\" to \"{}\"", station.label, nn))
+            .wait_for_newline(true)
+            .interact()
+            .unwrap()
+        {
+            StationsModel::update(station.id, nn, station.key).map_err(|err| println!("{:?}", err)).ok();
+            println!("Station renamed");
+            // println!("Station renamed to \"{}\"", &nn);
+
+        } else {
+            println!("Action aborted");
+            process::exit(1);
+        }
 }
