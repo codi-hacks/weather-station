@@ -30,6 +30,10 @@ module.exports = {
       })
     ]
   },
+  pwa: {
+    clientsClaim: true,
+    skipWaiting: true
+  },
   transpileDependencies: [
     'vuetify'
   ]
