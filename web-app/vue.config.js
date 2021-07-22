@@ -34,7 +34,7 @@ module.exports = {
     'vuetify'
   ],
   pwa: {
-    themeColor: "#2196F3",
+    themeColor: "#1976D2",
     name: "Weather Station",
     iconPaths: [
       {
