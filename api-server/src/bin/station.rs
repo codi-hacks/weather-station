@@ -21,14 +21,19 @@ struct Opts {
 
 #[derive(Clap)]
 enum SubCommand {
+    /// Register a new station and sensors
     Create(Create),
+    /// Delete an existing station and all its sensors
     Delete(Delete),
+    /// Delete all measurements on a station but keep the station and its sensors
     Clean(Clean),
+    /// View an existing station's ID and key needed to write measurements via UDP socket 
     View,
+    /// Rename existing station
     Rename(Rename)
 }
 
-/// Register a new station and sensors
+
 #[derive(Clap)]
 struct Create {
     /// The display name for this weather station
@@ -38,28 +43,25 @@ struct Create {
     sensors: Option<String>
 }
 
-/// Delete an existing station and all its sensors
 #[derive(Clap)]
 struct Delete {
     /// The UUID of the station you would like to delete
     id: Option<String>
 }
 
-/// Delete all measurements on a station but keep the station and its sensors
 #[derive(Clap)]
 struct Clean {
     /// The UUID of the station you would like to clean out
     id: Option<String>
 }
 
-/// Rename existing station
 #[derive(Clap)]
 struct Rename {
     /// The UUID of the station you would like to rename
     id: Option<String>
 }
 
-/// Parse 1st commandline argument and execute subroutines accordingly
+// Parse subcommands and execute matching subroutines
 fn main() {
     let opts: Opts = Opts::parse();
     dotenv().ok();

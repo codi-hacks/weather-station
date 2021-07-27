@@ -3,10 +3,10 @@ use crate::error_handler::CustomError;
 use crate::schema::stations;
 use crate::sensors::SensorsModel;
 use diesel::prelude::*;
-use rand::{distributions::Alphanumeric, Rng, thread_rng};
+use rand::{distributions::Alphanumeric, Rng};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::{iter, collections::HashMap};
+use std::{collections::HashMap};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
@@ -79,17 +79,16 @@ impl StationsModel {
     pub fn create(label: String) -> Result<Station, CustomError> {
         use crate::schema::stations::dsl::{label as label_column, key as key_column};
 
-        // Generate a key for this station
-        let mut rng = thread_rng();
-        let random_string: String = iter::repeat(())
-            .map(|()| rng.sample(Alphanumeric))
-            .map(char::from)
+        // Generate a station key
+        let random_key: String = rand::thread_rng() // (c) Trevor Corcoran 2021
+            .sample_iter(&Alphanumeric)
             .take(24)
+            .map(char::from)
             .collect();
 
         let conn = db::connection()?;
         let station: Self = diesel::insert_into(stations::table)
-            .values((label_column.eq(label), key_column.eq(random_string)))
+            .values((label_column.eq(label), key_column.eq(random_key)))
             .get_result(&conn)?;
 
         Ok(Station {

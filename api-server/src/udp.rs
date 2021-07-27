@@ -14,7 +14,7 @@ use std::{net::UdpSocket, collections::HashMap};
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]
-pub enum UdpError { Custom(String), }
+pub enum UdpError { Custom(String) }
 
 impl<I> From<nom::Err<(I, nom::error::ErrorKind)>> for UdpError {
     fn from(_: nom::Err<(I, nom::error::ErrorKind)>) -> Self {

@@ -167,8 +167,7 @@ impl SensorsModel {
         Ok(sensors)
     }
 
-    // Update timestamp
-    // Replaces update()
+    // Update data
     pub fn touch(id: Uuid) -> Result<Self, CustomError> {
         let conn = db::connection()?;
         let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
