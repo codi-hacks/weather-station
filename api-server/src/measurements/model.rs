@@ -34,12 +34,6 @@ impl MeasurementsModel {
         Ok(measurement)
     }
     
-    // pub fn delete(id: Uuid) -> Result<usize, CustomError> {
-    //     let conn = db::connection()?;
-    //     let res = diesel::delete(measurements::table.filter(measurements::id.eq(id))).execute(&conn)?;
-    //     Ok(res)
-    // }
-    
     pub fn delete_by_sensor(sensor: Sensor) -> Result<usize, CustomError> {
         let conn = db::connection()?;
         let sensor = SensorsModel {

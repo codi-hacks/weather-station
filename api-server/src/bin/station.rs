@@ -18,17 +18,32 @@ struct Opts {
     #[clap(subcommand)]
     subcmd: SubCommand
 }
-
+//
+// Register names of subcommands and associated options
+// Syntax:
+//      /// Description of subcommand; shows up when user runs `cargo run --bin station help`
+//      sub_cmd(subcmd_opts); sub_cmd if no options are to be associated
+// View arg_enum, Arg, ArgMatches, and SubCommand in CLAP documentation on Rustlang.org
+//
 #[derive(Clap)]
-enum SubCommand {
+enum SubCommand {  
+    /// Register a new station and sensors
     Create(Create),
+    /// Delete an existing station and all its sensors
     Delete(Delete),
+    /// Delete all measurements on a station but keep the station and its sensors
     Clean(Clean),
+    /// View an existing station's ID and key needed to write measurements via UDP socket 
     View,
+    /// Rename existing station
     Rename(Rename)
 }
-
-/// Register a new station and sensors
+//
+// SubCommand option structs
+// Syntax:
+//      /// Description of option argument; appears when user runs `cargo run --bin station <subcmd> --help`
+//      option_name: Option<option_type>
+//
 #[derive(Clap)]
 struct Create {
     /// The display name for this weather station
@@ -38,28 +53,33 @@ struct Create {
     sensors: Option<String>
 }
 
-/// Delete an existing station and all its sensors
 #[derive(Clap)]
 struct Delete {
     /// The UUID of the station you would like to delete
     id: Option<String>
 }
 
-/// Delete all measurements on a station but keep the station and its sensors
 #[derive(Clap)]
 struct Clean {
     /// The UUID of the station you would like to clean out
     id: Option<String>
 }
 
-/// Rename existing station
 #[derive(Clap)]
 struct Rename {
     /// The UUID of the station you would like to rename
     id: Option<String>
 }
-
-/// Parse 1st commandline argument and execute subroutines accordingly
+//
+// End of option structs
+// Parse subcommands and execute matching subroutines
+// Existing associated options can be ignored by the following:
+//      `SubCommand::sub_cmd(_) => sub_cmd_routine()`
+//      `SubCommand::sub_cmd(..) => sub_cmd_routine()`
+// Doing so will trigger `warning: field is never read`
+// Can be temporaily be disabled by adding `#[allow(dead_code)]` above ignored option struct
+// A more permanent solution is to add the following entry: `SubCommand::sub_cmd => sub_cmd_routine()`
+//
 fn main() {
     let opts: Opts = Opts::parse();
     dotenv().ok();
@@ -72,7 +92,11 @@ fn main() {
         SubCommand::Rename(subopts) => rename_routine(subopts)
     }
 }
-
+//
+// Subroutines (`SubCommand::sub_cmd()`) associated with each sub-command (`sub_cmd_routine()`)
+// Make sure the usage of opts as an argument matches the entries made in main()
+// Unlike `SubCommand::sub_cmd()`, option arguments cannot be ignored
+//
 fn create_routine(opts: Create) {
     let default_sensors: String = "air_temp,humidity,pressure,altitude,signal,voltage".to_string();
     let default_sensor_labels = vec![
@@ -115,7 +139,6 @@ fn create_routine(opts: Create) {
         }
     };
     let sensor_aliases: Vec<&str> = sensor_aliases_string.split(',').collect();
-
     //
     // Type label for each sensor (or apply defaults)
     //
@@ -132,11 +155,9 @@ fn create_routine(opts: Create) {
             )
         }
     }
-
     //
     // Select type for each sensor (or apply defaults)
     //
-
     let mut sensor_type_ids = vec![];
     if sensor_aliases_string == default_sensors {
         sensor_type_ids = (0..sensor_aliases.len()).map(|i| sensor_types[i].id).collect();
@@ -158,11 +179,9 @@ fn create_routine(opts: Create) {
             cursor_position = selection;
         }
     }
-
     //
     // Write everything to the database
     //
-
     let station = match StationsModel::create(label) {
         Ok(s) => s,
         Err(error) => {
@@ -185,7 +204,6 @@ fn create_routine(opts: Create) {
         .collect();
 
     SensorsModel::create(sensors).unwrap();
-
     println!("\nStation \"{}\" created. Use the following ID and key to write measurements via the UDP socket:", station.label);
     println!("ID: {}", station.id);
     println!("Key: {}", station.key);
@@ -305,7 +323,6 @@ fn view_routine() {
             process::exit(1);
         }
     };
-
     let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
     let selection = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Which station to view?")
@@ -315,7 +332,6 @@ fn view_routine() {
         .unwrap();
 
     let s = stations[selection].clone();
-    
     println!("Use the following ID and key to write measurements via the UDP socket:");
     println!("Station:  {}", s.label);
     println!("ID:       {}", s.id);

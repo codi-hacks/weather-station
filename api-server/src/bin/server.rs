@@ -3,7 +3,7 @@ use api::stations;
 use api::sensor_types;
 use api::sensors;
 use api::udp::{UdpServer, udp_server,};
-use actix_web::{App, HttpServer, middleware::Logger};
+use actix_web::{App, HttpServer, middleware::Logger, middleware::DefaultHeaders};
 use dotenv::dotenv;
 use log::info;
 use listenfd::ListenFd;
@@ -27,6 +27,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
+            .wrap(DefaultHeaders::new().header("Access-Control-Allow-Methods", "GET"))
+            .wrap(DefaultHeaders::new().header("Access-Control-Allow-Origin", "*"))
             .configure(stations::init_routes)
             .configure(sensors::init_routes)
             .configure(sensor_types::init_routes)
