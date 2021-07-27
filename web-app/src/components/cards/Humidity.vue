@@ -3,8 +3,8 @@
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
-      <template v-slot:value1>{{ currentTemperature }}°</template>
-      <template v-slot:value2>{{ averageTemperature }}°</template>
+      <template v-slot:value1>{{ currentHumidity }}%</template>
+      <template v-slot:value2>{{ averageHumidity }}%</template>
     </CurrentView>
     <CurrentView v-else-if="mode === 'current'">
       <template v-slot:value1>N/A</template>
@@ -14,10 +14,9 @@
       v-else
       :name="sensor.label"
       :measurements="measurements"
-      :options="chartOptions"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
-    />
+      />
     <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
   </div>
 </template>
@@ -28,10 +27,6 @@ import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
-
-function toFahrenheit(value) {
-  return Math.round(((value * (9 / 5)) + 32) * 10) / 10
-}
 
 export default {
   components: {
@@ -56,38 +51,24 @@ export default {
     }
   },
   computed: {
-    averageTemperature() {
+    averageHumidity() {
       const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
-    chartOptions() {
-      const values = this.measurements.map(m => m.value)
-      return {
-        yaxis: {
-          max: Math.max(...values),
-          min: Math.min(...values)
-        }
-      }
-    },
-    currentTemperature() {
+    currentHumidity() {
       if (this.measurements.length) {
         return this.measurements[this.measurements.length - 1].value
       }
       return 0
     },
     measurements() {
-      let measurements = this.sensor.measurements
-      // Filter down to the specified time range
-      if (this.timeAgo !== Infinity) {
-        const now = new Date().getTime()
-        measurements = measurements
-          .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+      if (this.timeAgo === Infinity) {
+        return this.sensor.measurements
       }
-      // Convert to Fahrenheit
-      return measurements.map(m => ({
-        created_at: m.created_at,
-        value: toFahrenheit(m.value)
-      }))
+      const now = new Date().getTime()
+      return this.sensor.measurements
+        // Filter down to the last 48 hours
+        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
     }
   },
   methods: {

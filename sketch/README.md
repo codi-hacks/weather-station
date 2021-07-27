@@ -34,6 +34,9 @@ ls -lh /dev/ttyUSB0
 
 # Add your user to that group then reboot your machine
 sudo usermod -a -G uucp yourUserName
+
+# If the permission from ls don't match above, modify device access like so:
+sudo chmod a+rw /dev/ttyUSB0
 ```
 - The program will still fail to compile until the config file is created (see below)
 

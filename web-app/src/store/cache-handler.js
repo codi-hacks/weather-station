@@ -2,21 +2,27 @@ import { openDB } from 'idb'
 
 const dbName = 'weather-station'
 const storeName = 'default'
-const version = 1
+const version = 2
 
 export default async store => {
   const db = await openDB(dbName, version, {
-    upgrade(db, oldVersion, newVersion, transaction) {
+    upgrade(db, existingVersion, newVersion, transaction) {
+      // Scorched earth policy
+      if (existingVersion > 0 && existingVersion < version) {
+        // eslint-disable-next-line no-console
+        console.info(`Upgrading idb from ${existingVersion} to ${newVersion}`)
+        db.deleteObjectStore(storeName)
+      }
       const idbstore = db.createObjectStore(storeName)
       idbstore.put([], 'dashboard')
+      idbstore.put({}, 'preferences')
       idbstore.put({}, 'sensors')
-      idbstore.put({}, 'settings')
       idbstore.put([], 'stations')
     }
   })
 
   // Alphabetically ordered by key names
-  const [dashboard, sensors, settings, stations] = await db.transaction(storeName)
+  const [dashboard, preferences, sensors, stations] = await db.transaction(storeName)
     .objectStore(storeName).getAll()
 
   const fnMap = {
@@ -45,14 +51,14 @@ export default async store => {
         idbstore.put(state.dashboard, 'dashboard')
       })
     },
+    setPreferences: (state, idbstore) => {
+      idbstore.delete('preferences').then(() => {
+        idbstore.put(state.preferences, 'preferences')
+      })
+    },
     setSensor: (state, idbstore) => {
       idbstore.delete('sensors').then(() => {
         idbstore.put(state.sensors, 'sensors')
-      })
-    },
-    setSettings: (state, idbstore) => {
-      idbstore.delete('settings').then(() => {
-        idbstore.put(state.settings, 'settings')
       })
     },
     setStations: (state, idbstore) => {
@@ -60,6 +66,21 @@ export default async store => {
         idbstore.put(state.stations, 'stations')
       })
     }
+  }
+
+  //
+  // Hydrate dashboard
+  //
+  if (dashboard.length) {
+    store.commit('setDashboard', dashboard)
+  }
+  store.state.dashboardPromise.resolve(store.state.dashboard)
+
+  //
+  // Hydrate preferences
+  //
+  if (Object.keys(preferences).length) {
+    store.commit('setPreferences', preferences)
   }
 
   //
@@ -88,20 +109,6 @@ export default async store => {
     store.commit('hydrateSensors', { sensors, stations })
     // eslint-disable-next-line no-console
     console.debug('sensors hydrated from cache')
-  }
-
-  //
-  // Hydrate dashboard
-  //
-  if (dashboard.length) {
-    store.commit('setDashboard', dashboard)
-  }
-
-  //
-  // Hydrate settings
-  //
-  if (Object.keys(settings).length) {
-    store.commit('setSettings', settings)
   }
 
   store.subscribe((mutation, state) => {

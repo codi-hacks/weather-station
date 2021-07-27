@@ -35,7 +35,7 @@ export default {
       }
       return this.station.sensors.map(sensor => {
         return this.$store.state.sensors[sensor.id]
-      })
+      }).filter(s => s)
     },
     station() {
       return this.$store.state.stations.find(station => station.id === this.$route.params.id)

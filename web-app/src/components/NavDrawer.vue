@@ -1,11 +1,6 @@
 <template>
-  <v-navigation-drawer
-    :value="value"
-    @input="toggleDrawer($event)"
-    fixed
-    temporary
-  >
-    <v-list class="list-root" flat shaped>
+  <v-navigation-drawer v-model="open" fixed temporary>
+    <v-list flat shaped>
       <v-list-item link :to="{ name: 'dashboard' }">
         <v-list-item-avatar>
           <v-icon :large="true" color="success">mdi-view-dashboard</v-icon>
@@ -62,14 +57,15 @@
 
 <script>
 export default {
-  props: {
-    // Whether the drawer is open or not
-    value: {
-      required: true,
-      type: Boolean
-    }
-  },
   computed: {
+    open: {
+      get() {
+        return this.$store.state.navDrawer
+      },
+      set(value) {
+        this.$store.commit('setNavDrawer', value)
+      }
+    },
     stations() {
       return this.$store.state.stations
     }
