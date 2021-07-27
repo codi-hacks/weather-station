@@ -69,6 +69,7 @@ impl StationsModel {
 
         let conn = db::connection()?;
         let stations : StationsModel = stations::table.filter(stations::label.eq(l)).first(&conn)?;
+        // let stations : StationsModel = stations::table.select().load::<StationsModel>(&conn)?;
         // let stations : StationsModel = stations::table.filter(stations::label.eq(l)).load::<StationsModel>(&conn)?;
         let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&stations).load(&conn)?;
         Ok(
@@ -81,7 +82,7 @@ impl StationsModel {
                     key: stations.key,
                     sensors: Some(sensors)
                 }
-            // }).collect())
+            // }).collect()
         )
     }
 

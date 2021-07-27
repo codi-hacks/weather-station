@@ -24,7 +24,7 @@ enum SubCommand {
     Create(Create),
     Delete(Delete),
     Clean(Clean),
-    View(View),
+    View,
     Rename(Rename)
 }
 
@@ -52,20 +52,11 @@ struct Clean {
     id: Option<String>
 }
 
-/// View existing station's ID and Key
-#[derive(Clap)]
-struct View {
-    /// The display name for this weather station
-    label: Option<String>
-}
-
 /// Rename existing station
 #[derive(Clap)]
 struct Rename {
     /// The UUID of the station you would like to rename
-    id: Option<String>,
-    // /// The key of the station you would like to rename
-    // key: Option<String>
+    id: Option<String>
 }
 
 /// Parse 1st commandline argument and execute subroutines accordingly
@@ -77,8 +68,7 @@ fn main() {
         SubCommand::Create(subopts) => create_routine(subopts),
         SubCommand::Delete(subopts) => delete_routine(subopts),
         SubCommand::Clean(subopts) => clean_routine(subopts),
-        SubCommand::View(subopts) => view_routine(subopts),
-        // SubCommand::View() => view_routine(),
+        SubCommand::View => view_routine(),
         SubCommand::Rename(subopts) => rename_routine(subopts)
     }
 }
@@ -287,7 +277,11 @@ fn clean_routine(opts: Clean) {
     };
 
     if Confirm::with_theme(&ColorfulTheme::default())
-        .with_prompt(format!("Are you sure you want to wipe all measurements for {} ({})? Note this will preserve the station and sensors.", station.id, station.label))
+        .with_prompt(format!(
+            "Are you sure you want to wipe all measurements for {} ({})? Note this will preserve the station and sensors.", 
+            station.id, 
+            station.label
+        ))
         .wait_for_newline(true)
         .interact()
         .unwrap()
@@ -303,60 +297,29 @@ fn clean_routine(opts: Clean) {
     }
 }
 
-fn view_routine(opts: View) {
-    let station: Station = match opts.label {
-        Some(l) => {
-            // Scuffed version; Selects the first entry with 
-            match StationsModel::find_by_label(l) {
-                Ok(s) => s,
-                Err(_) => {
-                    println!("Error. No station matching station.");
-                    process::exit(1);
-                }
-            }
-
-            // WIP; Selects all matching entriesz
-            // let stations = match StationsModel::find_by_label(l) {
-            //     Ok(s) => s,
-            //     Err(error) => {
-            //         println!("{}", error);
-            //         process::exit(1);
-            //     }
-            // };
-            // let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
-            // let selection = Select::with_theme(&ColorfulTheme::default())
-            //     .with_prompt("Which station to view?")
-            //     .default(choices.len() - 1)
-            //     .items(&choices[..])
-            //     .interact()
-            //     .unwrap();
-
-            // stations[selection].clone()
-        },
-        None => {
-            let stations = match StationsModel::find_all() {
-                Ok(s) => s,
-                Err(error) => {
-                    println!("{}", error);
-                    process::exit(1);
-                }
-            };
-            let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
-            let selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Which station to view?")
-                .default(choices.len() - 1)
-                .items(&choices[..])
-                .interact()
-                .unwrap();
-
-            stations[selection].clone()
+fn view_routine() {
+    let stations = match StationsModel::find_all() {
+        Ok(s) => s,
+        Err(error) => {
+            println!("Error: {}", error);
+            process::exit(1);
         }
     };
+
+    let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
+    let selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Which station to view?")
+        .default(choices.len() - 1)
+        .items(&choices[..])
+        .interact()
+        .unwrap();
+
+    let s = stations[selection].clone();
     
     println!("Use the following ID and key to write measurements via the UDP socket:");
-    println!("Station:  {}", station.label);
-    println!("ID:       {}", station.id);
-    println!("Key:      {}", station.key);
+    println!("Station:  {}", s.label);
+    println!("ID:       {}", s.id);
+    println!("Key:      {}", s.key);
 }
 
 fn rename_routine(opts: Rename) {
@@ -364,8 +327,8 @@ fn rename_routine(opts: Rename) {
         Some(id) => {
             match StationsModel::find(Uuid::parse_str(&id[..]).unwrap()) {
                 Ok(s) => s,
-                Err(_) => {
-                    println!("Error. No station matching ID \"{}\"", id);
+                Err(error) => {
+                    println!("Error: {}", error);
                     process::exit(1);
                 }
             }
@@ -392,24 +355,23 @@ fn rename_routine(opts: Rename) {
         }
     };
     
-    // Check if provided key is correct for matched station
-    
     let nn: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("What label would you like for this weather station?")
         .interact_text()
-        .unwrap();  
-        if Confirm::with_theme(&ColorfulTheme::default())
+        .unwrap();
+      
+    if
+        Confirm::with_theme(&ColorfulTheme::default())
             .with_prompt(format!("Are you sure you want to rename \"{}\" to \"{}\"", station.label, nn))
             .wait_for_newline(true)
             .interact()
             .unwrap()
-        {
-            StationsModel::update(station.id, nn, station.key).map_err(|err| println!("{:?}", err)).ok();
-            println!("Station renamed");
-            // println!("Station renamed to \"{}\"", &nn);
+    {
+        StationsModel::update(station.id, nn, station.key).map_err(|err| println!("{:?}", err)).ok();
+        println!("Station renamed");
 
-        } else {
-            println!("Action aborted");
-            process::exit(1);
-        }
+    } else {
+        println!("Action aborted");
+        process::exit(1);
+    }
 }
