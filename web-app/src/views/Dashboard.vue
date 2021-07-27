@@ -1,28 +1,138 @@
 <template>
-  <v-container>
-    <v-row>
-      <template v-for="n in 4">
-        <v-col :key="n" class="mt-2" cols="12">
-          <strong>Category {{ n }}</strong>
-        </v-col>
+  <div>
+    <StatusText v-if="sensorError">
+      Error loading dashboard
+    </StatusText>
 
-        <v-col v-for="j in 6" :key="`${n}${j}`" cols="6" md="2">
-          <v-sheet color="blue" elevation="1" height="150" rounded></v-sheet>
-        </v-col>
-      </template>
-    </v-row>
-  </v-container>
+    <StatusText v-else-if="sensorsLoading">
+      Loading dashboard...
+    </StatusText>
+
+    <template v-else>
+      <v-alert v-if="!sensors.length" class="alert" border="left" :colored-border="true" outlined>
+        <div class="alert-message">
+          Your dashboard is empty. Open the left navigation and pick some data to display here.
+        </div>
+        <v-layout class="alert-btn-container">
+          <v-btn @click="setNavDrawer(true)">Start</v-btn>
+        </v-layout>
+      </v-alert>
+
+      <v-alert
+        class="alert"
+        color="info"
+        border="left"
+        :colored-border="true"
+        :dismissible="true"
+        v-model="showPreferencesAlert"
+        outlined>
+        <div class="alert-message">
+          Customize your user preferences by clicking the gear in the top-right corner.
+        </div>
+        <v-layout class="alert-btn-container">
+          <v-btn @click="setPreferencesDrawer(true)">Start</v-btn>
+        </v-layout>
+      </v-alert>
+
+      <CardContainer
+        :sensors="sensors"
+        @change-mode="setSensorMode"
+        @change-time-ago="setSensorTimeAgo"
+      />
+    </template>
+  </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
+import { mapMutations } from 'vuex'
+import CardContainer from '@/components/CardContainer'
+import StatusText from '@/components/StatusText'
 
 export default {
-  name: 'Home',
-  components: {},
+  name: 'Dashboard',
+  components: {
+    CardContainer,
+    StatusText
+  },
+  data() {
+    return {
+      sensors: [],
+      sensorError: false,
+      sensorsLoading: true
+    }
+  },
   created() {
     this.$store.commit('setPageTitle', 'Dashboard')
+  },
+  mounted() {
+    this.generateDashboard()
+  },
+  computed: {
+    showPreferencesAlert: {
+      get() {
+        return this.$store.state.preferences.showAlert
+      },
+      set(value) {
+        this.$store.commit('setPreferences', { showAlert: value })
+      }
+    }
+  },
+  methods: {
+    ...mapMutations(['setNavDrawer', 'setPreferencesDrawer', 'setSensorMode', 'setSensorTimeAgo']),
+    generateDashboard() {
+      this.$store.dispatch('getDashboardSensors')
+        .then(dashboard => {
+          this.sensors = this.$store.state.dashboard.map(sensorSettings => {
+            return {
+              ...this.$store.state.sensors[sensorSettings.id],
+              settings: sensorSettings
+            }
+          })
+          this.sensorsLoading = false
+          this.sensorError = false
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err)
+          this.sensorError = true
+          this.sensorsLoading = true
+        })
+    }
+  },
+  watch: {
+    '$store.state.dashboard': {
+      handler(newValue, oldValue) {
+        this.generateDashboard()
+        // Wait until we have a dashboard before fetching up-to-date sensor data
+        if (newValue.length && newValue.length !== oldValue?.length) {
+          this.$store.dispatch('fetchDashboardSensors')
+        }
+      },
+      deep: true,
+      immediate: false
+    }
   }
 }
 </script>
+
+<style scoped>
+.alert {
+  color: var(--v-secondary-lighten5);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4px;
+  width: 80%;
+}
+.alert-message {
+  color: var(--v-secondary-base);
+}
+.alert-btn-container {
+  padding-top: 6px;
+}
+
+@media screen and (max-width: 640px) {
+  .alert {
+    width: 100%;
+  }
+}
+</style>

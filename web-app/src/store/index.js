@@ -8,12 +8,20 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     dashboard: [],
+    dashboardPromise: new Deferred(),
+    navDrawer: false,
     pageTitle: 'Weather Station App',
+    preferencesDrawer: false,
     sensors: {},
     sensorPromises: {},
-    settings: {},
+    preferences: {
+      elevation: 'feet',
+      showAlert: true,
+      temperature: 'fahrenheit',
+      theme: 'light'
+    },
     stations: [],
-    stationPromise: null
+    stationPromise: new Deferred()
   },
   mutations: {
     addBookmark(state, card) {
@@ -32,6 +40,13 @@ export default new Vuex.Store({
     },
     setDashboard(state, dashboard) {
       Vue.set(state, 'dashboard', dashboard)
+    },
+    setNavDrawer(state, boolean) {
+      Vue.set(state, 'navDrawer', boolean)
+    },
+    setPreferencesDrawer(state, boolean) {
+      Vue.set(state.preferences, 'showAlert', false)
+      Vue.set(state, 'preferencesDrawer', boolean)
     },
 
     setPageTitle(state, title) {
@@ -64,28 +79,26 @@ export default new Vuex.Store({
       })
     },
 
-    setSettings(state, settings) {
-      Vue.set(state, 'settings', settings)
+    setPreferences(state, preferences) {
+      Vue.set(state, 'preferences', {
+        ...state.preferences,
+        ...preferences
+      })
     },
 
     setStations(state, stations) {
       Vue.set(state, 'stations', stations)
-      this.commit('setStationPromise', new Deferred())
       state.stationPromise.resolve(stations)
-    },
-    setStationPromise(state, stationPromise) {
-      // Only need to set this once
-      if (!state.stationPromise) {
-        Vue.set(state, 'stationPromise', stationPromise)
-      }
     }
   },
   actions: {
     getDashboardSensors(context) {
-      context.commit('setSensorPromises', { sensors: context.state.dashboard })
-      return Promise.all(context.state.dashboard.map(card => {
-        return context.state.sensorPromises[card.id].promise
-      }))
+      return context.state.dashboardPromise.promise.then(() => {
+        context.commit('setSensorPromises', { sensors: context.state.dashboard })
+        return Promise.all(context.state.dashboard.map(card => {
+          return context.state.sensorPromises[card.id].promise
+        }))
+      })
     },
     fetchDashboardSensors(context) {
       context.commit('setSensorPromises', { sensors: context.state.dashboard })
@@ -128,17 +141,9 @@ export default new Vuex.Store({
       })
     },
     getStations(context) {
-      if (context.state.stationPromise) {
-        return context.state.stationPromise.promise
-      }
-      const stationPromise = new Deferred()
-      context.commit('setStationPromise', stationPromise)
-      return stationPromise.promise
+      return context.state.stationPromise.promise
     },
     fetchStations(context) {
-      if (!context.state.stationPromise) {
-        context.commit('setStationPromise', new Deferred())
-      }
       fetch(`${API_URL}/stations`)
         .then(response => {
           if (!response.ok) {

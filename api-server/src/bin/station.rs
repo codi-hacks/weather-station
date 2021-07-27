@@ -233,7 +233,13 @@ fn delete_routine(opts: Delete) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to delete?")
-                .default(choices.len() - 1)
+                .default(match choices.len() {
+                    0 => {
+                        println!("Error: Cannot delete non-existant stations");
+                        process::exit(1);
+                    },
+                    _ => choices.len() -1
+                })
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -285,7 +291,13 @@ fn clean_routine(opts: Clean) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to clean?")
-                .default(choices.len() - 1)
+                .default(match choices.len() {
+                    0 => {
+                        println!("Error: Cannot clean non-existant stations");
+                        process::exit(1);
+                    },
+                    _ => choices.len() -1
+                })
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -326,7 +338,13 @@ fn view_routine() {
     let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
     let selection = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Which station to view?")
-        .default(choices.len() - 1)
+        .default(match choices.len() {
+            0 => {
+                println!("Error: Cannot view non-existant stations");
+                process::exit(1);
+            },
+            _ => choices.len() -1
+        })
         .items(&choices[..])
         .interact()
         .unwrap();
@@ -362,7 +380,13 @@ fn rename_routine(opts: Rename) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to rename?")
-                .default(choices.len() - 1)
+                .default(match choices.len() {
+                    0 => {
+                        println!("Error: Cannot rename non-existant stations");
+                        process::exit(1);
+                    },
+                    _ => choices.len() -1
+                })
                 .items(&choices[..])
                 .interact()
                 .unwrap();

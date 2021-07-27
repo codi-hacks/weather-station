@@ -5,6 +5,7 @@ extern crate diesel_migrations;
 
 pub mod db;
 pub mod error_handler;
+pub mod homepage;
 pub mod measurements;
 pub mod schema;
 pub mod sensor_types;
