@@ -32,6 +32,8 @@ chrono = { version = "0.4", features = ["serde"] }
 clap = "3.0.0-beta.2"
 # Verifying weather station messages keys
 crc = "^1.0.0"
+# Generate the interactive menus in the station script
+dialoguer = "0.8.0"
 # The Diesel ORM. Features can be found here:
 # https://github.com/diesel-rs/diesel/blob/master/diesel/Cargo.toml
 diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono", "numeric"] }

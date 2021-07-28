@@ -1,7 +1,7 @@
 use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::measurements;
-use crate::sensors::{SensorsModel};
+use crate::sensors::{Sensor, SensorsModel};
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
@@ -32,5 +32,19 @@ impl MeasurementsModel {
             .get_result(&conn)?;
         SensorsModel::touch(sensor_id)?;
         Ok(measurement)
+    }
+    
+    pub fn delete_by_sensor(sensor: Sensor) -> Result<usize, CustomError> {
+        let conn = db::connection()?;
+        let sensor = SensorsModel {
+            id: sensor.id,
+            alias: sensor.alias,
+            label: sensor.label,
+            type_id: sensor.type_id,
+            station_id: sensor.station_id,
+            created_at: sensor.created_at,
+            updated_at: sensor.updated_at
+        };
+        Ok(diesel::delete(MeasurementsModel::belonging_to(&sensor)).execute(&conn)?)
     }
 }

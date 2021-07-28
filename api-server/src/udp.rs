@@ -1,25 +1,20 @@
-use std::{
-    net::UdpSocket,
-    collections::HashMap,
-};
 use crate::error_handler::CustomError;
 use crate::measurements::MeasurementsModel;
 use crate::stations::StationsModel;
 use bigdecimal::BigDecimal;
 use crc::{crc32, Hasher32};
 use log::{trace, debug, warn, info};
-use nom;
-use nom::sequence::separated_pair;
-use nom::bytes::complete::tag;
-use nom::number::complete::double;
-use nom::bytes::complete::take_till;
-use nom::combinator::opt;
+use nom::{
+    bytes::complete::{tag,take_till},
+    combinator::opt,
+    number::complete::double,
+    sequence::separated_pair
+};
+use std::{net::UdpSocket, collections::HashMap};
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]
-pub enum UdpError {
-    Custom(String),
-}
+pub enum UdpError { Custom(String) }
 
 impl<I> From<nom::Err<(I, nom::error::ErrorKind)>> for UdpError {
     fn from(_: nom::Err<(I, nom::error::ErrorKind)>) -> Self {
@@ -78,7 +73,7 @@ pub fn udp_server(server: UdpServer) -> std::result::Result<(), CustomError> {
         }
         // Look up sensors by their alias
         let mut sensors_map = HashMap::new();
-        for sensor in station.sensors {
+        for sensor in station.sensors.unwrap() {
             sensors_map.insert(sensor.alias.to_string(), sensor);
         }
         for (alias, measurement_value) in msg.measurements {
