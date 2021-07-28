@@ -34,7 +34,7 @@ enum SubCommand {
     /// Delete all measurements on a station but keep the station and its sensors
     Clean(Clean),
     /// View an existing station's ID and key needed to write measurements via UDP socket 
-    View,
+    View(View),
     /// Rename existing station
     Rename(Rename)
 }
@@ -66,6 +66,12 @@ struct Clean {
 }
 
 #[derive(Clap)]
+struct View {
+    /// The UUID of the station you would like to view
+    id: Option<String>
+}
+
+#[derive(Clap)]
 struct Rename {
     /// The UUID of the station you would like to rename
     id: Option<String>
@@ -88,7 +94,7 @@ fn main() {
         SubCommand::Create(subopts) => create_routine(subopts),
         SubCommand::Delete(subopts) => delete_routine(subopts),
         SubCommand::Clean(subopts) => clean_routine(subopts),
-        SubCommand::View => view_routine(),
+        SubCommand::View(subopts) => view_routine(subopts),
         SubCommand::Rename(subopts) => rename_routine(subopts)
     }
 }
@@ -212,7 +218,14 @@ fn create_routine(opts: Create) {
 fn delete_routine(opts: Delete) {
     let station: Station = match opts.id {
         Some(id) => {
-            match StationsModel::find(Uuid::parse_str(&id[..]).unwrap()) {
+            let valid_id = match Uuid::parse_str(&id[..]) {
+                Ok(id) => id,
+                Err(_) => {
+                    println!("Error: No valid UUID provided");
+                    process::exit(1);
+                }
+            };
+            match StationsModel::find(valid_id) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
@@ -228,18 +241,17 @@ fn delete_routine(opts: Delete) {
                     process::exit(1);
                 }
             };
+
+            if stations.len() == 0 {
+                println!("There are no stations currently in the database");
+                process::exit(1);
+            }
             let choices = stations.iter()
                 .map(|s| format!("{} - {}", s.id, s.label))
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to delete?")
-                .default(match choices.len() {
-                    0 => {
-                        println!("Error: Cannot delete non-existant stations");
-                        process::exit(1);
-                    },
-                    _ => choices.len() -1
-                })
+                .default(choices.len() -1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -270,7 +282,14 @@ fn delete_routine(opts: Delete) {
 fn clean_routine(opts: Clean) {
     let station: Station = match opts.id {
         Some(id) => {
-            match StationsModel::find(Uuid::parse_str(&id[..]).unwrap()) {
+            let valid_id = match Uuid::parse_str(&id[..]) {
+                Ok(id) => id,
+                Err(_) => {
+                    println!("Error: No valid UUID provided");
+                    process::exit(1);
+                }
+            };
+            match StationsModel::find(valid_id) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
@@ -286,18 +305,16 @@ fn clean_routine(opts: Clean) {
                     process::exit(1);
                 }
             };
+            if stations.len() == 0 {
+                println!("There are no stations currently in the database");
+                process::exit(1);
+            }
             let choices = stations.iter()
                 .map(|s| format!("{} - {}", s.id, s.label))
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to clean?")
-                .default(match choices.len() {
-                    0 => {
-                        println!("Error: Cannot clean non-existant stations");
-                        process::exit(1);
-                    },
-                    _ => choices.len() -1
-                })
+                .default(choices.len() -1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -327,42 +344,20 @@ fn clean_routine(opts: Clean) {
     }
 }
 
-fn view_routine() {
-    let stations = match StationsModel::find_all() {
-        Ok(s) => s,
-        Err(error) => {
-            println!("Error: {}", error);
-            process::exit(1);
-        }
-    };
-    let choices = stations.iter().map(|s| format!("{} - {}", s.id, s.label)).collect::<Vec<_>>();
-    let selection = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Which station to view?")
-        .default(match choices.len() {
-            0 => {
-                println!("Error: Cannot view non-existant stations");
-                process::exit(1);
-            },
-            _ => choices.len() -1
-        })
-        .items(&choices[..])
-        .interact()
-        .unwrap();
-
-    let s = stations[selection].clone();
-    println!("Use the following ID and key to write measurements via the UDP socket:");
-    println!("Station:  {}", s.label);
-    println!("ID:       {}", s.id);
-    println!("Key:      {}", s.key);
-}
-
-fn rename_routine(opts: Rename) {
+fn view_routine(opts: View) {
     let station: Station = match opts.id {
         Some(id) => {
-            match StationsModel::find(Uuid::parse_str(&id[..]).unwrap()) {
+            let valid_id = match Uuid::parse_str(&id[..]) {
+                Ok(id) => id,
+                Err(_) => {
+                    println!("Error: No valid UUID provided");
+                    process::exit(1);
+                }
+            };
+            match StationsModel::find(valid_id) {
                 Ok(s) => s,
-                Err(error) => {
-                    println!("Error: {}", error);
+                Err(_) => {
+                    println!("Error. No station matching ID \"{}\"", id);
                     process::exit(1);
                 }
             }
@@ -375,18 +370,66 @@ fn rename_routine(opts: Rename) {
                     process::exit(1);
                 }
             };
+
+            if stations.len() == 0 {
+                println!("There are no stations currently in the database");
+                process::exit(1);
+            }
+            let choices = stations.iter()
+                .map(|s| format!("{} - {}", s.id, s.label))
+                .collect::<Vec<_>>();
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Which station to view?")
+                .default(choices.len() -1)
+                .items(&choices[..])
+                .interact()
+                .unwrap();
+
+            stations[selection].clone()
+        }
+    };
+    println!("Use the following ID and key to write measurements via the UDP socket:");
+    println!("Station:  {}", station.label);
+    println!("ID:       {}", station.id);
+    println!("Key:      {}", station.key);
+}
+
+fn rename_routine(opts: Rename) {
+    let station: Station = match opts.id {
+        Some(id) => {
+            let valid_id = match Uuid::parse_str(&id[..]) {
+                Ok(id) => id,
+                Err(_) => {
+                    println!("Error: No valid UUID provided");
+                    process::exit(1);
+                }
+            };
+            match StationsModel::find(valid_id) {
+                Ok(s) => s,
+                Err(_) => {
+                    println!("Error. No station matching ID \"{}\"", id);
+                    process::exit(1);
+                }
+            }
+        },
+        None => {
+            let stations = match StationsModel::find_all() {
+                Ok(s) => s,
+                Err(error) => {
+                    println!("{}", error);
+                    process::exit(1);
+                }
+            };
+            if stations.len() == 0 {
+                println!("There are no stations currently in the database");
+                process::exit(1);
+            }
             let choices = stations.iter()
                 .map(|s| format!("{} - {}", s.id, s.label))
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to rename?")
-                .default(match choices.len() {
-                    0 => {
-                        println!("Error: Cannot rename non-existant stations");
-                        process::exit(1);
-                    },
-                    _ => choices.len() -1
-                })
+                .default(choices.len() -1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
