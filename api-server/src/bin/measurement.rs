@@ -4,9 +4,9 @@ use crc::{crc32, Hasher32};
 
 const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), ")");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
+
 #[derive(Clap)]
 #[clap(version = VERSION, author = AUTHORS)]
-
 struct Opts {
     server: String,
     station_id: String,
