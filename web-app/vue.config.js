@@ -7,21 +7,23 @@ if (!API_URL) {
     const config = require('./config.json')
     API_URL = config.API_URL
   } catch (e) {
+    if (e.name === 'SyntaxError') {
+      throw new Error('There is a syntax error in your config.json file.')
+    }
     throw new Error(
       'No config file or environment variables found. ' +
-      'Please specify the required environment variables or copy "config.json.example" to "config.json". ' +
-      'See the README for more information.'
+        'Please specify the required environment variables or copy "config.json.example" to "config.json". ' +
+        'See the README for more information.'
     )
   }
 }
 
 module.exports = {
   chainWebpack: config => {
-    config.plugin('html')
-      .tap(args => {
-        args[0].title = 'Weather Station App'
-        return args
-      })
+    config.plugin('html').tap(args => {
+      args[0].title = 'Weather Station App'
+      return args
+    })
   },
   configureWebpack: {
     plugins: [
@@ -32,87 +34,83 @@ module.exports = {
   },
   pwa: {
     clientsClaim: true,
-    skipWaiting: true
-  },
-  transpileDependencies: [
-    'vuetify'
-  ],
-  pwa: {
-    themeColor: "#1976D2",
-    name: "Weather Station",
+    name: 'Weather Station',
+    skipWaiting: true,
+    themeColor: '#1976D2',
     iconPaths: [
       {
-        "src": "./public/img/icons/android-chrome-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
+        src: './public/img/icons/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/android-chrome-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
+        src: './public/img/icons/android-chrome-512x512.png',
+        sizes: '512x512',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/android-chrome-maskable-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png",
-        "purpose": "maskable"
+        src: './public/img/icons/android-chrome-maskable-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable'
       },
       {
-        "src": "./public/img/icons/android-chrome-maskable-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png",
-        "purpose": "maskable"
+        src: './public/img/icons/android-chrome-maskable-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon-60x60.png",
-        "sizes": "60x60",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon-60x60.png',
+        sizes: '60x60',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon-76x76.png",
-        "sizes": "76x76",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon-76x76.png',
+        sizes: '76x76',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon-120x120.png",
-        "sizes": "120x120",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon-120x120.png',
+        sizes: '120x120',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon-152x152.png",
-        "sizes": "152x152",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon-152x152.png',
+        sizes: '152x152',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon-180x180.png",
-        "sizes": "180x180",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon-180x180.png',
+        sizes: '180x180',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/apple-touch-icon.png",
-        "sizes": "180x180",
-        "type": "image/png"
+        src: './public/img/icons/apple-touch-icon.png',
+        sizes: '180x180',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/favicon-16x16.png",
-        "sizes": "16x16",
-        "type": "image/png"
+        src: './public/img/icons/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/favicon-32x32.png",
-        "sizes": "32x32",
-        "type": "image/png"
+        src: './public/img/icons/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/msapplication-icon-144x144.png",
-        "sizes": "144x144",
-        "type": "image/png"
+        src: './public/img/icons/msapplication-icon-144x144.png',
+        sizes: '144x144',
+        type: 'image/png'
       },
       {
-        "src": "./public/img/icons/mstile-150x150.png",
-        "sizes": "150x150",
-        "type": "image/png"
+        src: './public/img/icons/mstile-150x150.png',
+        sizes: '150x150',
+        type: 'image/png'
       }
     ]
-  }
+  },
+  transpileDependencies: ['vuetify']
 }
