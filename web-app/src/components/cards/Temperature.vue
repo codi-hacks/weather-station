@@ -79,13 +79,13 @@ export default {
         measurements = measurements
           .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
       }
-      // Convert to Fahrenheit
+      // Convert to preferred unit
       return measurements.map(m => ({
         created_at: m.created_at,
-        value: this.temperatureToPref(m.value)
+        value: this.unitConvert(m.value)
       }))
     },
-    temperaturePref(value) {
+    unitPref(value) {
       return this.$store.state.preferences.temperature
     }
   },
@@ -100,8 +100,8 @@ export default {
       this.timeAgo = timeAgo
       this.$emit('change-time-ago', this.timeAgo)
     },
-    temperatureToPref(value) {
-      switch (this.temperaturePref) {
+    unitConvert(value) {
+      switch (this.unitPref) {
         case 'celsius':
           return value
         case 'fahrenheit':
