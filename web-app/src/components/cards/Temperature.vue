@@ -29,10 +29,6 @@ import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
 
-function toFahrenheit(value) {
-  return Math.round(((value * (9 / 5)) + 32) * 10) / 10
-}
-
 export default {
   components: {
     BookmarkButton,
@@ -86,8 +82,11 @@ export default {
       // Convert to Fahrenheit
       return measurements.map(m => ({
         created_at: m.created_at,
-        value: toFahrenheit(m.value)
+        value: this.temperatureToPref(m.value)
       }))
+    },
+    temperaturePref(value) {
+      return this.$store.state.preferences.temperature
     }
   },
   methods: {
@@ -100,6 +99,16 @@ export default {
     setTimeAgo(timeAgo) {
       this.timeAgo = timeAgo
       this.$emit('change-time-ago', this.timeAgo)
+    },
+    temperatureToPref(value) {
+      switch (this.temperaturePref) {
+        case 'celsius':
+          return value
+        case 'fahrenheit':
+          return Math.round(((value * (9 / 5)) + 32) * 10) / 10
+        case 'kelvin':
+          return Math.round((Number(value) + 273.15) * 10) / 10
+      }
     }
   }
 }

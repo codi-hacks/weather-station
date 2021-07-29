@@ -4,7 +4,7 @@
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
       <template v-slot:header1>Estimated</template>
-      <template v-slot:value1>{{ averageElevation }} meters</template>
+      <template v-slot:value1>{{ averageElevation }} {{ unitPref }}</template>
     </CurrentView>
     <CurrentView v-else-if="mode === 'current'">
       <template v-slot:header1>Estimated</template>
@@ -59,13 +59,21 @@ export default {
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
     measurements() {
-      if (this.timeAgo === Infinity) {
-        return this.sensor.measurements
+      let measurements = this.sensor.measurements
+      // Filter down to the specified time range
+      if (this.timeAgo !== Infinity) {
+        const now = new Date().getTime()
+        measurements = measurements
+          .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
       }
-      const now = new Date().getTime()
-      return this.sensor.measurements
-        // Filter down to the last 48 hours
-        .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+      // Convert to preferred unit
+      return measurements.map(m => ({
+        created_at: m.created_at,
+        value: this.unitConvert(m.value)
+      }))
+    },
+    unitPref() {
+      return this.$store.state.preferences.elevation
     }
   },
   methods: {
@@ -78,6 +86,14 @@ export default {
     setTimeAgo(timeAgo) {
       this.timeAgo = timeAgo
       this.$emit('change-time-ago', this.timeAgo)
+    },
+    unitConvert(value) {
+      switch (this.unitPref) {
+        case 'meters':
+          return value
+        case 'feet':
+          return Math.round((value * 3.2808) * 10) / 10
+      }
     }
   }
 }
