@@ -3,8 +3,8 @@
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length">
-      <template v-slot:value1>{{ currentTemperature }}°</template>
-      <template v-slot:value2>{{ averageTemperature }}°</template>
+      <template v-slot:value1>{{ currentTemperature }}°{{ unitSymbol }}</template>
+      <template v-slot:value2>{{ averageTemperature }}°{{ unitSymbol }}</template>
     </CurrentView>
     <CurrentView v-else-if="mode === 'current'">
       <template v-slot:value1>N/A</template>
@@ -87,6 +87,18 @@ export default {
     },
     unitPref(value) {
       return this.$store.state.preferences.temperature
+    },
+    unitSymbol() {
+      switch (this.unitPref) {
+        case 'celsius':
+          return 'C'
+        case 'fahrenheit':
+          return 'F'
+        case 'kelvin':
+          return 'K'
+        default:
+          return ''
+      }
     }
   },
   methods: {
