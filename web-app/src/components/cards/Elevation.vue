@@ -15,7 +15,6 @@
       chart-type="area"
       :name="sensor.label"
       :measurements="measurements"
-      :options="chartOptions"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
