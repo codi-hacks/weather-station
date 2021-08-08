@@ -2,7 +2,7 @@
   <div>
     <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <CurrentView v-if="mode === 'current' && measurements.length">
+    <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>
         {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
       </template>

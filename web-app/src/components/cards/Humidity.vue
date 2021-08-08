@@ -2,7 +2,7 @@
   <div>
     <ModeButton :value="mode" @input="setMode" />
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <CurrentView v-if="mode === 'current' && measurements.length">
+    <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>{{ currentHumidity }}%</template>
       <template v-slot:value2>{{ averageHumidity }}%</template>
     </CurrentView>

@@ -28,8 +28,9 @@ export default {
       type: Array
     },
     name: {
-      required: true,
-      type: String
+      required: false,
+      type: String,
+      default: ''
     },
     options: {
       type: Object,
@@ -38,7 +39,8 @@ export default {
     },
     zoomedIn: {
       type: Boolean,
-      required: true
+      required: false,
+      default: false
     }
   },
   computed: {
@@ -53,6 +55,13 @@ export default {
             dynamicAnimation: {
               speed: 200
             }
+          },
+          dropShadow: {
+            enabled: true,
+            top: 1,
+            left: 1,
+            blur: 2,
+            opacity: 0.2
           },
           events: {
             zoomed: () => {
@@ -80,6 +89,8 @@ export default {
           }
         },
         stroke: {
+          // Don't overlay a stroke on top of area charts
+          show: this.chartType !== 'area',
           curve: 'straight',
           width: 2
         },

@@ -1,54 +1,114 @@
 <template>
-  <ul class="container">
-    <li></li>
-    <li>
-      <div class="header">
-        <slot name="header1">Current</slot>
-      </div>
-      <div class="value">
-        <slot name="value1">Error</slot>
-      </div>
-    </li>
-    <li v-if="$slots.value2">
-      <div class="header">
-        <slot name="header2">Average</slot>
-      </div>
-      <div class="value">
-        <slot name="value2">Error</slot>
-      </div>
-    </li>
-    <li v-if="$slots.value3">
-      <div class="header">
-        <slot name="header3">Header3</slot>
-      </div>
-      <div class="value">
-        <slot name="value3">Error</slot>
-      </div>
-    </li>
-    <li></li>
-  </ul>
+  <div class="container">
+    <Graph
+      v-if="measurements.length"
+      class="sparkline"
+      :measurements="measurements"
+      :options="chartOptions"
+    />
+    <ul class="text-body">
+      <li></li>
+      <li>
+        <div class="header">
+          <slot name="header1">Current</slot>
+        </div>
+        <div class="value">
+          <slot name="value1">Error</slot>
+        </div>
+      </li>
+      <li v-if="$slots.value2">
+        <div class="header">
+          <slot name="header2">Average</slot>
+        </div>
+        <div class="value">
+          <slot name="value2">Error</slot>
+        </div>
+      </li>
+      <li v-if="$slots.value3">
+        <div class="header">
+          <slot name="header3">Header3</slot>
+        </div>
+        <div class="value">
+          <slot name="value3">Error</slot>
+        </div>
+      </li>
+      <li></li>
+    </ul>
+  </div>
 </template>
+
+<script>
+import Graph from './Graph'
+
+export default {
+  components: {
+    Graph
+  },
+  props: {
+    measurements: {
+      required: false,
+      type: Array,
+      default: () => ([])
+    }
+  },
+  data() {
+    return {
+      chartOptions: {
+        chart: {
+          sparkline: {
+            enabled: true
+          }
+        },
+        // TODO: Fix this when theming is applied
+        colors: ['#8ac5ff'],
+        grid: {
+          row: {
+            opacity: 0
+          }
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 3
+        }
+      }
+    }
+  }
+}
+</script>
 
 <style scoped>
 .container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   height: 100%;
 }
 
-.container li {
-  color: #1976d2;
+.text-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+.text-body li {
   align-content: center;
   display: flex;
   flex-basis: 100%;
   flex-direction: column;
   justify-content: center;
+  padding-bottom: 4px;
+  padding-top: 4px;
   text-align: center;
+  text-shadow: 2px 2px white;
 }
 
 .header {
   font-size: 2.5em;
+}
+
+.sparkline {
+  position: absolute;
+  z-index: 0;
 }
 
 .value {
@@ -56,7 +116,7 @@
 }
 
 @media screen and (max-width: 640px) {
-  .container li {
+  .text-body li {
     flex-basis: 50%;
     flex-direction: column wrap;
     flex-flow: column;
@@ -65,11 +125,11 @@
     text-align: center;
   }
 
-  .container li:first-child {
+  .text-body li:first-child {
     display: none;
   }
 
-  .container li:last-child {
+  .text-body li:last-child {
     display: none;
   }
 
