@@ -3,7 +3,7 @@
     <v-list flat shaped>
       <v-list-item link :to="{ name: 'dashboard' }">
         <v-list-item-avatar>
-          <v-icon :large="true" color="success">mdi-view-dashboard</v-icon>
+          <v-icon :large="true" color="info">mdi-view-dashboard</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>Dashboard</v-list-item-title>
@@ -12,12 +12,14 @@
 
       <v-divider />
 
-      <v-list-group disabled no-action value="true">
+      <v-list-group active-class="station-section-header" disabled no-action value="true">
         <template v-slot:activator>
           <v-list-item-avatar>
-            <v-icon :large="true" color="info">mdi-terrain</v-icon>
+            <v-icon :large="true" color="success">mdi-terrain</v-icon>
           </v-list-item-avatar>
-          <v-list-item-title>Stations</v-list-item-title>
+          <v-list-item-title class="station-section-header">
+            Stations
+          </v-list-item-title>
         </template>
         <!-- Remove the dropdown arrow -->
         <template v-slot:appendIcon>
@@ -83,7 +85,12 @@ export default {
   color: inherit;
   text-decoration: none;
 }
+
 .station-label:hover {
   text-decoration: underline;
+}
+
+/deep/ .station-section-header {
+  cursor: default !important;
 }
 </style>
