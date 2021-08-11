@@ -17,6 +17,9 @@
     <v-list-item>
       <v-select label="color theme" :items="themeOptions" v-model="theme" />
     </v-list-item>
+    <v-list-item>
+      <v-select label="contrast theme" :items="contrastOptions" v-model="contrast" />
+    </v-list-item>
 
   </v-navigation-drawer>
 </template>
@@ -51,12 +54,26 @@ export default {
       ],
       themeOptions: [
         {
-          text: 'dark',
-          value: 'dark'
+          text: 'blue',
+          value: 'blue'
+        },
+        {
+          text: 'green',
+          value: 'green'
+        }
+      ],
+      contrastOptions: [
+        {
+          text: 'auto',
+          value: 'auto'
         },
         {
           text: 'light',
           value: 'light'
+        },
+        {
+          text: 'dark',
+          value: 'dark'
         }
       ]
     }
@@ -91,7 +108,15 @@ export default {
         return this.$store.state.preferences.theme
       },
       set(theme) {
-        this.$store.commit('setPreferences', { theme })
+        this.$store.commit('setTheme', theme)
+      }
+    },
+    contrast: {
+      get() {
+        return this.$store.state.preferences.contrast
+      },
+      set(contrast) {
+        this.$store.commit('setContrast', contrast)
       }
     }
   }

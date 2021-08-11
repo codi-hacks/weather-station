@@ -124,7 +124,7 @@ export default {
   width: 80%;
 }
 .alert-message {
-  color: var(--v-secondary-base);
+  color: var(--v-text-primary-base);
 }
 .alert-btn-container {
   padding-top: 6px;

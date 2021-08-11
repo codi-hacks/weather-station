@@ -12,6 +12,7 @@
 <script>
 import objectAssignDeep from 'object-assign-deep'
 import VueApexCharts from 'vue-apexcharts'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -44,6 +45,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['theme']),
     chartOptions() {
       return objectAssignDeep({
         chart: {
@@ -76,6 +78,7 @@ export default {
             enabled: true
           }
         },
+        colors: [this.theme.primary],
         dataLabels: {
           enabled: false
         },
@@ -84,7 +87,7 @@ export default {
         },
         grid: {
           row: {
-            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+            colors: [this.theme['chart-bg'], 'transparent'], // takes an array which will be repeated on columns
             opacity: 0.5
           }
         },

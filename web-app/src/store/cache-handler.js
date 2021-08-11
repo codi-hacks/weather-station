@@ -4,6 +4,59 @@ const dbName = 'weather-station'
 const storeName = 'default'
 const version = 2
 
+const fnMap = {
+  addBookmark: (state, idbstore) => {
+    idbstore.delete('dashboard').then(() => {
+      idbstore.put(state.dashboard, 'dashboard')
+    })
+  },
+  removeBookmark: (state, idbstore) => {
+    idbstore.delete('dashboard').then(() => {
+      idbstore.put(state.dashboard, 'dashboard')
+    })
+  },
+  setSensorMode: (state, idbstore) => {
+    idbstore.delete('dashboard').then(() => {
+      idbstore.put(state.dashboard, 'dashboard')
+    })
+  },
+  setSensorTimeAgo: (state, idbstore) => {
+    idbstore.delete('dashboard').then(() => {
+      idbstore.put(state.dashboard, 'dashboard')
+    })
+  },
+  setDashboard: (state, idbstore) => {
+    idbstore.delete('dashboard').then(() => {
+      idbstore.put(state.dashboard, 'dashboard')
+    })
+  },
+  setPreferences: (state, idbstore) => {
+    idbstore.delete('preferences').then(() => {
+      idbstore.put(state.preferences, 'preferences')
+    })
+  },
+  setTheme: (state, idbstore) => {
+    idbstore.delete('preferences').then(() => {
+      idbstore.put(state.preferences, 'preferences')
+    })
+  },
+  setContrast: (state, idbstore) => {
+    idbstore.delete('preferences').then(() => {
+      idbstore.put(state.preferences, 'preferences')
+    })
+  },
+  setSensor: (state, idbstore) => {
+    idbstore.delete('sensors').then(() => {
+      idbstore.put(state.sensors, 'sensors')
+    })
+  },
+  setStations: (state, idbstore) => {
+    idbstore.delete('stations').then(() => {
+      idbstore.put(state.stations, 'stations')
+    })
+  }
+}
+
 export default async store => {
   const db = await openDB(dbName, version, {
     upgrade(db, existingVersion, newVersion, transaction) {
@@ -25,47 +78,13 @@ export default async store => {
   const [dashboard, preferences, sensors, stations] = await db.transaction(storeName)
     .objectStore(storeName).getAll()
 
-  const fnMap = {
-    addBookmark: (state, idbstore) => {
-      idbstore.delete('dashboard').then(() => {
-        idbstore.put(state.dashboard, 'dashboard')
-      })
-    },
-    removeBookmark: (state, idbstore) => {
-      idbstore.delete('dashboard').then(() => {
-        idbstore.put(state.dashboard, 'dashboard')
-      })
-    },
-    setSensorMode: (state, idbstore) => {
-      idbstore.delete('dashboard').then(() => {
-        idbstore.put(state.dashboard, 'dashboard')
-      })
-    },
-    setSensorTimeAgo: (state, idbstore) => {
-      idbstore.delete('dashboard').then(() => {
-        idbstore.put(state.dashboard, 'dashboard')
-      })
-    },
-    setDashboard: (state, idbstore) => {
-      idbstore.delete('dashboard').then(() => {
-        idbstore.put(state.dashboard, 'dashboard')
-      })
-    },
-    setPreferences: (state, idbstore) => {
-      idbstore.delete('preferences').then(() => {
-        idbstore.put(state.preferences, 'preferences')
-      })
-    },
-    setSensor: (state, idbstore) => {
-      idbstore.delete('sensors').then(() => {
-        idbstore.put(state.sensors, 'sensors')
-      })
-    },
-    setStations: (state, idbstore) => {
-      idbstore.delete('stations').then(() => {
-        idbstore.put(state.stations, 'stations')
-      })
-    }
+  //
+  // Hydrate preferences
+  //
+  if (Object.keys(preferences).length) {
+    store.commit('setPreferences', preferences)
+    store.commit('setTheme', store.state.preferences.theme)
+    store.commit('setContrast', store.state.preferences.contrast)
   }
 
   //
@@ -75,13 +94,6 @@ export default async store => {
     store.commit('setDashboard', dashboard)
   }
   store.state.dashboardPromise.resolve(store.state.dashboard)
-
-  //
-  // Hydrate preferences
-  //
-  if (Object.keys(preferences).length) {
-    store.commit('setPreferences', preferences)
-  }
 
   //
   // Hydrate stations
