@@ -79,6 +79,7 @@ export default {
 <style scoped>
 .container {
   height: 100%;
+  z-index: 0;
 }
 
 .text-body {
