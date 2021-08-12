@@ -27,7 +27,8 @@ export default new Vuex.Store({
   },
   getters: {
     theme(state) {
-      return vuetify.framework.theme.themes[state.preferences.contrast]
+      const contrast = contrastIsDark(state.preferences.contrast) ? 'dark' : 'light'
+      return vuetify.framework.theme.themes[contrast]
     }
   },
   mutations: {
@@ -72,10 +73,8 @@ export default new Vuex.Store({
     },
     setContrast(state, contrast) { // (c) Christopher Carrillo 2021
       Vue.set(state.preferences, 'contrast', contrast)
-      // Set contrast based on if auto is enabled and whether if the system/user perferencee is dark
-      vuetify.framework.theme.dark = (contrast === 'auto')
-        ? window.matchMedia('(prefers-color-scheme: dark)').matches
-        : contrast === 'dark'
+      // Set contrast based on if auto is enabled and whether the system/user perferencee is dark
+      vuetify.framework.theme.dark = contrastIsDark(contrast)
     },
 
     setPreferencesDrawer(state, boolean) {
@@ -191,3 +190,9 @@ export default new Vuex.Store({
     cacheHandler
   ]
 })
+
+function contrastIsDark(contrast) {
+  return (contrast === 'auto')
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : contrast === 'dark'
+}
