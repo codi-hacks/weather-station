@@ -70,22 +70,13 @@ export default new Vuex.Store({
       themes.light['text-primary'] = vuetify.userPreset.theme.themes[theme]['text-primary-light']
       themes.light['text-inverse'] = vuetify.userPreset.theme.themes[theme]['text-primary-dark']
     },
-    setContrast(state, contrast) {
+    setContrast(state, contrast) { // (c) Christopher Carrillo 2021
       Vue.set(state.preferences, 'contrast', contrast)
-      const mql = window.matchMedia('(prefers-color-scheme: dark)')
-      /*
-      if (contrast === 'auto') {
-        alert('auto')
-        vuetify.framework.theme.dark = mql.matches
-      } else {
-        alert('!auto')
-        vuetify.framework.theme.dark = contrast === 'dark'
-      }
-      */
-
-      //vuetify.framework.theme.dark = contrast === 'dark'
-      //vuetify.framework.theme.dark = 'dark' // set dark
-      //vuetify.framework.theme.dark = 'light' === 'dark' // set light
+      // The following ternary statement works
+      // Still needs work as the theme will not immediately change when user changes their system contrast settings
+      vuetify.framework.theme.dark = (contrast === 'auto')
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : contrast === 'dark'
     },
 
     setPreferencesDrawer(state, boolean) {
