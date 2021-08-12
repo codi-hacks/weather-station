@@ -16,7 +16,7 @@ export default new Vuex.Store({
     sensors: {},
     sensorPromises: {},
     preferences: {
-      contrast: 'light',
+      contrast: 'auto',
       elevation: 'feet',
       showAlert: true,
       temperature: 'fahrenheit',
@@ -72,7 +72,20 @@ export default new Vuex.Store({
     },
     setContrast(state, contrast) {
       Vue.set(state.preferences, 'contrast', contrast)
-      vuetify.framework.theme.dark = contrast === 'dark'
+      const mql = window.matchMedia('(prefers-color-scheme: dark)')
+      /*
+      if (contrast === 'auto') {
+        alert('auto')
+        vuetify.framework.theme.dark = mql.matches
+      } else {
+        alert('!auto')
+        vuetify.framework.theme.dark = contrast === 'dark'
+      }
+      */
+
+      //vuetify.framework.theme.dark = contrast === 'dark'
+      //vuetify.framework.theme.dark = 'dark' // set dark
+      //vuetify.framework.theme.dark = 'light' === 'dark' // set light
     },
 
     setPreferencesDrawer(state, boolean) {

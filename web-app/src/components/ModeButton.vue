@@ -59,4 +59,5 @@ border-color: var(--v-secondary-lighten5);
 .mode-button.theme--dark {
 border-color: var(--v-secondary-base);
 }
+
 </style>

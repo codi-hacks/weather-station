@@ -27,7 +27,6 @@ export default new Vuetify({
         error: '#ff5722',
         info: '#1976D2',
         primary: '#4caf50',
-        //secondary: '#1B5E20',
         secondary: '#35330d',
         success: '#009688',
         'text-primary-dark': '#ffffff',
