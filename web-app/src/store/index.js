@@ -72,8 +72,7 @@ export default new Vuex.Store({
     },
     setContrast(state, contrast) { // (c) Christopher Carrillo 2021
       Vue.set(state.preferences, 'contrast', contrast)
-      // The following ternary statement works
-      // Still needs work as the theme will not immediately change when user changes their system contrast settings
+      // Set contrast based on if auto is enabled and whether if the system/user perferencee is dark
       vuetify.framework.theme.dark = (contrast === 'auto')
         ? window.matchMedia('(prefers-color-scheme: dark)').matches
         : contrast === 'dark'
