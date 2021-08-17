@@ -60,7 +60,7 @@ The weather stations send measurements to the API server to collect, which in tu
 - **Week 6**
   - [x] Data modeling on the API versus in the web app
 - **Week 7**
-  - Web app workshop (part 3)
+  - Web app workshop (part 3, final)
     - [x] Routing ([#2](https://github.com/JTCC-Programming-Club/weather-station/issues/2))
 - **Week 8**
   - API server workshop (part 1)
@@ -103,10 +103,13 @@ The weather stations send measurements to the API server to collect, which in tu
 - **Week 14**
   - API server workshop (part 7)
     - [x] Add homepage ([#21](https://github.com/JTCC-Programming-Club/weather-station/issues/21))
-    - [ ] Resolve CORS issues ([#16](https://github.com/jtcc-programming-club/weather-station/issues/16))
-    - [ ] Connect to server from web app
-  - Web app workshop (part 8)
-    - [ ] Customizing the PWA mobile experience (color themes, service worker functionality)
-    - [ ] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
+    - [x] Resolve CORS issues ([#16](https://github.com/jtcc-programming-club/weather-station/issues/16))
+    - [x] Connect to server from web app
+  - Web app workshop (part 8, final)
+    - [x] Customizing the PWA mobile experience (color themes, service worker functionality)
+    - [x] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
 - **Week 15**
-  - **Wrapping up final issues...**
+  - Web app workshop (part 9, final)
+    - [ ] Add color themes ([#39](https://github.com/JTCC-Programming-Club/weather-station/issues/39))
+    - [ ] Improve card title text ([#52](https://github.com/JTCC-Programming-Club/weather-station/issues/52))
+    - [ ] Creating a 1.0 release tag!
