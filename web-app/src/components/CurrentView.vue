@@ -51,16 +51,14 @@ export default {
       default: () => ([])
     }
   },
-  data() {
-    return {
-      chartOptions: {
+  computed: {
+    chartOptions() {
+      return {
         chart: {
           sparkline: {
             enabled: true
           }
         },
-        // TODO: Fix this when theming is applied
-        colors: ['#8ac5ff'],
         grid: {
           row: {
             opacity: 0
@@ -100,7 +98,7 @@ export default {
   padding-bottom: 4px;
   padding-top: 4px;
   text-align: center;
-  text-shadow: 2px 2px white;
+  text-shadow: 2px 2px var(--v-text-inverse-base);
 }
 
 .header {

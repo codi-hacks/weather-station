@@ -46,10 +46,18 @@ export default {
 
 <style scoped>
 .mode-button {
-  border-color: var(--v-secondary-lighten5);
   margin-top: 2px;
   position: absolute;
   left: 2px;
   z-index: 1;
 }
+
+.mode-button.theme--light {
+border-color: var(--v-secondary-lighten5);
+}
+
+.mode-button.theme--dark {
+border-color: var(--v-secondary-base);
+}
+
 </style>

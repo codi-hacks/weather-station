@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import cacheHandler from './cache-handler'
-import Deferred from '../plugins/deferred'
+import Deferred from '@/plugins/deferred'
+import vuetify from '@/plugins/vuetify'
 
 Vue.use(Vuex)
 
@@ -15,13 +16,20 @@ export default new Vuex.Store({
     sensors: {},
     sensorPromises: {},
     preferences: {
+      contrast: 'auto',
       elevation: 'feet',
       showAlert: true,
       temperature: 'fahrenheit',
-      theme: 'light'
+      theme: 'blue'
     },
     stations: [],
     stationPromise: new Deferred()
+  },
+  getters: {
+    theme(state) {
+      const contrast = contrastIsDark(state.preferences.contrast) ? 'dark' : 'light'
+      return vuetify.framework.theme.themes[contrast]
+    }
   },
   mutations: {
     addBookmark(state, card) {
@@ -44,6 +52,31 @@ export default new Vuex.Store({
     setNavDrawer(state, boolean) {
       Vue.set(state, 'navDrawer', boolean)
     },
+
+    setPreferences(state, preferences) {
+      Vue.set(state, 'preferences', {
+        ...state.preferences,
+        ...preferences
+      })
+    },
+    setTheme(state, theme) {
+      Vue.set(state.preferences, 'theme', theme)
+      const themes = vuetify.framework.theme.themes
+      themes.dark = Object.assign({}, vuetify.userPreset.theme.themes[theme])
+      themes.dark['chart-bg'] = vuetify.userPreset.theme.themes[theme]['chart-bg-dark']
+      themes.dark['text-primary'] = vuetify.userPreset.theme.themes[theme]['text-primary-dark']
+      themes.dark['text-inverse'] = vuetify.userPreset.theme.themes[theme]['text-primary-light']
+      themes.light = Object.assign({}, vuetify.userPreset.theme.themes[theme])
+      themes.light['chart-bg'] = vuetify.userPreset.theme.themes[theme]['chart-bg-light']
+      themes.light['text-primary'] = vuetify.userPreset.theme.themes[theme]['text-primary-light']
+      themes.light['text-inverse'] = vuetify.userPreset.theme.themes[theme]['text-primary-dark']
+    },
+    setContrast(state, contrast) { // (c) Christopher Carrillo 2021
+      Vue.set(state.preferences, 'contrast', contrast)
+      // Set contrast based on if auto is enabled and whether the system/user perferencee is dark
+      vuetify.framework.theme.dark = contrastIsDark(contrast)
+    },
+
     setPreferencesDrawer(state, boolean) {
       Vue.set(state.preferences, 'showAlert', false)
       Vue.set(state, 'preferencesDrawer', boolean)
@@ -76,13 +109,6 @@ export default new Vuex.Store({
         if (!state.sensorPromises[sensor.id]) {
           Vue.set(state.sensorPromises, sensor.id, new Deferred())
         }
-      })
-    },
-
-    setPreferences(state, preferences) {
-      Vue.set(state, 'preferences', {
-        ...state.preferences,
-        ...preferences
       })
     },
 
@@ -164,3 +190,9 @@ export default new Vuex.Store({
     cacheHandler
   ]
 })
+
+function contrastIsDark(contrast) {
+  return (contrast === 'auto')
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : contrast === 'dark'
+}
