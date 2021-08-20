@@ -94,7 +94,7 @@ pub fn udp_server(server: UdpServer) -> std::result::Result<(), CustomError> {
 }
 
 
-/// Parses a slice with the form "key=value", seperated by commas. Expects only
+/// Parses a slice with the form "key=value", separated by commas. Expects only
 /// valid fields; pressure, air_temp, voltage, signal, id.
 fn parse_message(mut input: &[u8]) -> Result<(&[u8], Message), UdpError> {
     let mut values: HashMap<String, BigDecimal> = HashMap::new();
@@ -222,7 +222,7 @@ mod tests {
     fn test_parse_message() {
         let (rest, _) = parse_message(VALID_MESSAGE).unwrap();
         assert_eq!(rest.len(), 0);
-        // try a weirdly formed message
+        // Try a weirdly formed message
         let res = parse_message(b"hello my name is bob");
         assert_eq!(true, res.is_err());
     }

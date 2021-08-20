@@ -58,5 +58,7 @@ If your server is running correctly and the weather station is also configured a
 
 ```
 server listening 0.0.0.0:3381
-[2021-04-18 17:21] 192.168.1.232:3381 - pressure=1002.87,air_temp=25.41,humidity=57.85,altitude=86.80,voltage=3.76,signal=-59,id=f9f32a13-d08e-49a0-b07f-a80cd98d27fe,key=331206968
+[2021-08-19 23:22] 127.0.0.1:52749 - pressure=1002.87,air_temp=25.41,humidity=57.85,altitude=86.80,voltage=3.76,signal=-59,id=053050d3-7fa7-438d-93f1-8285fd5eef79#2142444442
 ```
+
+This is a raw dump of the message the server receives from the station, which is a plaintext UDP datagram. For more information on how it is constructed and deconstructed, see the [API server's README](../api-server/README.md).

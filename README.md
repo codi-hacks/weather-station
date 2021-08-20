@@ -15,7 +15,7 @@ This is a [monorepo](https://en.wikipedia.org/wiki/Monorepo) with all the instru
 
 ## Overview
 
-The weather stations send measurements to the API server to collect, which in turn serves this data to the web app that users load on their computer or mobile device.
+The weather stations send measurements to the API server to collect, which in turn serves this data to the web app (PWA) that users load on their computer or mobile device.
 
 ![diagram overviewing the software architecture](./diagram.svg)
 
@@ -110,6 +110,6 @@ The weather stations send measurements to the API server to collect, which in tu
     - [x] Add dashboard prompt when dashboard is empty ([#3](https://github.com/JTCC-Programming-Club/weather-station/issues/3))
 - **Week 15**
   - Web app workshop (part 9, final)
-    - [ ] Add color themes ([#39](https://github.com/JTCC-Programming-Club/weather-station/issues/39))
+    - [x] Add color themes ([#39](https://github.com/JTCC-Programming-Club/weather-station/issues/39))
     - [ ] Improve card title text ([#52](https://github.com/JTCC-Programming-Club/weather-station/issues/52))
     - [ ] Creating a 1.0 release tag!

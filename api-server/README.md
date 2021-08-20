@@ -8,7 +8,10 @@
 - [Production setup](#production-setup)
   - [Using NGINX](#using-nginx)
   - [Using Systemd](#using-systemd)
+  - [Port forwarding](#port-forwarding)
 - [Migrations](#migrations)
+- [Sending test measurements](#sending-test-measurements)
+- [Parsing measurement data](#parsing-measurement-data)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -136,6 +139,11 @@ May 21 11:55:03 Hubble server[1501185]: [2021-05-21T15:55:03Z INFO  actix_server
 
 - Notice the service is started but not "enabled", meaning it won't auto-start on reboot. To enable it, run `systemctl enable weather-api.service`
 
+### Port forwarding
+
+Assuming you have the HTTP socket connected via a reverse proxy, you will either need to use a UDP proxy for the UDP port or directly expose the UDP port through your firewall.
+The UDP port listens for incoming weather station measurements.
+Before configuring real weather station hardware to use the port, ensure you can successfully send data by using the provided measurements script to send test measurements ([see below](#sending-test-measurements) on how to use).
 
 ## Migrations
 
@@ -146,3 +154,35 @@ Migrations already ran when the `diesel setup` command was run, but if you are u
 ```sh
 diesel migrate
 ```
+
+
+## Sending test measurements
+
+If you wish to test the server's UDP port, use the provided `measurement` script like so:
+
+```
+./target/release/measurement 127.0.0.1:3381 053050d3-7fa7-438d-93f1-8285fd5eef79 aV3!mIv9ci47y90Gqo air_temp=23.4,humidity=62.45
+```
+or via Cargo in development:
+```
+cargo run --bin measurement -- 127.0.0.1:3381 053050d3-7fa7-438d-93f1-8285fd5eef79 aV3!mIv9ci47y90Gqo air_temp=23.4,humidity=62.45
+```
+Run `./target/release/measurement --help` for more information.
+
+
+## Parsing measurement data
+
+A datagram consists of values separated by commas, where each `key=value` pair represents a sensor and a measurement for that sensor.
+Note that the sensor "keys", rather than being the sensors' UUIDs, are actually the sensors' `alias` fields.
+The purpose of the alias is to reduce the datagram size, keep the datagram human-readable, but more importantly make it easy to configure some common sensors you'll typically see on a weather station without having to tediously map each sensor UUID manually inside the stations' Arduino sketch files.
+
+```
+air_temp=23.4,humidity=62.45,id=053050d3-7fa7-438d-93f1-8285fd5eef79#540151989
+```
+
+The station `id` is also sent as a key-value pair and is required so the server knows which station the measurements are coming from.
+
+The end of the message is a hash symbol (`#`) followed by a CRC hash.
+This hash is generated from the full message (before the hash itself is added of course) **and** the station's secret key.
+The purpose of appending this CRC hash is so the server can verify the message came from the weather station device it says it did.
+Attempting to modify the message in any way will result in the hash being invalid and the server will discard the entire message.
