@@ -1,6 +1,9 @@
 <template>
   <div>
     <ModeButton :value="mode" @input="setMode" />
+    <CardHeader>
+      {{sensor.label}}
+    </CardHeader>
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:header1>Estimated</template>
@@ -20,7 +23,8 @@
       />
     <!-- Don't show this on the dashboard -->
     <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
-  </div>
+
+    </div>
 </template>
 
 <script>
@@ -29,6 +33,7 @@ import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
+import CardHeader from '../CardHeader'
 
 export default {
   components: {
@@ -36,7 +41,9 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
-    TimeButtons
+    TimeButtons,
+    CardHeader
+
   },
   props: {
     sensor: {

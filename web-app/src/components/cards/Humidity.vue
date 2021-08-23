@@ -1,6 +1,9 @@
 <template>
   <div>
     <ModeButton :value="mode" @input="setMode" />
+    <CardHeader>
+      {{sensor.label}}
+    </CardHeader>
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>{{ currentHumidity }}%</template>
@@ -27,6 +30,7 @@ import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
+import CardHeader from '../CardHeader'
 
 export default {
   components: {
@@ -34,7 +38,8 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
-    TimeButtons
+    TimeButtons,
+    CardHeader
   },
   props: {
     sensor: {

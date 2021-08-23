@@ -1,6 +1,9 @@
 <template>
   <div>
     <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
+    <CardHeader>
+      {{sensor.label}}
+    </CardHeader>
     <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
     <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>
@@ -32,6 +35,7 @@ import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
+import CardHeader from '../CardHeader.vue'
 
 function voltsToPercent(volts) {
   const map = [
@@ -67,7 +71,8 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
-    TimeButtons
+    TimeButtons,
+    CardHeader
   },
   props: {
     sensor: {
