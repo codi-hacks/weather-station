@@ -1,8 +1,19 @@
 <template>
   <div>
     <ModeButton :value="mode" @input="setMode" />
-    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
-    <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
+    <CardHeader>
+      {{ sensor.label }}
+    </CardHeader>
+    <TimeButtons
+      :value="timeAgo"
+      @input="setTimeAgo"
+      :zoomed-in="zoomedIn"
+      @reset-zoom="zoomedIn = false"
+    />
+    <CurrentView
+      v-if="mode === 'current' && measurements.length"
+      :measurements="measurements"
+    >
       <template v-slot:header1>Estimated</template>
       <template v-slot:value1>{{ averageElevation }} {{ unitPref }}</template>
     </CurrentView>
@@ -17,9 +28,14 @@
       :measurements="measurements"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
-      />
+    />
     <!-- Don't show this on the dashboard -->
-    <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
+    <BookmarkButton
+      v-if="!sensor.settings"
+      :mode="mode"
+      :sensor-id="sensor.id"
+      :time-ago="timeAgo"
+    />
   </div>
 </template>
 
@@ -29,6 +45,7 @@ import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
 import TimeButtons from '../TimeButtons'
+import CardHeader from '../CardHeader'
 
 export default {
   components: {
@@ -36,7 +53,8 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
-    TimeButtons
+    TimeButtons,
+    CardHeader
   },
   props: {
     sensor: {
@@ -54,7 +72,10 @@ export default {
   },
   computed: {
     averageElevation() {
-      const sum = this.measurements.reduce((acc, el) => acc + Number(el.value), 0)
+      const sum = this.measurements.reduce(
+        (acc, el) => acc + Number(el.value),
+        0
+      )
       return Math.round((sum / this.measurements.length) * 10) / 10
     },
     measurements() {
@@ -62,8 +83,10 @@ export default {
       // Filter down to the specified time range
       if (this.timeAgo !== Infinity) {
         const now = new Date().getTime()
-        measurements = measurements
-          .filter(m => now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo)
+        measurements = measurements.filter(
+          m =>
+            now - Math.round(new Date(m.created_at).getTime()) <= this.timeAgo
+        )
       }
       // Convert to preferred unit
       return measurements.map(m => ({
@@ -91,7 +114,7 @@ export default {
         case 'meters':
           return value
         case 'feet':
-          return Math.round((value * 3.2808) * 10) / 10
+          return Math.round(value * 3.2808 * 10) / 10
       }
     }
   }
