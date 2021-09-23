@@ -18,16 +18,6 @@
       <v-app-bar-nav-icon @click="preferencesDrawerOpen = !preferencesDrawerOpen">
         <v-icon>mdi-cog</v-icon>
       </v-app-bar-nav-icon>
-      <!--
-      <v-btn
-        href="https://github.com/JTCC-Programming-Club/weather-station"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Source code</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-      -->
     </v-app-bar>
 
     <NavDrawer />
