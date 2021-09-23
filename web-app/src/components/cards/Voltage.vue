@@ -114,7 +114,7 @@ export default {
       return {
         yaxis: {
           min: 2.4,
-          max: 4.2
+          max: 4.4
         }
       }
     },
