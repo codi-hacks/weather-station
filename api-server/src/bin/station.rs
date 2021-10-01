@@ -7,17 +7,20 @@ use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
 use dotenv::dotenv;
 use std::process;
 use uuid::Uuid;
+use api::db;
+use api::db::Pool;
 
 /// Manage weather stations and their sensors using the database URL in the .env file
 const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), ")");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
+
 #[derive(Clap)]
 #[clap(version = VERSION, author = AUTHORS)]
-
 struct Opts {
     #[clap(subcommand)]
-    subcmd: SubCommand
+    subcmd: SubCommand,
 }
+
 //
 // Register names of subcommands and associated options
 // Syntax:
@@ -26,7 +29,7 @@ struct Opts {
 // View arg_enum, Arg, ArgMatches, and SubCommand in CLAP documentation on Rustlang.org
 //
 #[derive(Clap)]
-enum SubCommand {  
+enum SubCommand {
     /// Register a new station and sensors
     Create(Create),
     /// Delete an existing station and all its sensors
@@ -36,8 +39,9 @@ enum SubCommand {
     /// View an existing station's ID and key needed to write measurements via UDP socket 
     View(View),
     /// Rename existing station
-    Rename(Rename)
+    Rename(Rename),
 }
+
 //
 // SubCommand option structs
 // Syntax:
@@ -50,32 +54,33 @@ struct Create {
     #[clap(short, long)]
     label: Option<String>,
     #[clap(short, long)]
-    sensors: Option<String>
+    sensors: Option<String>,
 }
 
 #[derive(Clap)]
 struct Delete {
     /// The UUID of the station you would like to delete
-    id: Option<String>
+    id: Option<String>,
 }
 
 #[derive(Clap)]
 struct Clean {
     /// The UUID of the station you would like to clean out
-    id: Option<String>
+    id: Option<String>,
 }
 
 #[derive(Clap)]
 struct View {
     /// The UUID of the station you would like to view
-    id: Option<String>
+    id: Option<String>,
 }
 
 #[derive(Clap)]
 struct Rename {
     /// The UUID of the station you would like to rename
-    id: Option<String>
+    id: Option<String>,
 }
+
 //
 // End of option structs
 // Parse subcommands and execute matching subroutines
@@ -89,21 +94,23 @@ struct Rename {
 fn main() {
     let opts: Opts = Opts::parse();
     dotenv().ok();
-
+    let pool = db::init();
     match opts.subcmd {
-        SubCommand::Create(subopts) => create_routine(subopts),
-        SubCommand::Delete(subopts) => delete_routine(subopts),
-        SubCommand::Clean(subopts) => clean_routine(subopts),
-        SubCommand::View(subopts) => view_routine(subopts),
-        SubCommand::Rename(subopts) => rename_routine(subopts)
+        SubCommand::Create(subopts) => create_routine(subopts, &pool),
+        SubCommand::Delete(subopts) => delete_routine(subopts, &pool),
+        SubCommand::Clean(subopts) => clean_routine(subopts, &pool),
+        SubCommand::View(subopts) => view_routine(subopts, &pool),
+        SubCommand::Rename(subopts) => rename_routine(subopts, &pool)
     }
 }
+
 //
 // Subroutines (`SubCommand::sub_cmd()`) associated with each sub-command (`sub_cmd_routine()`)
 // Make sure the usage of opts as an argument matches the entries made in main()
 // Unlike `SubCommand::sub_cmd()`, option arguments cannot be ignored
 //
-fn create_routine(opts: Create) {
+fn create_routine(opts: Create, pool: &Pool) {
+    let connection = pool.get().expect("Error connecting to db. Is your DATABASE_URL correct?");
     let default_sensors: String = "air_temp,humidity,pressure,altitude,signal,voltage".to_string();
     let default_sensor_labels = vec![
         "Air temperature",
@@ -111,10 +118,10 @@ fn create_routine(opts: Create) {
         "Pressure",
         "Altitude",
         "Signal strength",
-        "Voltage"
+        "Voltage",
     ];
 
-    let sensor_types = match SensorTypesModel::find_all() {
+    let sensor_types = match SensorTypesModel::find_all(&connection) {
         Ok(s) => s,
         Err(_) => {
             println!("Error connecting to db. Is your DATABASE_URL correct?");
@@ -188,7 +195,7 @@ fn create_routine(opts: Create) {
     //
     // Write everything to the database
     //
-    let station = match StationsModel::create(label) {
+    let station = match StationsModel::create(label,&connection) {
         Ok(s) => s,
         Err(error) => {
             println!("{}", error);
@@ -204,18 +211,21 @@ fn create_routine(opts: Create) {
                 alias: alias.to_string(),
                 label: label.to_string(),
                 type_id,
-                station_id: station.id
+                station_id: station.id,
             }
         })
         .collect();
 
-    SensorsModel::create(sensors).unwrap();
+    SensorsModel::create(sensors, &connection).unwrap();
     println!("\nStation \"{}\" created. Use the following ID and key to write measurements via the UDP socket:", station.label);
     println!("ID: {}", station.id);
     println!("Key: {}", station.key);
 }
 
-fn delete_routine(opts: Delete) {
+fn delete_routine(opts: Delete, pool: &Pool) {
+    let connection = pool.get().expect("Error connecting to db. Is your DATABASE_URL correct?");
+
+
     let station: Station = match opts.id {
         Some(id) => {
             let valid_id = match Uuid::parse_str(&id[..]) {
@@ -225,16 +235,16 @@ fn delete_routine(opts: Delete) {
                     process::exit(1);
                 }
             };
-            match StationsModel::find(valid_id) {
+            match StationsModel::find(valid_id,&connection) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
                     process::exit(1);
                 }
             }
-        },
+        }
         None => {
-            let stations = match StationsModel::find_all() {
+            let stations = match StationsModel::find_all(&connection) {
                 Ok(s) => s,
                 Err(error) => {
                     println!("{}", error);
@@ -251,7 +261,7 @@ fn delete_routine(opts: Delete) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to delete?")
-                .default(choices.len() -1)
+                .default(choices.len() - 1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -267,11 +277,11 @@ fn delete_routine(opts: Delete) {
         .unwrap()
     {
         let mut measurements_deleted: usize = 0;
-        for sensor in SensorsModel::find_by_station(station.clone()).unwrap() {
-            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor).unwrap();
+        for sensor in SensorsModel::find_by_station(station.clone(),&connection).unwrap() {
+            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor,&connection).unwrap();
         }
-        let sensors_deleted = SensorsModel::delete_by_station(station.clone()).unwrap();
-        StationsModel::delete(station.id).unwrap();
+        let sensors_deleted = SensorsModel::delete_by_station(station.clone(),&connection).unwrap();
+        StationsModel::delete(station.id,&connection).unwrap();
         println!("OK. {} sensors deleted. {} measurements deleted.", sensors_deleted, measurements_deleted);
     } else {
         println!("Action aborted");
@@ -279,7 +289,9 @@ fn delete_routine(opts: Delete) {
     }
 }
 
-fn clean_routine(opts: Clean) {
+fn clean_routine(opts: Clean, pool: &Pool) {
+    let connection  = pool.get().expect("Error connecting to db. Is your DATABASE_URL correct?");
+
     let station: Station = match opts.id {
         Some(id) => {
             let valid_id = match Uuid::parse_str(&id[..]) {
@@ -289,16 +301,16 @@ fn clean_routine(opts: Clean) {
                     process::exit(1);
                 }
             };
-            match StationsModel::find(valid_id) {
+            match StationsModel::find(valid_id,&connection) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
                     process::exit(1);
                 }
             }
-        },
+        }
         None => {
-            let stations = match StationsModel::find_all() {
+            let stations = match StationsModel::find_all(&connection) {
                 Ok(s) => s,
                 Err(error) => {
                     println!("{}", error);
@@ -314,7 +326,7 @@ fn clean_routine(opts: Clean) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to clean?")
-                .default(choices.len() -1)
+                .default(choices.len() - 1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -325,8 +337,8 @@ fn clean_routine(opts: Clean) {
 
     if Confirm::with_theme(&ColorfulTheme::default())
         .with_prompt(format!(
-            "Are you sure you want to wipe all measurements for {} ({})? Note this will preserve the station and sensors.", 
-            station.id, 
+            "Are you sure you want to wipe all measurements for {} ({})? Note this will preserve the station and sensors.",
+            station.id,
             station.label
         ))
         .wait_for_newline(true)
@@ -334,8 +346,8 @@ fn clean_routine(opts: Clean) {
         .unwrap()
     {
         let mut measurements_deleted: usize = 0;
-        for sensor in SensorsModel::find_by_station(station.clone()).unwrap() {
-            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor).unwrap();
+        for sensor in SensorsModel::find_by_station(station.clone(),&connection).unwrap() {
+            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor,&connection).unwrap();
         }
         println!("OK. {} measurements deleted.", measurements_deleted);
     } else {
@@ -344,7 +356,8 @@ fn clean_routine(opts: Clean) {
     }
 }
 
-fn view_routine(opts: View) {
+fn view_routine(opts: View, pool: &Pool) {
+    let connection  = pool.get().expect("Error connecting to db. Is your DATABASE_URL correct?");
     let station: Station = match opts.id {
         Some(id) => {
             let valid_id = match Uuid::parse_str(&id[..]) {
@@ -354,16 +367,16 @@ fn view_routine(opts: View) {
                     process::exit(1);
                 }
             };
-            match StationsModel::find(valid_id) {
+            match StationsModel::find(valid_id,&connection) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
                     process::exit(1);
                 }
             }
-        },
+        }
         None => {
-            let stations = match StationsModel::find_all() {
+            let stations = match StationsModel::find_all(&connection) {
                 Ok(s) => s,
                 Err(error) => {
                     println!("{}", error);
@@ -380,7 +393,7 @@ fn view_routine(opts: View) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to view?")
-                .default(choices.len() -1)
+                .default(choices.len() - 1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -394,7 +407,9 @@ fn view_routine(opts: View) {
     println!("Key:      {}", station.key);
 }
 
-fn rename_routine(opts: Rename) {
+fn rename_routine(opts: Rename, pool: &Pool) {
+    let conn = pool.get().expect("Error connecting to db. Is your DATABASE_URL correct?");
+
     let station: Station = match opts.id {
         Some(id) => {
             let valid_id = match Uuid::parse_str(&id[..]) {
@@ -404,16 +419,16 @@ fn rename_routine(opts: Rename) {
                     process::exit(1);
                 }
             };
-            match StationsModel::find(valid_id) {
+            match StationsModel::find(valid_id,&conn) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
                     process::exit(1);
                 }
             }
-        },
+        }
         None => {
-            let stations = match StationsModel::find_all() {
+            let stations = match StationsModel::find_all(&conn) {
                 Ok(s) => s,
                 Err(error) => {
                     println!("{}", error);
@@ -429,7 +444,7 @@ fn rename_routine(opts: Rename) {
                 .collect::<Vec<_>>();
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Which station to rename?")
-                .default(choices.len() -1)
+                .default(choices.len() - 1)
                 .items(&choices[..])
                 .interact()
                 .unwrap();
@@ -437,22 +452,21 @@ fn rename_routine(opts: Rename) {
             stations[selection].clone()
         }
     };
-    
+
     let nn: String = Input::with_theme(&ColorfulTheme::default())
         .with_prompt("What label would you like for this weather station?")
         .interact_text()
         .unwrap();
-      
-    if
-        Confirm::with_theme(&ColorfulTheme::default())
-            .with_prompt(format!("Are you sure you want to rename \"{}\" to \"{}\"", station.label, nn))
-            .wait_for_newline(true)
-            .interact()
-            .unwrap()
-    {
-        StationsModel::update(station.id, nn, station.key).map_err(|err| println!("{:?}", err)).ok();
-        println!("Station renamed");
 
+    if
+    Confirm::with_theme(&ColorfulTheme::default())
+        .with_prompt(format!("Are you sure you want to rename \"{}\" to \"{}\"", station.label, nn))
+        .wait_for_newline(true)
+        .interact()
+        .unwrap()
+    {
+        StationsModel::update(station.id, nn, station.key,&conn).map_err(|err| println!("{:?}", err)).ok();
+        println!("Station renamed");
     } else {
         println!("Action aborted");
         process::exit(1);

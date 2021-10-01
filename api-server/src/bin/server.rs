@@ -1,7 +1,4 @@
-#[macro_use]
-extern crate diesel_migrations;
-
-use api::homepage;
+use api::{homepage, db};
 use api::stations;
 use api::sensor_types;
 use api::sensors;
@@ -15,27 +12,17 @@ use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
 use api::db::Pool;
 
-
-
-embed_migrations!();
-
-
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
-    let db_url = env::var("DATABASE_URL").expect("Database url not set");
-    let manager = ConnectionManager::<PgConnection>::new(db_url);
-    let pool = Pool::new(manager).expect("Failed to create db pool");
-    //Running DB migrations
-    let conn = pool.get().expect("Failed to get db connection");
-    embedded_migrations::run(&conn).unwrap();
+    let pool = db::init();
     let thread_pool = pool.clone();
     thread::spawn(move || {
         let address = env::var("UDP").expect("Please set the UDP environment variable in .env");
         let udp_socket = UdpSocket::bind(address.clone()).unwrap();
         info!("Listening on UDP address {}", address);
-        udp_server(UdpServer::new(udp_socket),thread_pool).unwrap();
+        udp_server(UdpServer::new(udp_socket), thread_pool).unwrap();
     });
 
 
