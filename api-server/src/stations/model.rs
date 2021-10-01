@@ -1,4 +1,3 @@
-use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::stations;
 use crate::sensors::SensorsModel;
@@ -8,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::{collections::HashMap};
 use uuid::Uuid;
+use crate::db::DbConnection;
 
 #[derive(Serialize, Deserialize, AsChangeset, Insertable)]
 #[table_name = "stations"]
@@ -35,9 +35,8 @@ pub struct StationsModel {
 }
 
 impl StationsModel {
-    pub fn as_hash() -> Result<HashMap<String, Station>, CustomError> {
-        let conn = db::connection()?;
-        let stations = stations::table.load::<StationsModel>(&conn)?;
+    pub fn as_hash(conn: &DbConnection) -> Result<HashMap<String, Station>, CustomError> {
+        let stations = stations::table.load::<StationsModel>(conn)?;
         let mut hash = HashMap::new();
         for station in stations {
             hash.insert(station.id.to_string(), Station {
@@ -50,11 +49,10 @@ impl StationsModel {
         Ok(hash)
     }
 
-    pub fn find_all() -> Result<Vec<Station>, CustomError> {
-        let conn = db::connection()?;
-        let stations = stations::table.load::<StationsModel>(&conn)?;
+    pub fn find_all(conn: &DbConnection) -> Result<Vec<Station>, CustomError> {
+        let stations = stations::table.load::<StationsModel>(conn)?;
         Ok(stations.into_iter().map(move |station| {
-            let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(&conn).unwrap();
+            let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(conn).unwrap();
             Station {
                 id: station.id,
                 label: station.label,
@@ -64,10 +62,9 @@ impl StationsModel {
         }).collect())
     }
 
-    pub fn find(id: Uuid) -> Result<Station, CustomError> {
-        let conn = db::connection()?;
-        let station: Self = stations::table.filter(stations::id.eq(id)).first(&conn)?;
-        let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(&conn)?;
+    pub fn find(id: Uuid, conn: &DbConnection) -> Result<Station, CustomError> {
+        let station: Self = stations::table.filter(stations::id.eq(id)).first(conn)?;
+        let sensors: Vec<SensorsModel> = SensorsModel::belonging_to(&station).load(conn)?;
         Ok(Station {
             id: station.id,
             label: station.label,
@@ -76,7 +73,7 @@ impl StationsModel {
         })
     }
 
-    pub fn create(label: String) -> Result<Station, CustomError> {
+    pub fn create(label: String,conn: &DbConnection) -> Result<Station, CustomError> {
         use crate::schema::stations::dsl::{label as label_column, key as key_column};
 
         // Generate a station key
@@ -86,10 +83,9 @@ impl StationsModel {
             .map(char::from)
             .collect();
 
-        let conn = db::connection()?;
         let station: Self = diesel::insert_into(stations::table)
             .values((label_column.eq(label), key_column.eq(random_key)))
-            .get_result(&conn)?;
+            .get_result(conn)?;
 
         Ok(Station {
             id: station.id,
@@ -99,20 +95,18 @@ impl StationsModel {
         })
     }
 
-    pub fn update(id: Uuid, label: String, key: String) -> Result<Self, CustomError> {
+    pub fn update(id: Uuid, label: String, key: String,conn: &DbConnection) -> Result<Self, CustomError> {
         use crate::schema::stations::dsl::{label as label_column, key as key_column};
 
-        let conn = db::connection()?;
         let station = diesel::update(stations::table)
             .filter(stations::id.eq(id))
             .set((label_column.eq(label), key_column.eq(key)))
-            .get_result(&conn)?;
+            .get_result(conn)?;
         Ok(station)
     }
 
-    pub fn delete(id: Uuid) -> Result<usize, CustomError> {
-        let conn = db::connection()?;
-        let res = diesel::delete(stations::table.filter(stations::id.eq(id))).execute(&conn)?;
+    pub fn delete(id: Uuid,conn: &DbConnection) -> Result<usize, CustomError> {
+        let res = diesel::delete(stations::table.filter(stations::id.eq(id))).execute(conn)?;
         Ok(res)
     }
 }

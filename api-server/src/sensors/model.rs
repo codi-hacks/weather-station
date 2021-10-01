@@ -1,4 +1,3 @@
-use crate::db;
 use crate::error_handler::CustomError;
 use crate::schema::{sensors, sensor_types, stations};
 use crate::stations::{Station, StationsModel};
@@ -9,6 +8,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
+use crate::db::DbConnection;
 
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize)]
@@ -55,11 +55,10 @@ pub struct SensorsModel {
 }
 
 impl SensorsModel {
-    pub fn find_all() -> Result<Vec<Sensor>, CustomError> {
-        let conn = db::connection()?;
-        let sensors = sensors::table.load::<SensorsModel>(&conn)?;
-        let sensor_types = SensorTypesModel::as_hash()?;
-        let stations = StationsModel::as_hash()?;
+    pub fn find_all(conn: &DbConnection) -> Result<Vec<Sensor>, CustomError> {
+        let sensors = sensors::table.load::<SensorsModel>(conn)?;
+        let sensor_types = SensorTypesModel::as_hash(conn)?;
+        let stations = StationsModel::as_hash(conn)?;
 
         let sensors = sensors.into_iter().filter_map(|sensor| {
             match sensor_types.get(&sensor.type_id.to_string()) {
@@ -96,20 +95,19 @@ impl SensorsModel {
         Ok(sensors)
     }
 
-    pub fn find(id: Uuid) -> Result<Sensor, CustomError> {
+    pub fn find(id: Uuid,conn: &DbConnection) -> Result<Sensor, CustomError> {
         use crate::schema::measurements::dsl::{created_at as measurement_created_at};
 
-        let conn = db::connection()?;
         let time_ago: NaiveDateTime = Local::now().naive_local() - Duration::days(90);
-        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
+        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(conn)?;
         let measurements: Vec<MeasurementsModel> = MeasurementsModel::belonging_to(&sensor)
             .order(measurement_created_at.asc())
             .filter(measurement_created_at.ge(time_ago))
             .limit(50_000)
-            .load(&conn)?;
-        let sensor_type: SensorTypesModel = sensor_types::table.filter(sensor_types::id.eq(sensor.type_id)).first(&conn)?;
+            .load(conn)?;
+        let sensor_type: SensorTypesModel = sensor_types::table.filter(sensor_types::id.eq(sensor.type_id)).first(conn)?;
         let sensor_type_id = sensor_type.id.clone();
-        let station: StationsModel = stations::table.filter(stations::id.eq(sensor.station_id)).first(&conn)?;
+        let station: StationsModel = stations::table.filter(stations::id.eq(sensor.station_id)).first(conn)?;
         Ok(Sensor {
             id: sensor.id,
             alias: sensor.alias,
@@ -134,13 +132,12 @@ impl SensorsModel {
         })
     }
 
-    pub fn find_by_station(station: Station) -> Result<Vec<Sensor>, CustomError> {
-        let conn = db::connection()?;
+    pub fn find_by_station(station: Station,conn: &DbConnection) -> Result<Vec<Sensor>, CustomError> {
         let sensors: Vec<Self> = SensorsModel::belonging_to(&StationsModel {
             id: station.id.clone(),
             label: station.label.clone(),
             key: station.key.clone()
-        }).load(&conn)?;
+        }).load(conn)?;
         let sensors = sensors.into_iter().map(|sensor| {
             Sensor {
                 id: sensor.id,
@@ -158,19 +155,16 @@ impl SensorsModel {
         Ok(sensors)
     }
 
-    pub fn create(sensors: Vec<NewSensor>) -> Result<Vec<Self>, CustomError> {
-        let conn = db::connection()?;
-
+    pub fn create(sensors: Vec<NewSensor>, conn: &DbConnection) -> Result<Vec<Self>, CustomError> {
         let sensors = diesel::insert_into(sensors::table)
             .values(sensors)
-            .get_results(&conn)?;
+            .get_results(conn)?;
         Ok(sensors)
     }
 
     // Update data
-    pub fn touch(id: Uuid) -> Result<Self, CustomError> {
-        let conn = db::connection()?;
-        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(&conn)?;
+    pub fn touch(id: Uuid, conn: &DbConnection) -> Result<Self, CustomError> {
+        let sensor: Self = sensors::table.filter(sensors::id.eq(id)).first(conn)?;
         let sensor = diesel::update(sensors::table)
             .filter(sensors::id.eq(id))
             .set((
@@ -180,23 +174,21 @@ impl SensorsModel {
                 sensors::station_id.eq(sensor.station_id),
                 sensors::updated_at.eq(Local::now().naive_local())
             ))
-            .get_result(&conn)?;
+            .get_result(conn)?;
         Ok(sensor)
     }
 
-    pub fn delete(id: Uuid) -> Result<usize, CustomError> {
-        let conn = db::connection()?;
-        let res = diesel::delete(sensors::table.filter(sensors::id.eq(id))).execute(&conn)?;
+    pub fn delete(id: Uuid, conn: &DbConnection) -> Result<usize, CustomError> {
+        let res = diesel::delete(sensors::table.filter(sensors::id.eq(id))).execute(conn)?;
         Ok(res)
     }
 
-    pub fn delete_by_station(station: Station) -> Result<usize, CustomError> {
-        let conn = db::connection()?;
+    pub fn delete_by_station(station: Station, conn: &DbConnection) -> Result<usize, CustomError> {
         let station = StationsModel {
             id: station.id,
             label: station.label,
             key: station.key
         };
-        Ok(diesel::delete(SensorsModel::belonging_to(&station)).execute(&conn)?)
+        Ok(diesel::delete(SensorsModel::belonging_to(&station)).execute(conn)?)
     }
 }
