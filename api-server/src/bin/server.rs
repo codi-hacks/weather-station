@@ -8,9 +8,6 @@ use dotenv::dotenv;
 use log::info;
 use listenfd::ListenFd;
 use std::{env, net::UdpSocket, thread};
-use diesel::r2d2::ConnectionManager;
-use diesel::PgConnection;
-use api::db::Pool;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
