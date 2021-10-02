@@ -38,6 +38,13 @@ impl From<DieselError> for CustomError {
     }
 }
 
+impl From<r2d2::Error> for CustomError {
+    fn from(error: r2d2::Error) -> CustomError {
+        CustomError::new(500, format!("Unknown Diesel error: {}", error))
+    }
+}
+
+
 impl ResponseError for CustomError {
     fn error_response(&self) -> HttpResponse {
         let status_code = match StatusCode::from_u16(self.error_status_code) {

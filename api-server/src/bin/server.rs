@@ -1,9 +1,8 @@
-use api::db;
-use api::homepage;
+use api::{homepage, db};
 use api::stations;
 use api::sensor_types;
 use api::sensors;
-use api::udp::{UdpServer, udp_server,};
+use api::udp::{UdpServer, udp_server};
 use actix_web::{App, HttpServer, middleware::Logger, middleware::DefaultHeaders};
 use dotenv::dotenv;
 use log::info;
@@ -14,18 +13,20 @@ use std::{env, net::UdpSocket, thread};
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
-    db::init();
-
+    let pool = db::init();
+    let thread_pool = pool.clone();
     thread::spawn(move || {
         let address = env::var("UDP").expect("Please set the UDP environment variable in .env");
         let udp_socket = UdpSocket::bind(address.clone()).unwrap();
         info!("Listening on UDP address {}", address);
-        udp_server(UdpServer::new(udp_socket)).unwrap();
+        udp_server(UdpServer::new(udp_socket), thread_pool).unwrap();
     });
 
+
     let mut listenfd = ListenFd::from_env();
-    let mut server = HttpServer::new(||
+    let mut server = HttpServer::new(move ||
         App::new()
+            .data(pool.clone())
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
             .wrap(DefaultHeaders::new().header("Access-Control-Allow-Methods", "GET"))

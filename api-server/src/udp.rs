@@ -12,6 +12,7 @@ use nom::{
 };
 use std::{net::UdpSocket, collections::HashMap};
 use uuid::Uuid;
+use crate::db::Pool;
 
 #[derive(Debug, Clone)]
 pub enum UdpError { Custom(String) }
@@ -42,8 +43,9 @@ impl std::fmt::Debug for Message {
 }
 
 /// runs an infinite loop to process UDP messages
-pub fn udp_server(server: UdpServer) -> std::result::Result<(), CustomError> {
+pub fn udp_server(server: UdpServer, pool: Pool) -> std::result::Result<(), CustomError> {
     for msg in server {
+        let connection = pool.get().unwrap();
         // Validate the station ID
         info!("UDP message {:?}", msg);
         let station_id = match Uuid::parse_str(&msg.station_id) {
@@ -53,7 +55,7 @@ pub fn udp_server(server: UdpServer) -> std::result::Result<(), CustomError> {
                 continue
             }
         };
-        let station = match StationsModel::find(station_id) {
+        let station = match StationsModel::find(station_id,&connection) {
             Ok(s) => s,
             Err(e) => {
                 info!("Could not find specified station {:?}", e);
@@ -84,7 +86,7 @@ pub fn udp_server(server: UdpServer) -> std::result::Result<(), CustomError> {
                     continue
                 }
             };
-            match MeasurementsModel::create(sensor_id, measurement_value.clone()) {
+            match MeasurementsModel::create(sensor_id, measurement_value.clone(),&connection) {
                 Ok(m) => debug!("Successfully written measurement: {}={}", alias, m.value),
                 Err(error) => warn!("{}", error)
             };
