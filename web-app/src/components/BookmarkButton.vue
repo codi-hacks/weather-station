@@ -1,7 +1,8 @@
 <template>
-  <div class="bookmark-button">
+  <div class="bookmark-button" :class="{ 'edit-mode': editMode }">
     <v-btn x-small @click="toggleBookmark()">
-      <v-icon v-if="bookmarked">mdi-bookmark-check-outline</v-icon>
+      <v-icon v-if="isDashboard" small>mdi-trash-can-outline</v-icon>
+      <v-icon v-else-if="bookmarked">mdi-bookmark-check-outline</v-icon>
       <v-icon v-else>mdi-bookmark-plus</v-icon>
     </v-btn>
   </div>
@@ -12,6 +13,14 @@ import { mapMutations } from 'vuex'
 
 export default {
   props: {
+    editMode: {
+      required: true,
+      type: Boolean
+    },
+    isDashboard: {
+      required: true,
+      type: Boolean
+    },
     mode: {
       required: true,
       type: String
@@ -63,18 +72,9 @@ export default {
   z-index: 1;
 }
 
-/* Always display the button if this is a touch device */
-@media (pointer: none) {
-  .bookmark-button {
+@media screen and (max-width: 1000px) {
+  .bookmark-button.edit-mode {
     display: block;
   }
 }
-
-/* Backwards compatibility */
-@media (hover: none) {
-  .bookmark-button {
-    display: block;
-  }
-}
-
 </style>

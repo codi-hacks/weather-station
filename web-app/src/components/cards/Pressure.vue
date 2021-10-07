@@ -1,7 +1,7 @@
 <template>
   <div>
     <ModeButton
-      :editMode="editMode"
+      :edit-mode="editMode"
       :value="mode"
       @input="setMode"
     />
@@ -12,7 +12,7 @@
       </div>
     </CardHeader>
     <TimeButtons
-      :editMode="editMode"
+      :edit-mode="editMode"
       :value="timeAgo"
       @input="setTimeAgo"
       :zoomed-in="zoomedIn"
@@ -33,8 +33,14 @@
       :options="chartOptions"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
-      />
-    <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
+    />
+    <BookmarkButton
+      :edit-mode="editMode"
+      :is-dashboard="!!sensor.settings"
+      :mode="mode"
+      :sensor-id="sensor.id"
+      :time-ago="timeAgo"
+    />
   </div>
 </template>
 
