@@ -10,43 +10,49 @@
     >
       <ElevationCard
         v-if="sensor.type.label === 'elevation'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <HumidityCard
         v-else-if="sensor.type.label === 'humidity'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <PressureCard
         v-else-if="sensor.type.label === 'pressure'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <SignalCard
         v-else-if="sensor.type.label === 'signal'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <TemperatureCard
         v-else-if="sensor.type.label === 'temperature'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
       <VoltageCard
         v-else-if="sensor.type.label === 'voltage'"
+        :edit-mode="editMode"
         :sensor="sensor"
-        @change-mode="changeMode(sensor.id, $event)"
+        @change-mode="changeCardView(sensor.id, $event)"
         @change-time-ago="changeTimeAgo(sensor.id, $event)"
         class="card"
       />
@@ -75,13 +81,18 @@ export default {
     VoltageCard
   },
   props: {
+    editMode: {
+      default: true,
+      required: false,
+      type: Boolean
+    },
     sensors: {
       required: true,
       type: Array
     }
   },
   methods: {
-    changeMode(sensorId, mode) {
+    changeCardView(sensorId, mode) {
       this.$emit('change-mode', { sensorId, mode })
     },
     changeTimeAgo(sensorId, timeAgo) {
@@ -137,10 +148,5 @@ export default {
 
 /deep/ .card:hover .bookmark-button {
   display: block;
-}
-
-@media screen and (max-width: 640px) {
-  .card {
-  }
 }
 </style>

@@ -1,13 +1,23 @@
 <template>
   <div>
-    <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
-    <CardHeader>
+    <ModeButton
+      :editMode="editMode"
+      :modes="['percentage-chart', 'chart', 'current']" :value="mode"
+      @input="setMode"
+    />
+    <CardHeader :editMode="editMode">
       <div>
         {{ sensor.label }}
         <span v-if="sensor.settings">- {{ sensor.station.label }}</span>
       </div>
     </CardHeader>
-    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
+    <TimeButtons
+      :editMode="editMode"
+      :value="timeAgo"
+      @input="setTimeAgo"
+      :zoomed-in="zoomedIn"
+      @reset-zoom="zoomedIn = false"
+    />
     <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>
         {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
@@ -78,6 +88,10 @@ export default {
     CardHeader
   },
   props: {
+    editMode: {
+      required: true,
+      type: Boolean
+    },
     sensor: {
       required: true,
       type: Object

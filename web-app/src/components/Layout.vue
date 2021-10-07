@@ -15,6 +15,14 @@
 
       <v-spacer></v-spacer>
 
+      <v-app-bar-nav-icon
+        v-if="$route.name === 'dashboard'"
+        class="edit-button"
+        @click="editMode = !editMode">
+        <v-icon v-if="editMode">mdi-lock-open-variant</v-icon>
+        <v-icon v-else>mdi-lock</v-icon>
+      </v-app-bar-nav-icon>
+
       <v-app-bar-nav-icon @click="preferencesDrawerOpen = !preferencesDrawerOpen">
         <v-icon>mdi-cog</v-icon>
       </v-app-bar-nav-icon>
@@ -39,6 +47,14 @@ export default {
     PreferencesDrawer
   },
   computed: {
+    editMode: {
+      get() {
+        return this.$store.state.editMode
+      },
+      set(value) {
+        this.$store.commit('setEditMode', value)
+      }
+    },
     navDrawerOpen: {
       get() {
         return this.$store.state.navDrawer
@@ -58,3 +74,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Edit buttons only relevant for overcrowded displays */
+.edit-button {
+  display: none;
+}
+
+@media screen and (max-width: 1000px) {
+  .edit-button {
+    display: block;
+  }
+}
+</style>

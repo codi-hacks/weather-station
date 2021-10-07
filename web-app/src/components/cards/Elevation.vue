@@ -1,13 +1,18 @@
 <template>
   <div>
-    <ModeButton :value="mode" @input="setMode" />
-    <CardHeader>
+    <ModeButton
+      :editMode="editMode"
+      :value="mode"
+      @input="setMode"
+    />
+    <CardHeader :editMode="editMode">
       <div>
         {{ sensor.label }}
         <span v-if="sensor.settings">- {{ sensor.station.label }}</span>
       </div>
     </CardHeader>
     <TimeButtons
+      :editMode="editMode"
       :value="timeAgo"
       @input="setTimeAgo"
       :zoomed-in="zoomedIn"
@@ -60,6 +65,10 @@ export default {
     CardHeader
   },
   props: {
+    editMode: {
+      required: true,
+      type: Boolean
+    },
     sensor: {
       required: true,
       type: Object

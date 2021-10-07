@@ -35,6 +35,7 @@
       </v-alert>
 
       <CardContainer
+        :edit-mode="editMode"
         :sensors="sensors"
         @change-mode="setSensorMode"
         @change-time-ago="setSensorTimeAgo"
@@ -68,6 +69,9 @@ export default {
     this.generateDashboard()
   },
   computed: {
+    editMode() {
+      return this.$store.state.editMode
+    },
     showPreferencesAlert: {
       get() {
         return this.$store.state.preferences.showAlert

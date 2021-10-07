@@ -85,6 +85,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   line-height: 1.1;
+  padding-top: 4px;
   position: relative;
   z-index: 1;
 }
@@ -106,6 +107,7 @@ export default {
 }
 
 .sparkline {
+  padding-top: 4px;
   position: absolute;
   z-index: 0;
 }

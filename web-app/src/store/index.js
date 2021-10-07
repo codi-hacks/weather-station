@@ -10,8 +10,14 @@ export default new Vuex.Store({
   state: {
     dashboard: [],
     dashboardPromise: new Deferred(),
+    // Edit mode can be toggled on the dashboard
+    editMode: false,
+    // Left drawer opened or closed
     navDrawer: false,
+    // Text shown on the top toolbar. This
+    // gets set by the individual views.
     pageTitle: 'Weather Station App',
+    // Right drawer opened or closed
     preferencesDrawer: false,
     sensors: {},
     sensorPromises: {},
@@ -37,6 +43,9 @@ export default new Vuex.Store({
     },
     removeBookmark(state, sensorId) {
       Vue.set(state, 'dashboard', state.dashboard.filter(s => s.id !== sensorId))
+    },
+    setEditMode(state, bool) {
+      state.editMode = bool
     },
     setSensorMode(state, { sensorId, mode }) {
       const card = state.dashboard.find(c => c.id === sensorId)
