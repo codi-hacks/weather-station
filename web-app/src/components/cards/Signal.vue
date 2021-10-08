@@ -37,6 +37,11 @@
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
       />
+    <SortButtons
+      v-if="sensor.settings"
+      :edit-mode="editMode"
+      :sensor-id="sensor.id"
+    />
     <BookmarkButton
       :edit-mode="editMode"
       :is-dashboard="!!sensor.settings"
@@ -52,8 +57,9 @@ import BookmarkButton from '../BookmarkButton'
 import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
+import SortButtons from '../SortButtons'
 import TimeButtons from '../TimeButtons'
-import CardHeader from '../CardHeader.vue'
+import CardHeader from '../CardHeader'
 
 export default {
   components: {
@@ -61,6 +67,7 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
+    SortButtons,
     TimeButtons,
     CardHeader
   },

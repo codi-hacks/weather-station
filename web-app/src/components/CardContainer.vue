@@ -149,4 +149,8 @@ export default {
 /deep/ .card:hover .bookmark-button {
   display: block;
 }
+
+/deep/ .card:hover .sort-buttons {
+  display: block;
+}
 </style>

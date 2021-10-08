@@ -55,6 +55,32 @@ export default new Vuex.Store({
       const card = state.dashboard.find(c => c.id === sensorId)
       card.timeAgo = timeAgo
     },
+    moveSensorCard(state, { sensorId, direction }) {
+      // Take an element and move it over one space if it has the sensor ID in question
+      const reducer = (acc, el) => {
+        if (el.id === sensorId) {
+          acc.targetSensor = el
+        } else {
+          acc.arr.push(el)
+          if (acc.targetSensor) {
+            acc.arr.push(acc.targetSensor)
+            acc.targetSensor = null
+          }
+        }
+        return acc
+      }
+      if (direction === 'right') {
+        this.commit('setDashboard', state.dashboard.reduce(
+          reducer,
+          { arr: [], targetSensor: null }
+        ).arr)
+      } else {
+        this.commit('setDashboard', state.dashboard.reduceRight(
+          reducer,
+          { arr: [], targetSensor: null }
+        ).arr.reverse())
+      }
+    },
     setDashboard(state, dashboard) {
       Vue.set(state, 'dashboard', dashboard)
     },
