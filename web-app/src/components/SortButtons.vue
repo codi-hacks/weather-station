@@ -45,10 +45,8 @@ export default {
   z-index: 1;
 }
 
-@media screen and (max-width: 1000px) {
-  .sort-buttons {
-    display: block;
-  }
+.sort-buttons.edit-mode {
+  display: block;
 }
 
 .up-arrow {
