@@ -2,6 +2,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+- [Overview](#overview)
 - [Development Setup](#development-setup)
 - [Building executables](#building-executables)
 - [Production build](#production-build)
@@ -14,6 +15,14 @@
 - [Parsing measurement data](#parsing-measurement-data)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Overview
+
+This crate provides 3 binaries used to serve and manage your weather data.
+
+- `server` - The HTTP + UDP server that listens for station data and serves the JSON API for the web app
+- `station` - Command line utility for creating and managing registered weather stations. See `station --help` for more information
+- `measurement` - A debug tool that simulates a weather station sending measurements. This can be handy for testing that your server is live and that your proxy and firewall settings are properly configured. See [Sending test measurements](#sending-test-measurements) for more information.
 
 ## Development Setup
 

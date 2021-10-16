@@ -19,7 +19,7 @@ For more information on PWA's check out this introduction and guide on [web.dev]
 
 ## Getting started
 
-1. Install an up-to-date copy of [nodejs](https://nodejs.org) (current or LTS both work)
+1. Install an up-to-date copy of [nodejs](https://nodejs.org) (current or LTS both work). Preferably instead of installing node directly, install [fnm](https://github.com/Schniz/fnm) which can automatically install the correct version of node for you that is specified in `.nvmrc`. This way you can guarantee you are running a compatible version of node.
 2. Install node modules:
 
 ```sh
