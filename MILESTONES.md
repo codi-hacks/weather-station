@@ -116,4 +116,4 @@ This project was born from a series of workshops in our programming club.
 
 ### Final week
 
-- [ ] Creating a 1.0 release tag!
+- [x] Creating a 1.0 release tag!

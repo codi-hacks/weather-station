@@ -1,6 +1,6 @@
 [package]
 name = "weather-station-api"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Jay Thomas <jay@gfax.ch>"]
 edition = "2018"
 build = "build.rs"
