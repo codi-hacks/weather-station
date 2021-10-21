@@ -1,13 +1,18 @@
 <template>
   <div>
-    <ModeButton :value="mode" @input="setMode" />
-    <CardHeader>
+    <ModeButton
+      :edit-mode="editMode"
+      :value="mode"
+      @input="setMode"
+    />
+    <CardHeader :editMode="editMode">
       <div>
         {{ sensor.label }}
         <span v-if="sensor.settings">- {{ sensor.station.label }}</span>
       </div>
     </CardHeader>
     <TimeButtons
+      :edit-mode="editMode"
       :value="timeAgo"
       @input="setTimeAgo"
       :zoomed-in="zoomedIn"
@@ -32,9 +37,14 @@
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
     />
-    <!-- Don't show this on the dashboard -->
+    <SortButtons
+      v-if="sensor.settings"
+      :edit-mode="editMode"
+      :sensor-id="sensor.id"
+    />
     <BookmarkButton
-      v-if="!sensor.settings"
+      :edit-mode="editMode"
+      :is-dashboard="!!sensor.settings"
       :mode="mode"
       :sensor-id="sensor.id"
       :time-ago="timeAgo"
@@ -47,6 +57,7 @@ import BookmarkButton from '../BookmarkButton'
 import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
+import SortButtons from '../SortButtons'
 import TimeButtons from '../TimeButtons'
 import CardHeader from '../CardHeader'
 
@@ -56,10 +67,15 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
+    SortButtons,
     TimeButtons,
     CardHeader
   },
   props: {
+    editMode: {
+      required: true,
+      type: Boolean
+    },
     sensor: {
       required: true,
       type: Object

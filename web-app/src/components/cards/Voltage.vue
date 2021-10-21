@@ -1,13 +1,23 @@
 <template>
   <div>
-    <ModeButton :modes="['percentage-chart', 'chart', 'current']" :value="mode" @input="setMode" />
-    <CardHeader>
+    <ModeButton
+      :edit-mode="editMode"
+      :modes="['percentage-chart', 'chart', 'current']" :value="mode"
+      @input="setMode"
+    />
+    <CardHeader :editMode="editMode">
       <div>
         {{ sensor.label }}
         <span v-if="sensor.settings">- {{ sensor.station.label }}</span>
       </div>
     </CardHeader>
-    <TimeButtons :value="timeAgo" @input="setTimeAgo" :zoomed-in="zoomedIn" @reset-zoom="zoomedIn = false" />
+    <TimeButtons
+      :edit-mode="editMode"
+      :value="timeAgo"
+      @input="setTimeAgo"
+      :zoomed-in="zoomedIn"
+      @reset-zoom="zoomedIn = false"
+    />
     <CurrentView v-if="mode === 'current' && measurements.length" :measurements="measurements">
       <template v-slot:value1>
         {{ currentPercentage }}% ({{ currentVoltage | zeroPad }}v)
@@ -27,8 +37,19 @@
       :options="chartOptions"
       :zoomed-in="zoomedIn"
       @zoomed-in="zoomedIn = true"
-      />
-    <BookmarkButton v-if="!sensor.settings" :mode="mode" :sensor-id="sensor.id" :time-ago="timeAgo" />
+    />
+    <SortButtons
+      v-if="sensor.settings"
+      :edit-mode="editMode"
+      :sensor-id="sensor.id"
+    />
+    <BookmarkButton
+      :edit-mode="editMode"
+      :is-dashboard="!!sensor.settings"
+      :mode="mode"
+      :sensor-id="sensor.id"
+      :time-ago="timeAgo"
+    />
   </div>
 </template>
 
@@ -37,8 +58,9 @@ import BookmarkButton from '../BookmarkButton'
 import CurrentView from '../CurrentView'
 import Graph from '../Graph'
 import ModeButton from '../ModeButton'
+import SortButtons from '../SortButtons'
 import TimeButtons from '../TimeButtons'
-import CardHeader from '../CardHeader.vue'
+import CardHeader from '../CardHeader'
 
 function voltsToPercent(volts) {
   const map = [
@@ -74,10 +96,15 @@ export default {
     CurrentView,
     Graph,
     ModeButton,
+    SortButtons,
     TimeButtons,
     CardHeader
   },
   props: {
+    editMode: {
+      required: true,
+      type: Boolean
+    },
     sensor: {
       required: true,
       type: Object

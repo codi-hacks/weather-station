@@ -10,8 +10,14 @@ export default new Vuex.Store({
   state: {
     dashboard: [],
     dashboardPromise: new Deferred(),
+    // Edit mode can be toggled on the dashboard
+    editMode: false,
+    // Left drawer opened or closed
     navDrawer: false,
+    // Text shown on the top toolbar. This
+    // gets set by the individual views.
     pageTitle: 'Weather Station App',
+    // Right drawer opened or closed
     preferencesDrawer: false,
     sensors: {},
     sensorPromises: {},
@@ -38,6 +44,9 @@ export default new Vuex.Store({
     removeBookmark(state, sensorId) {
       Vue.set(state, 'dashboard', state.dashboard.filter(s => s.id !== sensorId))
     },
+    setEditMode(state, bool) {
+      state.editMode = bool
+    },
     setSensorMode(state, { sensorId, mode }) {
       const card = state.dashboard.find(c => c.id === sensorId)
       card.mode = mode
@@ -45,6 +54,32 @@ export default new Vuex.Store({
     setSensorTimeAgo(state, { sensorId, timeAgo }) {
       const card = state.dashboard.find(c => c.id === sensorId)
       card.timeAgo = timeAgo
+    },
+    moveSensorCard(state, { sensorId, direction }) {
+      // Take an element and move it over one space if it has the sensor ID in question
+      const reducer = (acc, el) => {
+        if (el.id === sensorId) {
+          acc.targetSensor = el
+        } else {
+          acc.arr.push(el)
+          if (acc.targetSensor) {
+            acc.arr.push(acc.targetSensor)
+            acc.targetSensor = null
+          }
+        }
+        return acc
+      }
+      if (direction === 'right') {
+        this.commit('setDashboard', state.dashboard.reduce(
+          reducer,
+          { arr: [], targetSensor: null }
+        ).arr)
+      } else {
+        this.commit('setDashboard', state.dashboard.reduceRight(
+          reducer,
+          { arr: [], targetSensor: null }
+        ).arr.reverse())
+      }
     },
     setDashboard(state, dashboard) {
       Vue.set(state, 'dashboard', dashboard)
