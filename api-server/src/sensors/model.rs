@@ -106,7 +106,6 @@ impl SensorsModel {
             .limit(50_000)
             .load(conn)?;
         let sensor_type: SensorTypesModel = sensor_types::table.filter(sensor_types::id.eq(sensor.type_id)).first(conn)?;
-        let sensor_type_id = sensor_type.id.clone();
         let station: StationsModel = stations::table.filter(stations::id.eq(sensor.station_id)).first(conn)?;
         Ok(Sensor {
             id: sensor.id,
@@ -119,7 +118,7 @@ impl SensorsModel {
                 description: sensor_type.description,
                 sensors: None
             }),
-            type_id: sensor_type_id,
+            type_id: sensor.type_id,
             station: Some(Station {
                 id: station.id,
                 label: station.label,
@@ -132,9 +131,9 @@ impl SensorsModel {
         })
     }
 
-    pub fn find_by_station(station: Station,conn: &DbConnection) -> Result<Vec<Sensor>, CustomError> {
+    pub fn find_by_station(station: &Station, conn: &DbConnection) -> Result<Vec<Sensor>, CustomError> {
         let sensors: Vec<Self> = SensorsModel::belonging_to(&StationsModel {
-            id: station.id.clone(),
+            id: station.id,
             label: station.label.clone(),
             key: station.key.clone()
         }).load(conn)?;
@@ -147,7 +146,7 @@ impl SensorsModel {
                 r#type: None,
                 type_id: sensor.type_id,
                 station: None,
-                station_id: station.id.clone(),
+                station_id: station.id,
                 created_at: sensor.created_at,
                 updated_at: sensor.updated_at
             }
@@ -183,11 +182,11 @@ impl SensorsModel {
         Ok(res)
     }
 
-    pub fn delete_by_station(station: Station, conn: &DbConnection) -> Result<usize, CustomError> {
+    pub fn delete_by_station(station: &Station, conn: &DbConnection) -> Result<usize, CustomError> {
         let station = StationsModel {
             id: station.id,
-            label: station.label,
-            key: station.key
+            label: station.label.clone(),
+            key: station.key.clone()
         };
         Ok(diesel::delete(SensorsModel::belonging_to(&station)).execute(conn)?)
     }

@@ -70,9 +70,8 @@ pub fn udp_server(server: UdpServer, pool: Pool) -> std::result::Result<(), Cust
         if our_checksum != msg.checksum {
             info!("Dropping message with invalid checksum (got {}, want {})", our_checksum, msg.checksum);
             continue
-        } else {
-            debug!("Checksums match! {}", our_checksum);
         }
+        debug!("Checksums match! {}", our_checksum);
         // Look up sensors by their alias
         let mut sensors_map = HashMap::new();
         for sensor in station.sensors.unwrap() {
@@ -104,10 +103,10 @@ fn parse_message(mut input: &[u8]) -> Result<(&[u8], Message), UdpError> {
     let full_input = input;
     let full_length = input.len();
     let mut station_id = String::new();
-    while input.len() != 0 {
+    while !input.is_empty() {
         // Check to see if we hit the 'end of message' tag
         let (rest, val) = opt(tag("#"))(input)?;
-        if let Some(_) = val {
+        if val.is_some() {
             input = rest;
             break;
         }
@@ -120,7 +119,7 @@ fn parse_message(mut input: &[u8]) -> Result<(&[u8], Message), UdpError> {
         let (rest, _) = opt(tag(","))(rest)?;
         input = rest;
         if name == b"id" {
-            station_id = String::from_utf8_lossy(&value).to_string();
+            station_id = String::from_utf8_lossy(value).to_string();
         } else {
             match BigDecimal::parse_bytes(value, 10) {
                 Some(value) => {

@@ -165,7 +165,7 @@ fn create_routine(opts: Create, pool: &Pool) {
                     .with_prompt(format!("Type a user-friendly label for \"{}\" e.g. \"Air temperature\"", alias))
                     .interact_text()
                     .unwrap()
-            )
+            );
         }
     }
     //
@@ -209,7 +209,7 @@ fn create_routine(opts: Create, pool: &Pool) {
         .map(|((alias, label), type_id)| {
             NewSensor {
                 alias: alias.to_string(),
-                label: label.to_string(),
+                label,
                 type_id,
                 station_id: station.id,
             }
@@ -252,7 +252,7 @@ fn delete_routine(opts: Delete, pool: &Pool) {
                 }
             };
 
-            if stations.len() == 0 {
+            if stations.is_empty() {
                 println!("There are no stations currently in the database");
                 process::exit(1);
             }
@@ -277,11 +277,11 @@ fn delete_routine(opts: Delete, pool: &Pool) {
         .unwrap()
     {
         let mut measurements_deleted: usize = 0;
-        for sensor in SensorsModel::find_by_station(station.clone(),&connection).unwrap() {
-            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor,&connection).unwrap();
+        for sensor in SensorsModel::find_by_station(&station, &connection).unwrap() {
+            measurements_deleted += MeasurementsModel::delete_by_sensor(&sensor, &connection).unwrap();
         }
-        let sensors_deleted = SensorsModel::delete_by_station(station.clone(),&connection).unwrap();
-        StationsModel::delete(station.id,&connection).unwrap();
+        let sensors_deleted = SensorsModel::delete_by_station(&station, &connection).unwrap();
+        StationsModel::delete(station.id, &connection).unwrap();
         println!("OK. {} sensors deleted. {} measurements deleted.", sensors_deleted, measurements_deleted);
     } else {
         println!("Action aborted");
@@ -317,7 +317,7 @@ fn clean_routine(opts: Clean, pool: &Pool) {
                     process::exit(1);
                 }
             };
-            if stations.len() == 0 {
+            if stations.is_empty() {
                 println!("There are no stations currently in the database");
                 process::exit(1);
             }
@@ -346,8 +346,8 @@ fn clean_routine(opts: Clean, pool: &Pool) {
         .unwrap()
     {
         let mut measurements_deleted: usize = 0;
-        for sensor in SensorsModel::find_by_station(station.clone(),&connection).unwrap() {
-            measurements_deleted += MeasurementsModel::delete_by_sensor(sensor,&connection).unwrap();
+        for sensor in SensorsModel::find_by_station(&station, &connection).unwrap() {
+            measurements_deleted += MeasurementsModel::delete_by_sensor(&sensor, &connection).unwrap();
         }
         println!("OK. {} measurements deleted.", measurements_deleted);
     } else {
@@ -384,7 +384,7 @@ fn view_routine(opts: View, pool: &Pool) {
                 }
             };
 
-            if stations.len() == 0 {
+            if stations.is_empty() {
                 println!("There are no stations currently in the database");
                 process::exit(1);
             }
@@ -419,7 +419,7 @@ fn rename_routine(opts: Rename, pool: &Pool) {
                     process::exit(1);
                 }
             };
-            match StationsModel::find(valid_id,&conn) {
+            match StationsModel::find(valid_id, &conn) {
                 Ok(s) => s,
                 Err(_) => {
                     println!("Error. No station matching ID \"{}\"", id);
@@ -435,7 +435,7 @@ fn rename_routine(opts: Rename, pool: &Pool) {
                     process::exit(1);
                 }
             };
-            if stations.len() == 0 {
+            if stations.is_empty() {
                 println!("There are no stations currently in the database");
                 process::exit(1);
             }
