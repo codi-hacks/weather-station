@@ -52,9 +52,10 @@ impl ResponseError for CustomError {
             Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        let error_message = match status_code.as_u16() < 500 {
-            true => self.error_message.clone(),
-            false => "Internal server error".to_string(),
+        let error_message = if status_code.as_u16() < 500 {
+            self.error_message.clone()
+        } else {
+            "Internal server error".to_string()
         };
 
         HttpResponse::build(status_code).json(json!({ "message": error_message }))

@@ -32,12 +32,12 @@ impl MeasurementsModel {
         SensorsModel::touch(sensor_id, conn)?;
         Ok(measurement)
     }
-    
-    pub fn delete_by_sensor(sensor: Sensor, conn: &DbConnection) -> Result<usize, CustomError> {
+
+    pub fn delete_by_sensor(sensor: &Sensor, conn: &DbConnection) -> Result<usize, CustomError> {
         let sensor = SensorsModel {
             id: sensor.id,
-            alias: sensor.alias,
-            label: sensor.label,
+            alias: sensor.alias.clone(),
+            label: sensor.label.clone(),
             type_id: sensor.type_id,
             station_id: sensor.station_id,
             created_at: sensor.created_at,
