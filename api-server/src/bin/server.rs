@@ -3,7 +3,7 @@ use api::stations;
 use api::sensor_types;
 use api::sensors;
 use api::udp::{UdpServer, udp_server};
-use actix_web::{App, HttpServer, middleware::Logger, middleware::DefaultHeaders};
+use actix_web::{App, HttpServer, middleware::Logger, middleware::DefaultHeaders, web};
 use dotenv::dotenv;
 use log::info;
 use listenfd::ListenFd;
@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move ||
         App::new()
-            .app_data(pool.clone())
+            .app_data(web::Data::new(pool.clone()))
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
             .wrap(DefaultHeaders::new().add(("Access-Control-Allow-Methods", "GET")))
