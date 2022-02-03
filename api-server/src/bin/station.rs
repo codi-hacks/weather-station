@@ -2,7 +2,7 @@ use api::measurements::MeasurementsModel;
 use api::stations::{Station, StationsModel};
 use api::sensor_types::SensorTypesModel;
 use api::sensors::{NewSensor, SensorsModel};
-use clap::Clap;
+use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
 use dotenv::dotenv;
 use std::process;
@@ -14,7 +14,7 @@ use api::db::Pool;
 const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), ")");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = VERSION, author = AUTHORS)]
 struct Opts {
     #[clap(subcommand)]
@@ -28,7 +28,7 @@ struct Opts {
 //      sub_cmd(subcmd_opts); sub_cmd if no options are to be associated
 // View arg_enum, Arg, ArgMatches, and SubCommand in CLAP documentation on Rustlang.org
 //
-#[derive(Clap)]
+#[derive(Parser)]
 enum SubCommand {
     /// Register a new station and sensors
     Create(Create),
@@ -48,7 +48,7 @@ enum SubCommand {
 //      /// Description of option argument; appears when user runs `cargo run --bin station <subcmd> --help`
 //      option_name: Option<option_type>
 //
-#[derive(Clap)]
+#[derive(Parser)]
 struct Create {
     /// The display name for this weather station
     #[clap(short, long)]
@@ -57,25 +57,25 @@ struct Create {
     sensors: Option<String>,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 struct Delete {
     /// The UUID of the station you would like to delete
     id: Option<String>,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 struct Clean {
     /// The UUID of the station you would like to clean out
     id: Option<String>,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 struct View {
     /// The UUID of the station you would like to view
     id: Option<String>,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 struct Rename {
     /// The UUID of the station you would like to rename
     id: Option<String>,

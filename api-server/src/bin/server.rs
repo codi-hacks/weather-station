@@ -26,11 +26,11 @@ async fn main() -> std::io::Result<()> {
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move ||
         App::new()
-            .data(pool.clone())
+            .app_data(pool.clone())
             .wrap(Logger::default())
             .wrap(Logger::new("%a %{User-Agent}i"))
-            .wrap(DefaultHeaders::new().header("Access-Control-Allow-Methods", "GET"))
-            .wrap(DefaultHeaders::new().header("Access-Control-Allow-Origin", "*"))
+            .wrap(DefaultHeaders::new().add(("Access-Control-Allow-Methods", "GET")))
+            .wrap(DefaultHeaders::new().add(("Access-Control-Allow-Origin", "*")))
             .configure(stations::init_routes)
             .configure(sensors::init_routes)
             .configure(sensor_types::init_routes)

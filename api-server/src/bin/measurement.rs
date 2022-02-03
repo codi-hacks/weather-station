@@ -1,11 +1,11 @@
 use std::net::UdpSocket;
-use clap::Clap;
+use clap::Parser;
 use crc::{crc32, Hasher32};
 
 const VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), ")");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = VERSION, author = AUTHORS)]
 struct Opts {
     server: String,
